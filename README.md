@@ -2,7 +2,7 @@
 
 Persistent project knowledge base maintained by an LLM agent. Syncs from Azure DevOps, GitHub, and Dataverse; ingests meeting notes and analysis docs; publishes to GitHub Wiki.
 
-**Repository marketplace:** `raythekool/ray-llm-wiki`
+**Repository marketplace:** `raythekool/power-platform-llm-wiki`
 
 ---
 
@@ -12,13 +12,13 @@ Persistent project knowledge base maintained by an LLM agent. Syncs from Azure D
 
 1. Open `File > Preferences > Settings`
 2. Enable `Chat > Plugins: Enabled`
-3. Add `raythekool/ray-llm-wiki` to `Chat > Plugins: Marketplaces`
+3. Add `raythekool/power-platform-llm-wiki` to `Chat > Plugins: Marketplaces`
 4. Open the Extensions view and search for `@agentPlugins llm-wiki`
 5. Install the plugin
 
 Do not use a GitHub `tree/.../plugins/llm-wiki` URL in clone or install flows.
 That URL points to a folder view, not a Git repository. The supported source is
-the repository root `https://github.com/raythekool/ray-llm-wiki`.
+the repository root `https://github.com/raythekool/power-platform-llm-wiki`.
 
 ### First use
 

@@ -117,7 +117,7 @@ This skill does **NOT** modify any local file.
 10. **Generate `_Footer.md`**:
     ```markdown
     ---
-    *Wiki generata da [LLM Wiki](https://github.com/raythekool/ray-llm-wiki) il YYYY-MM-DD. Progetto: <project_name>.*
+   *Wiki generata da [LLM Wiki](https://github.com/raythekool/power-platform-llm-wiki) il YYYY-MM-DD. Progetto: <project_name>.*
     ```
 
 ### Phase 4 — Push
