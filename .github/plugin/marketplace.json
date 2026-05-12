@@ -1,0 +1,19 @@
+{
+  "name": "power-platform-llm-wiki",
+  "metadata": {
+    "description": "Plugin marketplace for LLM Wiki — persistent project knowledge base maintained by an LLM agent.",
+    "version": "1.2.0"
+  },
+  "owner": {
+    "name": "raythekool",
+    "email": ""
+  },
+  "plugins": [
+    {
+      "name": "power-platform-llm-wiki",
+      "source": "./plugins/power-platform-llm-wiki/",
+      "description": "Persistent project knowledge base — syncs from Azure DevOps, GitHub, and Dataverse; ingests meeting notes; publishes to GitHub Wiki.",
+      "version": "1.2.0"
+    }
+  ]
+}

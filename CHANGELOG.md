@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0 - 2026-05-12
+
+- Converted repository to marketplace format (`chat.plugins.marketplaces`).
+- Added `.github/plugin/marketplace.json` manifest.
+- Moved plugin content into `plugins/power-platform-llm-wiki/`.
+- Removed root `plugin.json` (not needed for marketplace repos).
+
 ## 1.1.1 - 2026-05-12
 
 - Added the required `plugin.json` manifest at repository root.
