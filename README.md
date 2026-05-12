@@ -2,19 +2,22 @@
 
 Persistent project knowledge base maintained by an LLM agent. Syncs from Azure DevOps, GitHub, and Dataverse; ingests meeting notes and analysis docs; publishes to GitHub Wiki.
 
-**Repository marketplace:** `raythekool/power-platform-llm-wiki`
+**Plugin source repository:** `raythekool/power-platform-llm-wiki`
 
 ---
 
 ## Quick Start
 
-### Install from repository marketplace
+### Install from source
 
-1. Open `File > Preferences > Settings`
-2. Enable `Chat > Plugins: Enabled`
-3. Add `raythekool/power-platform-llm-wiki` to `Chat > Plugins: Marketplaces`
-4. Open the Extensions view and search for `@agentPlugins llm-wiki`
-5. Install the plugin
+1. Open the Command Palette
+2. Run `Chat: Install Plugin From Source`
+3. Enter `https://github.com/raythekool/power-platform-llm-wiki`
+4. Confirm the install and enable the plugin if prompted
+5. Open the Extensions view and search for `@agentPlugins llm-wiki`
+
+Do not add this repository to `Chat > Plugins: Marketplaces`.
+That setting expects a plugin marketplace repository, not a single plugin source.
 
 Do not use a GitHub `tree/.../plugins/llm-wiki` URL in clone or install flows.
 That URL points to a folder view, not a Git repository. The supported source is
@@ -36,7 +39,7 @@ This folder is self-contained and can be distributed on its own.
 - For a private share, zip the contents of `plugins/llm-wiki/`.
 - For a dedicated repository, publish the exported plugin-only folder created by
     `scripts/export-plugin.ps1`.
-- The standalone package should contain `README.md`, `.mcp.json`, `agents/`,
+- The standalone package should contain `README.md`, `plugin.json`, `.mcp.json`, `agents/`,
     `skills/`, `references/`, `LICENSE`, and `CHANGELOG.md` at repository root.
 
 ### Export a plugin-only package
@@ -122,7 +125,7 @@ Configuration: `.mcp.json` at plugin root.
 
 ## Project Structure (after setup)
 
-```
+```text
 <project-root>/
 ├── .github/
 │   ├── agents/llm-wiki.agent.md        # Custom agent (from plugin)
@@ -156,5 +159,6 @@ Configuration: `.mcp.json` at plugin root.
 
 | Date       | Version | Changes                                                  |
 | ---------- | ------- | -------------------------------------------------------- |
+| 2026-05-12 | 1.1.1   | Added plugin manifest and corrected source install flow  |
 | 2026-05-12 | 1.1.0   | Added standalone distribution assets and export workflow |
 | 2026-04-29 | 1.0.0   | Initial plugin release — 1 agent, 11 skills              |
