@@ -1,0 +1,123 @@
+# wiki.config.yml — What the wiki tracks
+#
+# This file tells the LLM agent which items to filter during sync.
+# Connection settings (org, project, PAT) are in .vscode/mcp.json.
+
+# ─────────────────────────────────────────────────────────────────────
+# Azure DevOps — filtering only (connection is in .vscode/mcp.json)
+# ─────────────────────────────────────────────────────────────────────
+devops:
+  # Area paths to include (empty list = all areas)
+  area_paths: []
+  # Example:
+  # area_paths:
+  #   - "Project\\Backend"
+  #   - "Project\\Frontend"
+
+  # Iteration prefix to filter sprints (empty = all iterations)
+  iteration_prefix: ""
+  # Example: "Project\\2026"
+
+  # Work item types to sync
+  work_item_types:
+    - Feature
+    - User Story
+    - Task
+
+  # States to exclude from sync
+  excluded_states:
+    - Removed
+
+# ─────────────────────────────────────────────────────────────────────
+# Dataverse — solution analysis (connection via pacx auth profile)
+# ─────────────────────────────────────────────────────────────────────
+dataverse:
+  # Solutions to analyze — by name, publisher, or pattern
+  solutions: []
+  # Example:
+  # solutions:
+  #   - name: "MySolutionUniqueName"   # exact unique name
+  #   - publisher: "ava"               # all solutions by this publisher
+  #   - pattern: "ava_*"               # glob pattern match
+
+  # Custom table prefixes (used by pacx script for filtering)
+  publisher_prefixes: []
+  # Example:
+  # publisher_prefixes:
+  #   - "ava_"
+  #   - "ray_"
+
+  # Components to analyze (all enabled by default)
+  components:
+    tables: true
+    plugins: true
+    forms: true
+    views: true
+    security_roles: true
+    business_rules: true
+    flows: true
+    option_sets: true
+
+# ─────────────────────────────────────────────────────────────────────
+# GitHub — filtering only (authentication is in .vscode/mcp.json)
+# ─────────────────────────────────────────────────────────────────────
+github:
+  # Owner/org + repos to track (empty list = discover via MCP)
+  repos: []
+  # Example:
+  # repos:
+  #   - owner/repo-backend
+  #   - owner/repo-frontend
+  #   - owner/repo-infra
+
+  # Branch patterns to track (regex, empty = all branches)
+  branch_patterns:
+    - "^main$"
+    - "^develop$"
+    - "^feature/"
+    - "^release/"
+    - "^hotfix/"
+
+# ─────────────────────────────────────────────────────────────────────
+# SharePoint (optional)
+# ─────────────────────────────────────────────────────────────────────
+sharepoint:
+  enabled: false
+  site_url: ""
+  # Document libraries to scan
+  document_libraries: []
+  # Example:
+  # document_libraries:
+  #   - "Shared Documents/Analysis"
+  #   - "Shared Documents/Specs"
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Sprint settings
+  # ─────────────────────────────────────────────────────────────────────
+sprints:
+  # Sprint duration in weeks
+  duration_weeks: 2
+  # Sprint naming pattern (used in frontmatter)
+  pattern: "YYYY-SNN"
+
+# ─────────────────────────────────────────────────────────────────────
+# Automated updates — GitHub Action schedule
+# ─────────────────────────────────────────────────────────────────────
+automation:
+  enabled: true
+  # Schedule: daily | weekly | manual
+  schedule: daily
+
+# ─────────────────────────────────────────────────────────────────────
+# Publishing — push wiki to GitHub Wiki
+# ─────────────────────────────────────────────────────────────────────
+publish:
+  enabled: false
+  # Target GitHub Wiki repo (owner/repo)
+  repo: ""
+  # Project name displayed in sidebar header
+  project_name: ""
+  # Files/patterns to exclude from publishing
+  exclude:
+    - "wiki/log.md"
+    - "wiki/lint-*.md"

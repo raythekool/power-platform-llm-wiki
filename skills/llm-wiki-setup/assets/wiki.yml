@@ -1,0 +1,69 @@
+name: LLM Wiki
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # every day 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: "Operation"
+        required: true
+        default: "full-update"
+        type: choice
+        options:
+          [
+            full-update,
+            sync-devops,
+            sync-github,
+            sync-dataverse,
+            lint,
+            sprint-snapshot,
+          ]
+
+permissions:
+  issues: write
+
+jobs:
+  trigger-copilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create issue for Copilot agent
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          OPERATION="${{ github.event.inputs.operation || 'full-update' }}"
+          DATE=$(date +%Y-%m-%d)
+
+          BODY="## Wiki Auto-Update
+
+          **Operation:** \`${OPERATION}\`
+          **Date:** ${DATE}
+          **Mode:** Headless (no human confirmation)
+
+          ### Instructions
+
+          1. Read \`llm-wiki/AGENTS.md\` — your operating manual (especially § *Headless / Scheduled Mode*).
+          2. Read \`llm-wiki/wiki.config.yml\` — which DevOps org/project and GitHub repos to track.
+          3. Read \`llm-wiki/wiki/index.md\` — current content catalog.
+          4. Read the skill file for this operation: \`llm-wiki/skills/${OPERATION}.md\`.
+          5. Execute the operation following the skill procedure.
+          6. Append an entry to \`llm-wiki/wiki/log.md\`.
+
+          ### Key rules
+
+          - All wiki paths are under \`llm-wiki/\`.
+          - Never edit \`llm-wiki/raw/\` (except MCP dumps and markitdown conversions).
+          - \`llm-wiki/wiki/log.md\` is append-only.
+          - Use \`[[WikiLink]]\` syntax for cross-references.
+          - Every wiki page must have YAML frontmatter.
+          - Use inline markers: 🎯 Action, 🚫 Blocked, ⚠️ Contradiction, 🕐 Stale.
+          - Commit message: \`docs(wiki): auto-update [${DATE}] — ${OPERATION}\`"
+
+          # Remove leading whitespace from heredoc-style body
+          BODY=$(echo "$BODY" | sed 's/^          //')
+
+          gh issue create \
+            --repo "${{ github.repository }}" \
+            --title "wiki: ${OPERATION} [${DATE}]" \
+            --body "$BODY" \
+            --assignee "copilot"

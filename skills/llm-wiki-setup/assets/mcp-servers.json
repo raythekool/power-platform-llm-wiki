@@ -1,0 +1,25 @@
+{
+  "//": "MCP servers used by LLM Wiki. Merge these into .vscode/mcp.json",
+  "servers": {
+    "azure-devops": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@azure-devops/mcp@latest",
+        "YOUR_DEVOPS_ORG",
+        "-d",
+        "dev.azure.com"
+      ],
+      "envFile": "${workspaceFolder}/.env"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    },
+    "markitdown": {
+      "type": "stdio",
+      "command": "markitdown-mcp"
+    }
+  }
+}

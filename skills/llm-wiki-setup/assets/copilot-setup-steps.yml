@@ -1,0 +1,29 @@
+name: "Copilot Setup Steps"
+
+on: copilot_setup
+
+jobs:
+  copilot-setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.x"
+
+      - name: Install markitdown
+        run: pip install "markitdown[all]>=0.1.0"
+
+      - name: Install PAC CLI
+        run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+
+      - name: Verify tools
+        run: |
+          markitdown --version
+          gh --version
+          pac --version
