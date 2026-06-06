@@ -25,11 +25,11 @@ param(
 $ErrorActionPreference = "Stop"
 
 if (-not $RepoRoot) {
-    # script is at <repoRoot>/plugins/llm-wiki/scripts/Validate-Plugin.ps1
+    # script is at <repoRoot>/plugins/power-platform-llm-wiki/scripts/Validate-Plugin.ps1
     $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
 }
 
-$pluginRoot = Join-Path $RepoRoot "plugins\llm-wiki"
+$pluginRoot = Join-Path $RepoRoot "plugins\power-platform-llm-wiki"
 $expectedSkills = @("init", "config", "update", "ingest", "query")
 $legacyPattern = 'llm-wiki-setup\.md|llm-wiki-sync-|llm-wiki-full-update|llm-wiki-ingest\.md|llm-wiki-ingest-meeting|llm-wiki-lint\.md|llm-wiki-publish\.md|llm-wiki-query\.md|llm-wiki-sprint-snapshot|skills/llm-wiki-'
 
@@ -131,7 +131,7 @@ elseif (Test-Path $pjPath) {
                 $errors += "marketplace.json plugins[0].name '$($entry.name)' != plugin.json name '$pluginName' (breaks @agentPlugins resolution)"
             }
             $normSource = ($entry.source -replace '^\./', '' -replace '/$', '')
-            if ($normSource -ne "plugins/llm-wiki") {
+            if ($normSource -ne "plugins/power-platform-llm-wiki") {
                 $errors += "marketplace.json plugins[0].source '$($entry.source)' does not point to plugins/llm-wiki/"
             }
         }
@@ -173,3 +173,4 @@ else {
 }
 
 if (-not $ok) { exit 1 } else { exit 0 }
+
