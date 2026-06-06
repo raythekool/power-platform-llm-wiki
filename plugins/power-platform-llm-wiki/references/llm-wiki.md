@@ -489,7 +489,7 @@ When running in GitHub Actions or scheduled automation (no human in the loop):
 
 ## MCP server configuration
 
-The LLM agent needs access to the following MCP servers. Configure them in your agent's MCP settings file (e.g., `.vscode/mcp.json`, `claude_desktop_config.json`, or equivalent).
+The LLM agent needs access to the following MCP servers. Configure them in `.mcp.json` at the workspace root.
 
 ### Azure DevOps MCP (optional)
 
@@ -497,7 +497,7 @@ The LLM agent needs access to the following MCP servers. Configure them in your 
 {
   "azure-devops": {
     "command": "npx",
-    "args": ["-y", "@anthropic/azure-devops-mcp"],
+    "args": ["-y", "@azure-devops/mcp"],
     "env": {
       "AZURE_DEVOPS_ORG": "https://dev.azure.com/YOUR_ORG",
       "AZURE_DEVOPS_PROJECT": "YOUR_PROJECT",
@@ -548,9 +548,6 @@ The LLM agent needs access to the following MCP servers. Configure them in your 
 
 ## Tips and tricks
 
-- **Obsidian** is the ideal companion viewer. Open Obsidian pointing at the wiki and watch the LLM's edits appear in real time. Use Graph View to see how pages connect.
-- **Dataview** (Obsidian plugin) can query YAML frontmatter across pages. With the frontmatter schema above, you can build dynamic views like "all active features" or "all open action items by person".
-- **Marp** (Obsidian plugin) generates slide decks from markdown — useful for sprint reviews or stakeholder updates generated from wiki content.
 - **"Sync all"** — ask the LLM to "sync devops and github" to pull all live data in one pass. In headless mode, this happens automatically.
 - **Meeting minutes** are the only routine manual input. Paste them into `raw/meetings/` and tell the LLM to ingest. Everything else is automated.
 - The wiki is a git repo. You get version history, branching, and collaboration for free. Consider using a `wiki-update` branch for automated updates and merging to `main` after review.

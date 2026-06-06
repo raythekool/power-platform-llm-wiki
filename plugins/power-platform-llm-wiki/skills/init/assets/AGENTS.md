@@ -137,7 +137,31 @@ Central configuration: which DevOps project, GitHub repos, SharePoint sites, aut
 
 ### 6. `skills/`
 
-Executable procedures (one per operation). Agents should read the relevant skill file before executing an operation. See `skills/*.md`.
+Executable procedures. There are **five consolidated skills** (`skills/<name>.md`). Agents should read the relevant skill file before executing.
+
+| Skill    | Purpose                                                                                          |
+| -------- | ------------------------------------------------------------------------------------------------ |
+| `init`   | Scaffold `wiki/` + `raw/`, generate `wiki.config.yml`, integrate the host repo (wizard).         |
+| `config` | Reconfigure an existing wiki (integrations, repos, sprint, automation, publish target, secrets). |
+| `update` | Unified maintenance — `--source devops\|github\|dataverse\|all`, `--full`, `--lint`, `--publish`, `--sprint`. |
+| `ingest` | Process one source from `raw/` into the wiki (auto-detects meeting / spec / analysis / ADR / generic). |
+| `query`  | Answer a question using only wiki content, with `[[wiki-link]]` citations.                        |
+
+The **Operations** section below describes the underlying conceptual workflows. They map onto the five skills as follows:
+
+| Conceptual operation | Skill (mode)                |
+| -------------------- | --------------------------- |
+| Ingest, Ingest Meeting, Sync SharePoint (process step) | `ingest` |
+| Sync DevOps          | `update --source devops`    |
+| Sync GitHub          | `update --source github`    |
+| Sync Dataverse       | `update --source dataverse` |
+| Full Update          | `update --full`             |
+| Lint                 | `update --lint`             |
+| Sprint Snapshot      | `update --sprint`           |
+| Publish              | `update --publish`          |
+| Query                | `query`                     |
+| Setup / Initialize   | `init`                      |
+| Reconfigure          | `config`                    |
 
 ### 7. External authoring reference
 
@@ -243,7 +267,9 @@ GitHub Wiki `[[wiki links]]` do **NOT** support the pipe alias syntax `[[PageNam
 
 ## Operations
 
-### Ingest (from `raw/`)
+> **Note:** These are the conceptual workflows the wiki performs. They are grouped into the five skills listed in section 6 above. When a user request maps to one of these workflows, read the matching skill file (`skills/init.md`, `config.md`, `update.md`, `ingest.md`, or `query.md`) — that file is the authoritative, executable procedure. The descriptions below document the underlying steps each skill carries out.
+
+### Ingest (from `raw/`)  → skill `ingest`
 
 When asked to ingest a new source from `raw/`:
 
@@ -265,7 +291,7 @@ When asked to ingest a new source from `raw/`:
 10. Update `wiki/overview.md` if the source changes the big picture.
 11. Append an entry to `wiki/log.md`.
 
-### Ingest Meeting (from `raw/meetings/`)
+### Ingest Meeting (from `raw/meetings/`)  → skill `ingest` (meeting branch)
 
 1. **Check file format** — convert to markdown via `markitdown` if needed.
 2. Read the meeting document.
@@ -280,7 +306,7 @@ When asked to ingest a new source from `raw/`:
 6. Flag any contradictions with existing wiki content.
 7. Update `wiki/index.md` and append to `wiki/log.md`.
 
-### Sync DevOps (via MCP 🔌 → raw/ → wiki/)
+### Sync DevOps (via MCP 🔌 → raw/ → wiki/)  → skill `update --source devops`
 
 Query Azure DevOps via MCP, **dump raw data to `raw/devops/`**, then process into wiki.
 
@@ -298,7 +324,7 @@ Query Azure DevOps via MCP, **dump raw data to `raw/devops/`**, then process int
 6. Detect **drift** — flag if wiki pages don't match live DevOps state.
 7. Update `wiki/index.md` and append to `wiki/log.md` (referencing the raw dump file as source).
 
-### Sync GitHub (via MCP 🔌 + `gh` CLI → raw/ → wiki/)
+### Sync GitHub (via MCP 🔌 + `gh` CLI → raw/ → wiki/)  → skill `update --source github`
 
 Query GitHub via MCP for metadata, **use `gh api` for source code on non-default branches**, dump raw data to `raw/github/`, then process into wiki.
 
@@ -319,7 +345,7 @@ Query GitHub via MCP for metadata, **use `gh api` for source code on non-default
 5. Cross-reference branch names with feature pages.
 6. Update `wiki/index.md` and append to `wiki/log.md` (referencing the raw dump file as source).
 
-### Sync Dataverse (via PAC/PACX → raw/ → wiki/code/)
+### Sync Dataverse (via PAC/PACX → raw/ → wiki/code/)  → skill `update --source dataverse`
 
 Export Dataverse solutions and analyze their metadata, **dump to `raw/dataverse/`**, then process into wiki.
 
@@ -338,7 +364,7 @@ Export Dataverse solutions and analyze their metadata, **dump to `raw/dataverse/
 
 > **Note:** `pac` is used only for solution export (.zip). All analysis commands use `pacx`. Solution .zip files are gitignored.
 
-### Sync SharePoint (via MCP 🔌 — optional)
+### Sync SharePoint (via MCP 🔌 — optional)  → skill `ingest` (after download)
 
 If configured, pull documents directly from SharePoint.
 
@@ -348,7 +374,7 @@ If configured, pull documents directly from SharePoint.
 
 **Fallback:** If no SharePoint MCP, paste documents into `raw/analysis/` or `raw/specs/`.
 
-### Query
+### Query  → skill `query`
 
 1. Read `wiki/index.md` first — always.
 2. Identify relevant pages from the index.
@@ -359,7 +385,7 @@ If configured, pull documents directly from SharePoint.
 
 Never answer from general knowledge alone. If the answer is not in the wiki, say: "Not documented yet." Then offer to ingest relevant sources.
 
-### Lint
+### Lint  → skill `update --lint`
 
 Periodically health-check the wiki. Check for:
 
@@ -375,7 +401,7 @@ Periodically health-check the wiki. Check for:
 
 Produce `wiki/lint-YYYY-MM-DD.md`. Fix safe issues automatically. Flag contradictions for human review. Append to `wiki/log.md`.
 
-### Sprint Snapshot
+### Sprint Snapshot  → skill `update --sprint`
 
 1. Collect active features matching current sprint.
 2. Collect recent meetings from the sprint period.
@@ -469,7 +495,7 @@ The scheduled workflow (`.github/workflows/wiki.yml`) creates a GitHub issue ass
 
 ## MCP Server Configuration
 
-A pre-configured template is included at **`.vscode/mcp.json`**. Fill in your credentials:
+A pre-configured template is included at **`.mcp.json`**. Fill in your credentials:
 
 | Server                      | Env vars to set                                                  | Docs                                                                                              |
 | --------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
@@ -487,4 +513,4 @@ The `gh` CLI must be installed and authenticated (`gh auth login`) to use the RE
 gh auth status
 ```
 
-For non-VS Code agents (Claude Desktop, etc.), copy the server entries from `.vscode/mcp.json` into your agent's config file.
+In headless Copilot Coding Agent runs, these `.mcp.json` server entries are loaded automatically.

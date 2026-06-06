@@ -2,22 +2,19 @@
 
 Persistent project knowledge base maintained by an LLM agent. Syncs from Azure DevOps, GitHub, and Dataverse; ingests meeting notes and analysis docs; publishes to GitHub Wiki.
 
-**Plugin source repository:** `raythekool/power-platform-llm-wiki`
+**Published marketplace repository:** `raythekool/power-platform-llm-wiki`
 
 ---
 
 ## Quick Start
 
-### Install from source
+### Install from repository marketplace
 
-1. Open the Command Palette
-2. Run `Chat: Install Plugin From Source`
-3. Enter `https://github.com/raythekool/power-platform-llm-wiki`
-4. Confirm the install and enable the plugin if prompted
-5. Open the Extensions view and search for `@agentPlugins llm-wiki`
-
-Do not add this repository to `Chat > Plugins: Marketplaces`.
-That setting expects a plugin marketplace repository, not a single plugin source.
+1. Open `File > Preferences > Settings`
+2. Enable `Chat > Plugins: Enabled`
+3. Add `raythekool/power-platform-llm-wiki` to `Chat > Plugins: Marketplaces`
+4. Open the Extensions view and search for `@agentPlugins power-platform-llm-wiki`
+5. Install the plugin
 
 Do not use a GitHub `tree/.../plugins/llm-wiki` URL in clone or install flows.
 That URL points to a folder view, not a Git repository. The supported source is
@@ -27,22 +24,22 @@ the repository root `https://github.com/raythekool/power-platform-llm-wiki`.
 
 1. Install the plugin via VS Code agent plugins.
 2. Switch to **LLM Wiki** in the agent picker.
-3. Tell the agent: `setup` — it will integrate the wiki scaffold into your project.
-4. Start using: `sync devops`, `sync github`, `ingest raw/meetings/file.md`, `lint`, `publish wiki`.
+3. Tell the agent: `init` — it will scaffold the wiki and integrate it into your project.
+4. Then use: `update --source devops|github|dataverse|all`, `ingest raw/meetings/file.md`, `query <question>`, `update --lint`, `update --publish`.
 
 ---
 
 ## Distribution
 
-This folder is self-contained and can be distributed on its own.
+This source plugin can be exported as a standalone marketplace repository.
 
-- For a private share, zip the contents of `plugins/llm-wiki/`.
-- For a dedicated repository, publish the exported plugin-only folder created by
-    `scripts/export-plugin.ps1`.
-- The standalone package should contain `README.md`, `plugin.json`, `.mcp.json`, `agents/`,
-    `skills/`, `references/`, `LICENSE`, and `CHANGELOG.md` at repository root.
+- The export creates a repository root with `README.md`, `CHANGELOG.md`,
+    `LICENSE`, and `.github/plugin/marketplace.json`.
+- The plugin itself is exported under `plugins/power-platform-llm-wiki/`.
+- The exported repository is ready to publish as
+    `raythekool/power-platform-llm-wiki` or a similarly named marketplace repo.
 
-### Export a plugin-only package
+### Export a marketplace repository
 
 From the source repository root, run:
 
@@ -59,7 +56,7 @@ artifacts/power-platform-llm-wiki/
 That folder is ready to:
 
 1. Be zipped and shared directly.
-2. Be pushed as the root of a separate Git repository.
+2. Be pushed as the root of a separate marketplace repository.
 3. Be attached to a GitHub release.
 
 ---
@@ -74,19 +71,13 @@ That folder is ready to:
 
 ## Skills
 
-| Skill               | Folder                             | Description                                                                                  |
-| ------------------- | ---------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Setup**           | `skills/llm-wiki-setup/`           | Integrate the wiki into a host project (copilot-instructions, MCP, workflow, agent, prompts) |
-| **Ingest**          | `skills/llm-wiki-ingest/`          | Ingest a file from `raw/` into the wiki                                                      |
-| **Ingest Meeting**  | `skills/llm-wiki-ingest-meeting/`  | Ingest meeting minutes — creates structured synthesis                                        |
-| **Sync DevOps**     | `skills/llm-wiki-sync-devops/`     | Pull Features/User Stories/Tasks from Azure DevOps via MCP                                   |
-| **Sync GitHub**     | `skills/llm-wiki-sync-github/`     | Pull repo info, branches, PRs, source code from GitHub                                       |
-| **Sync Dataverse**  | `skills/llm-wiki-sync-dataverse/`  | Export & analyze Dataverse solutions via PAC/PACX                                            |
-| **Query**           | `skills/llm-wiki-query/`           | Answer questions using only wiki content                                                     |
-| **Lint**            | `skills/llm-wiki-lint/`            | Health-check the wiki — find contradictions, stale data, drift                               |
-| **Sprint Snapshot** | `skills/llm-wiki-sprint-snapshot/` | Generate sprint status report from wiki data                                                 |
-| **Full Update**     | `skills/llm-wiki-full-update/`     | Orchestrate all syncs + ingest + lint + publish                                              |
-| **Publish**         | `skills/llm-wiki-publish/`         | Push wiki content to a GitHub repository's wiki                                              |
+| Skill      | Folder            | Description                                                                                                  |
+| ---------- | ----------------- | ------------------------------------------------------------------------------------------------------------ |
+| **init**   | `skills/init/`    | Scaffold wiki + raw/ folders, generate `wiki.config.yml`, integrate with the host repo (`.github/`, `.mcp.json`, `.env`, `.gitignore`). Wizard-based; all integrations optional. |
+| **config** | `skills/config/`  | Reconfigure an existing wiki: add/remove integrations, update repos / area paths / solutions, change sprint settings, automation schedule, publish target, rotate secrets. |
+| **update** | `skills/update/`  | Unified maintenance: `--source devops|github|dataverse|all`, `--full` (orchestrated), `--lint`, `--publish`, `--sprint [<id>]`. Headless-mode friendly. |
+| **ingest** | `skills/ingest/`  | Process one source from `raw/` into the wiki. Auto-detects type (meeting / spec / analysis / ADR / generic) from path; `--type` overrides. Meetings produce structured synthesis (participants, decisions, action items, blockers). |
+| **query**  | `skills/query/`   | Answer a project question using only wiki content (never general knowledge). Cites every claim with `[[wiki-links]]`. Optionally files the answer as `wiki/reference/queries/<slug>.md`. |
 
 ---
 
@@ -117,6 +108,10 @@ Configuration: `.mcp.json` at plugin root.
 
 | File                                   | Purpose                                                   |
 | -------------------------------------- | --------------------------------------------------------- |
+| `plugin.json`                          | Plugin manifest (name, description, hooks, mcpServers)    |
+| `hooks.json`                           | SessionStart hook: staleness check                        |
+| `scripts/Check-PluginStaleness.ps1`    | Detects new commits to skill scripts on the default branch |
+| `scripts/Validate-Plugin.ps1`          | Validates manifests, the 5 skills, agent routing, and root↔plugin parity (run with `-Human`) |
 | `references/AGENTS.md`                 | Operating manual — wiki structure, conventions, workflows |
 | `references/llm-wiki.md`               | Design rationale and pattern description                  |
 | `references/powerplatform-llm-wiki.md` | Power Platform / D365 adaptation guide                    |
@@ -125,16 +120,15 @@ Configuration: `.mcp.json` at plugin root.
 
 ## Project Structure (after setup)
 
-```text
+```
 <project-root>/
 ├── .github/
 │   ├── agents/llm-wiki.agent.md        # Custom agent (from plugin)
 │   ├── prompts/llm-wiki.prompt.md       # Slash command /llm-wiki
-│   ├── prompts/llm-wiki-setup.prompt.md # Slash command /llm-wiki-setup
 │   ├── workflows/wiki.yml              # Scheduled CI workflow
 │   ├── copilot-instructions.md          # Extended with wiki section
 │   └── copilot-setup-steps.yml          # Copilot agent environment
-├── .vscode/mcp.json                     # MCP servers
+├── .mcp.json                     # MCP servers
 ├── .env                                 # Credentials (gitignored)
 └── llm-wiki/
     ├── AGENTS.md                        # Operating manual
@@ -145,20 +139,22 @@ Configuration: `.mcp.json` at plugin root.
     │   ├── devops/                      # MCP dumps
     │   ├── github/                      # MCP dumps
     │   └── dataverse/                   # Solution exports
-    ├── wiki/                            # LLM-maintained knowledge base
-    │   ├── index.md                     # Content catalog
-    │   ├── overview.md
-    │   ├── log.md                       # Append-only log
-    │   └── ...
-    └── skills/                          # Operation procedures
+    └── wiki/                            # LLM-maintained knowledge base
+        ├── index.md                     # Content catalog
+        ├── overview.md
+        └── log.md                       # Append-only log
+
+# Note: skills are provided by the plugin and are NOT copied into the host project.
 ```
 
 ---
 
 ## Version History
 
-| Date       | Version | Changes                                                  |
-| ---------- | ------- | -------------------------------------------------------- |
-| 2026-05-12 | 1.1.1   | Added plugin manifest and corrected source install flow  |
-| 2026-05-12 | 1.1.0   | Added standalone distribution assets and export workflow |
-| 2026-04-29 | 1.0.0   | Initial plugin release — 1 agent, 11 skills              |
+| Date       | Version | Changes                                                                        |
+| ---------- | ------- | ------------------------------------------------------------------------------ |
+| 2026-06-06 | 2.0.0   | **Breaking:** consolidated 11 skills into 5 (init, config, update, ingest, query); GitHub Copilot-only (removed Claude/Obsidian assets); export rebrands published `plugin.json` name to `power-platform-llm-wiki`; added plugin.json, hooks.json, staleness + validation scripts; single-agent routing; realigned references |
+| 2026-05-12 | 1.2.1   | Updated export flow to generate a standalone marketplace repository structure  |
+| 2026-05-12 | 1.2.0   | Added marketplace manifest alignment with the published standalone plugin repo |
+| 2026-05-12 | 1.1.0   | Added standalone distribution assets and export workflow                       |
+| 2026-04-29 | 1.0.0   | Initial plugin release — 1 agent, 11 skills                                    |

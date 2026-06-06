@@ -1,10 +1,10 @@
 # wiki.config.yml — What the wiki tracks
 #
 # This file tells the LLM agent which items to filter during sync.
-# Connection settings (org, project, PAT) are in .vscode/mcp.json.
+# Connection settings (org, project, PAT) are in .mcp.json.
 
 # ─────────────────────────────────────────────────────────────────────
-# Azure DevOps — filtering only (connection is in .vscode/mcp.json)
+# Azure DevOps — filtering only (connection is in .mcp.json)
 # ─────────────────────────────────────────────────────────────────────
 devops:
   # Area paths to include (empty list = all areas)
@@ -59,7 +59,7 @@ dataverse:
     option_sets: true
 
 # ─────────────────────────────────────────────────────────────────────
-# GitHub — filtering only (authentication is in .vscode/mcp.json)
+# GitHub — filtering only (authentication is in .mcp.json)
 # ─────────────────────────────────────────────────────────────────────
 github:
   # Owner/org + repos to track (empty list = discover via MCP)

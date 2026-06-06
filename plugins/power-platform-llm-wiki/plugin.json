@@ -1,0 +1,8 @@
+{
+  "name": "power-platform-llm-wiki",
+  "version": "2.0.0",
+  "description": "LLM Wiki — single-agent plugin that builds, maintains, ingests sources into, and publishes a persistent project knowledge base. Skills: init (scaffold), config (wizard), update (sync DevOps/GitHub/Dataverse + lint + publish + sprint snapshot), ingest (process raw/ sources), query (Q&A).",
+  "hooks": "hooks.json",
+  "mcpServers": ".mcp.json"
+}
+

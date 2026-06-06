@@ -1,6 +1,6 @@
 # LLM Wiki — Power Platform Edition
 
-> ⚠️ **This is a reference document.** It describes the pattern and rationale behind the LLM Wiki specialized for Power Platform / Dynamics 365 projects. To generate a working wiki repo from this document, share it with your LLM agent (Copilot, Claude, etc.) and ask: *"Generate an llm-wiki repository from this document."*
+> ⚠️ **This is a reference document.** It describes the pattern and rationale behind the LLM Wiki specialized for Power Platform / Dynamics 365 projects. To generate a working wiki repo from this document, share it with GitHub Copilot and ask: *"Generate an llm-wiki repository from this document."*
 
 A portable, LLM-maintained project wiki for **Power Platform and Dynamics 365** delivery projects.
 
@@ -194,21 +194,17 @@ The LLM reads this file before every operation. It defines page format, inline m
 
 ### 5. `skills/` — Executable procedures
 
-One markdown file per operation. The LLM reads the relevant skill file **before** executing an operation.
+Five consolidated skill folders (`skills/<name>/SKILL.md`). The LLM reads the relevant `SKILL.md` **before** executing.
 
-| Skill           | File                                 | Trigger                           |
-| --------------- | ------------------------------------ | --------------------------------- |
-| Setup           | `skills/llm-wiki-setup.md`           | "setup the wiki" / first install  |
-| Ingest          | `skills/llm-wiki-ingest.md`          | "ingest raw/..."                  |
-| Ingest Meeting  | `skills/llm-wiki-ingest-meeting.md`  | "ingest raw/meetings/..."         |
-| Sync DevOps     | `skills/llm-wiki-sync-devops.md`     | "sync devops"                     |
-| Sync GitHub     | `skills/llm-wiki-sync-github.md`     | "sync github"                     |
-| Sync Dataverse  | `skills/llm-wiki-sync-dataverse.md`  | "sync dataverse"                  |
-| Query           | `skills/llm-wiki-query.md`           | "what does the wiki say about..." |
-| Lint            | `skills/llm-wiki-lint.md`            | "lint the wiki"                   |
-| Sprint Snapshot | `skills/llm-wiki-sprint-snapshot.md` | "sprint snapshot"                 |
-| Full Update     | `skills/llm-wiki-full-update.md`     | "update the wiki" / "sync all"    |
-| Publish         | `skills/llm-wiki-publish.md`         | "publish wiki" / "push wiki"      |
+| Skill    | File                  | Trigger (examples)                                                  |
+| -------- | --------------------- | ------------------------------------------------------------------ |
+| init     | `skills/init/SKILL.md`   | "init" / "setup the wiki" / first install                       |
+| config   | `skills/config/SKILL.md` | "config" / "add an integration" / "rotate secret"               |
+| update   | `skills/update/SKILL.md` | "sync devops/github/dataverse", "full update", "lint", "publish", "sprint snapshot" |
+| ingest   | `skills/ingest/SKILL.md` | "ingest raw/..." / "process this file" / "process the minutes"  |
+| query    | `skills/query/SKILL.md`  | "what does the wiki say about..."                               |
+
+`update` is multi-mode: `--source devops\|github\|dataverse\|all`, `--full`, `--lint`, `--publish`, `--sprint [<id>]`.
 
 ### 6. `setup/` — Integration templates
 
@@ -216,12 +212,12 @@ Templates and agent prompts that integrate `llm-wiki/` with the host project. **
 
 | File                             | Purpose                                                                         |
 | -------------------------------- | ------------------------------------------------------------------------------- |
-| `setup/llm-wiki-setup.prompt.md` | Agent entry point (`/llm-wiki-setup`) — delegates to `skills/llm-wiki-setup.md` |
+| `setup/llm-wiki-setup.prompt.md` | Agent entry point (`/llm-wiki-setup`) — delegates to `skills/init/SKILL.md` |
 | `setup/llm-wiki.prompt.md`       | Wiki agent prompt (copied to `.github/prompts/` during setup)                   |
 | `setup/wiki.yml`                 | GitHub Actions workflow — creates issue assigned to Copilot                     |
 | `setup/copilot-setup-steps.yml`  | Copilot Coding Agent environment (markitdown, gh)                               |
 | `setup/env.sample`               | `.env` template with credential placeholders                                    |
-| `setup/mcp-servers.json`         | MCP server config fragment (merged into `.vscode/mcp.json`)                     |
+| `setup/mcp-servers.json`         | MCP server config fragment (merged into `.mcp.json`)                     |
 | `setup/copilot-snippet.md`       | Text appended to `.github/copilot-instructions.md`                              |
 
 ### Configuration: `wiki.config.yml`
@@ -430,7 +426,7 @@ Setup is performed by an LLM agent, not a shell script. The entry point is a VS 
 
 1. **Copy** the `llm-wiki/` folder into your project root.
 2. **Open** the setup prompt in VS Code: `/llm-wiki-setup` (file: `llm-wiki/setup/llm-wiki-setup.prompt.md`).
-3. The agent reads `llm-wiki/skills/llm-wiki-setup.md` and asks you for:
+3. The agent reads `llm-wiki/skills/init/SKILL.md` and asks you for:
    - Azure DevOps organization + project name
    - GitHub repo(s) to track
    - Azure DevOps PAT
@@ -440,7 +436,7 @@ Setup is performed by an LLM agent, not a shell script. The entry point is a VS 
 | File created/updated                 | Purpose                                        |
 | ------------------------------------ | ---------------------------------------------- |
 | `.github/copilot-instructions.md`    | Tells Copilot about the wiki (appended)        |
-| `.vscode/mcp.json`                   | Azure DevOps + GitHub + MarkItDown MCP servers |
+| `.mcp.json`                   | Azure DevOps + GitHub + MarkItDown MCP servers |
 | `.github/workflows/wiki.yml`         | Scheduled workflow → issue → Copilot agent     |
 | `.github/copilot-setup-steps.yml`    | Copilot Coding Agent environment               |
 | `.github/prompts/llm-wiki.prompt.md` | Agent prompt for interactive operations        |
@@ -450,11 +446,11 @@ Setup is performed by an LLM agent, not a shell script. The entry point is a VS 
 
 ### MCP server configuration
 
-The setup agent creates `.vscode/mcp.json` with:
+The setup agent creates `.mcp.json` with:
 
 ```json
 {
-  "servers": {
+  "mcpServers": {
     "azure-devops": {
       "type": "stdio",
       "command": "npx",
@@ -473,7 +469,7 @@ The setup agent creates `.vscode/mcp.json` with:
 }
 ```
 
-For non-VS Code agents (Claude Desktop, etc.), copy the server entries into your agent's config file.
+In headless Copilot Coding Agent runs, these `.mcp.json` server entries are loaded automatically.
 
 ---
 
@@ -576,7 +572,6 @@ Document the Dataverse solution layout:
 ```
 llm-wiki/
 ├── AGENTS.md              # LLM operating manual
-├── CLAUDE.md              # Claude-specific instructions
 ├── wiki.config.yml        # What to track (edit this)
 ├── raw/                   # Drop source documents here
 │   ├── meetings/          # Meeting minutes (.md, .docx, .pdf)
@@ -613,17 +608,12 @@ llm-wiki/
 │       ├── flows.md
 │       ├── batch.md
 │       └── infrastructure.md
-├── skills/                # Operation procedures
-│   ├── setup.md
+├── skills/                # Operation procedures (5 consolidated skills)
+│   ├── init.md
+│   ├── config.md
+│   ├── update.md
 │   ├── ingest.md
-│   ├── ingest-meeting.md
-│   ├── sync-devops.md
-│   ├── sync-github.md
-│   ├── sync-dataverse.md
-│   ├── query.md
-│   ├── lint.md
-│   ├── sprint-snapshot.md
-│   └── full-update.md
+│   └── query.md
 ├── setup/                 # Setup templates (no installer)
 │   ├── llm-wiki-setup.prompt.md
 │   ├── llm-wiki.prompt.md
@@ -670,7 +660,6 @@ llm-wiki/
 
 ## Tips
 
-- **Obsidian** works as a companion viewer — open it on `wiki/` and use Graph View to see how pages connect.
 - **"Sync all"** — ask the LLM to run `full update` to pull DevOps + GitHub + lint in one pass.
 - Meeting minutes are the main manual input. Everything else is automated via MCP.
 - The wiki is a git repo — you get version history and branching for free.

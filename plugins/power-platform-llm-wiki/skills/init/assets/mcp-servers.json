@@ -1,6 +1,6 @@
 {
-  "//": "MCP servers used by LLM Wiki. Merge these into .vscode/mcp.json",
-  "servers": {
+  "//": "MCP servers used by LLM Wiki. Merge these into .mcp.json",
+  "mcpServers": {
     "azure-devops": {
       "type": "stdio",
       "command": "npx",
