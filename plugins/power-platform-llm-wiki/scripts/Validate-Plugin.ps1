@@ -9,6 +9,7 @@
       4. The agent file (agents/llm-wiki.agent.md) references only existing skills.
       5. Root skills/<name>.md mirror the plugin skills (same five names).
       6. No stale legacy skill-name references remain in plugin docs.
+      7. marketplace.json plugins[0].name matches plugin.json name and points to plugins/llm-wiki/.
     Exit code 0 when all checks pass, 1 otherwise.
 .PARAMETER RepoRoot
     Repository root. Defaults to two levels above this script (plugin root's parent's parent).
@@ -115,6 +116,28 @@ foreach ($f in $pluginDocs) {
     if ($m) { $legacyHits += $m | ForEach-Object { "$($_.Path):$($_.LineNumber)" } }
 }
 if ($legacyHits.Count -gt 0) { $errors += "Legacy skill references in plugin docs: $($legacyHits -join ', ')" }
+
+# 7. Marketplace ↔ plugin identity consistency (guards @agentPlugins resolution).
+$marketplacePath = Join-Path $RepoRoot ".github\plugin\marketplace.json"
+if (-not (Test-Path $marketplacePath)) { $errors += "Missing marketplace manifest: .github/plugin/marketplace.json" }
+elseif (Test-Path $pjPath) {
+    try {
+        $mk = Get-Content $marketplacePath -Raw | ConvertFrom-Json
+        $pluginName = $pj.name
+        if ($mk.plugins.Count -lt 1) { $errors += "marketplace.json has no plugins" }
+        else {
+            $entry = $mk.plugins[0]
+            if ($entry.name -ne $pluginName) {
+                $errors += "marketplace.json plugins[0].name '$($entry.name)' != plugin.json name '$pluginName' (breaks @agentPlugins resolution)"
+            }
+            $normSource = ($entry.source -replace '^\./', '' -replace '/$', '')
+            if ($normSource -ne "plugins/llm-wiki") {
+                $errors += "marketplace.json plugins[0].source '$($entry.source)' does not point to plugins/llm-wiki/"
+            }
+        }
+    }
+    catch { $errors += "Invalid marketplace.json ($($_.Exception.Message))" }
+}
 
 $ok = ($errors.Count -eq 0)
 $result = [ordered]@{

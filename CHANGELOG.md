@@ -3,7 +3,9 @@
 ## 2.0.0 - 2026-06-06
 
 - **GitHub Copilot only:** removed Claude Code and Obsidian assets and references (`CLAUDE.md`, `.obsidian/`, the generic Claude skill-authoring guide, and Claude Desktop / `@anthropic` / Obsidian prose). The plugin now targets GitHub Copilot exclusively.
-- **Publish fix:** the export now rebrands the exported `plugin.json` name (and SessionStart hook matcher) to `power-platform-llm-wiki`, so `@agentPlugins power-platform-llm-wiki` resolves correctly.
+- **Directly installable source repo:** `raythekool/ray-llm-wiki` is now a self-consistent marketplace — `marketplace.json` plugin name and `plugin.json` name both `llm-wiki`, so `@agentPlugins llm-wiki` resolves when you add the repo directly. Install + usage instructions added to the READMEs.
+- **Publish fix:** the export rebrands the marketplace name, the exported `plugin.json` name, the SessionStart hook matcher, and the README identity tokens to `power-platform-llm-wiki`, so the published `raythekool/power-platform-llm-wiki` distribution resolves as `@agentPlugins power-platform-llm-wiki`.
+- **Validation:** `Validate-Plugin.ps1` now checks that `marketplace.json` plugins[0].name matches `plugin.json` name and points to `plugins/llm-wiki/`.
 - **Breaking:** consolidated 11 skills into 5 — `init`, `config`, `update`, `ingest`, `query`.
   - `init` replaces `llm-wiki-setup` (scaffolds `wiki/` + `raw/`, integrates the host repo).
   - `config` is new — wizard to reconfigure integrations, repos, sprint settings, automation, publish target, and secrets.

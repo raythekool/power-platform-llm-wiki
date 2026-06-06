@@ -8,14 +8,9 @@ Based on the [LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf55591489
 
 ## 🔌 Install As A VS Code Plugin
 
-This repository carries the marketplace manifest structure expected by GitHub
-Copilot plugin marketplaces.
-
-For installation, use the published marketplace repository:
-
-```text
-raythekool/power-platform-llm-wiki
-```
+This repository **is** a GitHub Copilot plugin marketplace — its root carries
+`.github/plugin/marketplace.json`. You can install the LLM Wiki agent directly
+from it.
 
 ### 1. Enable agent plugins in VS Code
 
@@ -27,15 +22,15 @@ raythekool/power-platform-llm-wiki
 
 1. Open `File > Preferences > Settings`
 2. Search for `Chat > Plugins: Marketplaces`
-3. Add this repository:
+3. Add this repository (use the `owner/repo` slug):
 
 ```text
 raythekool/power-platform-llm-wiki
 ```
 
-Do not use a GitHub folder URL such as
-`https://github.com/raythekool/ray-llm-wiki/tree/main/plugins/llm-wiki`.
-VS Code installs agent plugins by cloning the **repository root**.
+> Use the **repository slug**, not a folder URL such as a `…/tree/main/plugins/…`
+> link. VS Code installs agent plugins by cloning the **repository root**, where
+> `.github/plugin/marketplace.json` lives.
 
 ### 3. Install the plugin
 
@@ -43,11 +38,19 @@ VS Code installs agent plugins by cloning the **repository root**.
 2. Search for `@agentPlugins power-platform-llm-wiki`
 3. Install the plugin from this repository marketplace
 
+### 4. Use it
+
+1. Switch to the **LLM Wiki** agent in the agent picker (or run `/llm-wiki`).
+2. Tell it `init` — it scaffolds the wiki and integrates it into your project.
+3. Then drive it with the commands in the **Use it** section below — e.g.
+   `update --source devops`, `ingest raw/meetings/file.md`, `query "What is X?"`,
+   `update --lint`, `update --publish` — or plain natural language.
+
 ### Available Plugin
 
-| Plugin                    | Description                                                                                       | Details                      |
-| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------------------------- |
-| `power-platform-llm-wiki` | Power Platform-oriented LLM Wiki plugin for project knowledge bases, sync, ingest, and publishing | `plugins/power-platform-llm-wiki/README.md` |
+| Plugin | Description | Details |
+| ------ | ----------- | ------- |
+| `power-platform-llm-wiki` | LLM Wiki agent — single agent with five skills (init, config, update, ingest, query); syncs Azure DevOps / GitHub / Dataverse, ingests meeting notes and docs, and publishes to GitHub Wiki | `plugins/power-platform-llm-wiki/README.md` |
 
 ---
 

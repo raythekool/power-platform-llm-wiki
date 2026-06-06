@@ -2,7 +2,7 @@
 
 Persistent project knowledge base maintained by an LLM agent. Syncs from Azure DevOps, GitHub, and Dataverse; ingests meeting notes and analysis docs; publishes to GitHub Wiki.
 
-**Published marketplace repository:** `raythekool/power-platform-llm-wiki`
+**Marketplace repository:** `raythekool/power-platform-llm-wiki`
 
 ---
 
@@ -153,8 +153,9 @@ Configuration: `.mcp.json` at plugin root.
 
 | Date       | Version | Changes                                                                        |
 | ---------- | ------- | ------------------------------------------------------------------------------ |
-| 2026-06-06 | 2.0.0   | **Breaking:** consolidated 11 skills into 5 (init, config, update, ingest, query); GitHub Copilot-only (removed Claude/Obsidian assets); export rebrands published `plugin.json` name to `power-platform-llm-wiki`; added plugin.json, hooks.json, staleness + validation scripts; single-agent routing; realigned references |
+| 2026-06-06 | 2.0.0   | **Breaking:** consolidated 11 skills into 5 (init, config, update, ingest, query); GitHub Copilot-only (removed Claude/Obsidian assets); source repo `ray-llm-wiki` is now directly installable as its own marketplace (plugin id `llm-wiki`); export rebrands the published marketplace + `plugin.json` name to `power-platform-llm-wiki`; added plugin.json, hooks.json, staleness + validation scripts (incl. marketplace↔plugin name check); single-agent routing; realigned references |
 | 2026-05-12 | 1.2.1   | Updated export flow to generate a standalone marketplace repository structure  |
 | 2026-05-12 | 1.2.0   | Added marketplace manifest alignment with the published standalone plugin repo |
 | 2026-05-12 | 1.1.0   | Added standalone distribution assets and export workflow                       |
 | 2026-04-29 | 1.0.0   | Initial plugin release — 1 agent, 11 skills                                    |
+
