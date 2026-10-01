@@ -421,7 +421,12 @@ html.js .term-body .l {
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
-  background: linear-gradient(135deg, var(--indigo), var(--violet) 55%, var(--cyan));
+  background: linear-gradient(
+    135deg,
+    var(--indigo),
+    var(--violet) 55%,
+    var(--cyan)
+  );
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
