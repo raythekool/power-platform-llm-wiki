@@ -4,16 +4,16 @@ La versione 3 cambia link, front matter, configurazione e integrazione nel proge
 
 ### Cosa cambia
 
-| Area | v2 | v3 |
-| --- | --- | --- |
-| Link interni | `[[path/page]]`, `[[Page\|Alias]]` | Link Markdown relativi `[Titolo](../cartella/pagina.md)` |
-| `status` | Stato del lavoro (`active`, `completed`, `blocked`) | Ciclo di vita del contenuto (`draft`, `reviewed`, `certified`, ...); lo stato del lavoro va in `state` |
-| Nuovi campi | - | `owner`, `updated`, `sources`, `reviewed_by`, `certified_by`, `certified_at`, `req_id`, `implements` |
-| Configurazione | `wiki.config.yml` v2 | Schema 3: `project.profiles`, `code.repos`, `fno`, `governance`, `publish.target` |
-| Integrazione | Copie di agent e prompt in `.github/`, `.mcp.json` | Motore in `llm-wiki/.engine/`, `.vscode/mcp.json` |
-| Elaborazione incrementale | Ricerca nel `log.md` | Manifest `llm-wiki/.state/raw-manifest.json` |
-| Automazione | Workflow che crea issue per Copilot | Automazione del Copilot cloud agent (prompt fornito da `init`) |
-| Pubblicazione | Solo GitHub Wiki | Azure DevOps Wiki o GitHub Wiki |
+| Area                      | v2                                                  | v3                                                                                                     |
+| ------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| Link interni              | `[[path/page]]`, `[[Page\|Alias]]`                  | Link Markdown relativi `[Titolo](../cartella/pagina.md)`                                               |
+| `status`                  | Stato del lavoro (`active`, `completed`, `blocked`) | Ciclo di vita del contenuto (`draft`, `reviewed`, `certified`, ...); lo stato del lavoro va in `state` |
+| Nuovi campi               | -                                                   | `owner`, `updated`, `sources`, `reviewed_by`, `certified_by`, `certified_at`, `req_id`, `implements`   |
+| Configurazione            | `wiki.config.yml` v2                                | Schema 3: `project.profiles`, `code.repos`, `fno`, `governance`, `publish.target`                      |
+| Integrazione              | Copie di agent e prompt in `.github/`, `.mcp.json`  | Motore in `llm-wiki/.engine/`, `.vscode/mcp.json`                                                      |
+| Elaborazione incrementale | Ricerca nel `log.md`                                | Manifest `llm-wiki/.state/raw-manifest.json`                                                           |
+| Automazione               | Workflow che crea issue per Copilot                 | Automazione del Copilot cloud agent (prompt fornito da `init`)                                         |
+| Pubblicazione             | Solo GitHub Wiki                                    | Azure DevOps Wiki o GitHub Wiki                                                                        |
 
 ### Procedura
 

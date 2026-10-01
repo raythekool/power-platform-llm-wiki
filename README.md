@@ -100,14 +100,14 @@ The engine is copied into the project so that scheduled runs (Copilot cloud agen
 
 ## Documentation
 
-| Document | Audience |
-| --- | --- |
-| [docs/guida-utente.md](docs/guida-utente.md) | Project teams (Italian): installation, setup, daily use, publishing, questions, FAQ |
-| [docs/governance.md](docs/governance.md) | Leads, reviewers, certifiers (Italian): roles, page lifecycle, certification, cadence, security |
-| [docs/migrazione-v2-v3.md](docs/migrazione-v2-v3.md) | Projects with a v2 wiki (Italian): what changes and how to migrate |
-| [CONTRIBUTING.md](CONTRIBUTING.md) | Plugin maintainers: conventions, tests, release |
-| [plugins/power-platform-llm-wiki/references/AGENTS.md](plugins/power-platform-llm-wiki/references/AGENTS.md) | Operating manual installed in every project (wiki structure, page format, rules) |
-| [plugins/power-platform-llm-wiki/references/publishing.md](plugins/power-platform-llm-wiki/references/publishing.md) | Publishing to Azure DevOps Wiki / GitHub Wiki |
+| Document                                                                                                             | Audience                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| [docs/guida-utente.md](docs/guida-utente.md)                                                                         | Project teams (Italian): installation, setup, daily use, publishing, questions, FAQ             |
+| [docs/governance.md](docs/governance.md)                                                                             | Leads, reviewers, certifiers (Italian): roles, page lifecycle, certification, cadence, security |
+| [docs/migrazione-v2-v3.md](docs/migrazione-v2-v3.md)                                                                 | Projects with a v2 wiki (Italian): what changes and how to migrate                              |
+| [CONTRIBUTING.md](CONTRIBUTING.md)                                                                                   | Plugin maintainers: conventions, tests, release                                                 |
+| [plugins/power-platform-llm-wiki/references/AGENTS.md](plugins/power-platform-llm-wiki/references/AGENTS.md)         | Operating manual installed in every project (wiki structure, page format, rules)                |
+| [plugins/power-platform-llm-wiki/references/publishing.md](plugins/power-platform-llm-wiki/references/publishing.md) | Publishing to Azure DevOps Wiki / GitHub Wiki                                                   |
 
 ## Repository layout
 

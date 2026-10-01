@@ -11,16 +11,16 @@ Thanks for improving LLM Wiki. This repository is the source of the `power-platf
 
 ### Layout
 
-| Path | Content |
-| --- | --- |
-| `plugins/power-platform-llm-wiki/agents/` | The LLM Wiki agent (routing and core rules) |
-| `plugins/power-platform-llm-wiki/skills/<name>/SKILL.md` | One skill per user intent: `init`, `config`, `update`, `ingest`, `query` |
-| `plugins/power-platform-llm-wiki/references/` | `AGENTS.md` (installed in projects), `publishing.md`, `profiles/` |
-| `plugins/power-platform-llm-wiki/templates/` | Page templates |
-| `plugins/power-platform-llm-wiki/scripts/` | PowerShell 7 scripts; JSON on stdout; shared helpers in `LlmWiki.Common.ps1` |
-| `scripts/Validate-Plugin.ps1` | Release checks |
-| `tests/` | Fixtures and `Invoke-Tests.ps1` |
-| `docs/` | User documentation (Italian) |
+| Path                                                     | Content                                                                      |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `plugins/power-platform-llm-wiki/agents/`                | The LLM Wiki agent (routing and core rules)                                  |
+| `plugins/power-platform-llm-wiki/skills/<name>/SKILL.md` | One skill per user intent: `init`, `config`, `update`, `ingest`, `query`     |
+| `plugins/power-platform-llm-wiki/references/`            | `AGENTS.md` (installed in projects), `publishing.md`, `profiles/`            |
+| `plugins/power-platform-llm-wiki/templates/`             | Page templates                                                               |
+| `plugins/power-platform-llm-wiki/scripts/`               | PowerShell 7 scripts; JSON on stdout; shared helpers in `LlmWiki.Common.ps1` |
+| `scripts/Validate-Plugin.ps1`                            | Release checks                                                               |
+| `tests/`                                                 | Fixtures and `Invoke-Tests.ps1`                                              |
+| `docs/`                                                  | User documentation (Italian)                                                 |
 
 ### Conventions
 

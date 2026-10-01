@@ -4,12 +4,12 @@ Questa guida spiega come usare LLM Wiki su un progetto Dynamics 365 (CE / Power 
 
 ### A chi serve
 
-| Ruolo | Cosa fa con la wiki |
-| --- | --- |
-| Consulente funzionale | Carica FDD, verbali e trascrizioni; verifica le pagine dei requisiti; risponde alle domande dei key user |
-| Sviluppatore / tecnico | Lancia l'analisi del codice; verifica le pagine `code/` e la tracciabilità requisito -> codice |
-| Project manager / lead | Pubblica la wiki, controlla lint, azioni aperte e drift; organizza revisione e certificazione |
-| Key user / cliente | Consulta la wiki pubblicata (Azure DevOps Wiki o Copilot) e certifica i contenuti |
+| Ruolo                  | Cosa fa con la wiki                                                                                      |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| Consulente funzionale  | Carica FDD, verbali e trascrizioni; verifica le pagine dei requisiti; risponde alle domande dei key user |
+| Sviluppatore / tecnico | Lancia l'analisi del codice; verifica le pagine `code/` e la tracciabilità requisito -> codice           |
+| Project manager / lead | Pubblica la wiki, controlla lint, azioni aperte e drift; organizza revisione e certificazione            |
+| Key user / cliente     | Consulta la wiki pubblicata (Azure DevOps Wiki o Copilot) e certifica i contenuti                        |
 
 ### Prerequisiti
 
@@ -42,17 +42,17 @@ Al termine il progetto contiene la cartella `llm-wiki/` (configurazione, motore,
 
 ### 3. Riempire la wiki
 
-| Cosa vuoi fare | Cosa fai | Cosa produce l'agente |
-| --- | --- | --- |
-| Documentare l'as-built | `update --source code` | `wiki/projects/` e `wiki/code/` con diagrammi Mermaid, a partire dall'inventario del codice |
-| Metadati F&O | `update --source fno` | Modello dati, estensioni (Chain of Command), data entity, sicurezza |
-| Metadati Dataverse | `update --source dataverse` | Modello dati, plugin, flow, sicurezza dall'ambiente |
-| Work item | `update --source devops` | `wiki/features/`, backlog, collegamenti a requisiti e codice |
-| FDD / analisi funzionale | copia il file in `llm-wiki/raw/analysis/`, poi `ingest raw/analysis/<file>` | Una pagina per requisito (`REQ-...`) con criteri di accettazione e collegamento al codice |
-| TDD / specifica tecnica | file in `llm-wiki/raw/specs/`, poi `ingest ...` | Pagine `wiki/design/` confrontate con il codice |
-| Verbale o trascrizione Teams | file in `llm-wiki/raw/meetings/`, poi `ingest ...` | Verbale strutturato: domande e risposte, decisioni, action item, rischi |
-| Decisione architetturale | file in `llm-wiki/raw/adrs/` o richiesta diretta | Pagina ADR collegata a requisiti e design |
-| Tutto ciò che è cambiato | `update --full` | Sincronizza le fonti, elabora solo i file nuovi o modificati, lint finale |
+| Cosa vuoi fare               | Cosa fai                                                                    | Cosa produce l'agente                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Documentare l'as-built       | `update --source code`                                                      | `wiki/projects/` e `wiki/code/` con diagrammi Mermaid, a partire dall'inventario del codice |
+| Metadati F&O                 | `update --source fno`                                                       | Modello dati, estensioni (Chain of Command), data entity, sicurezza                         |
+| Metadati Dataverse           | `update --source dataverse`                                                 | Modello dati, plugin, flow, sicurezza dall'ambiente                                         |
+| Work item                    | `update --source devops`                                                    | `wiki/features/`, backlog, collegamenti a requisiti e codice                                |
+| FDD / analisi funzionale     | copia il file in `llm-wiki/raw/analysis/`, poi `ingest raw/analysis/<file>` | Una pagina per requisito (`REQ-...`) con criteri di accettazione e collegamento al codice   |
+| TDD / specifica tecnica      | file in `llm-wiki/raw/specs/`, poi `ingest ...`                             | Pagine `wiki/design/` confrontate con il codice                                             |
+| Verbale o trascrizione Teams | file in `llm-wiki/raw/meetings/`, poi `ingest ...`                          | Verbale strutturato: domande e risposte, decisioni, action item, rischi                     |
+| Decisione architetturale     | file in `llm-wiki/raw/adrs/` o richiesta diretta                            | Pagina ADR collegata a requisiti e design                                                   |
+| Tutto ciò che è cambiato     | `update --full`                                                             | Sincronizza le fonti, elabora solo i file nuovi o modificati, lint finale                   |
 
 I documenti Word, PowerPoint, Excel e PDF vengono convertiti in Markdown automaticamente (con `markitdown`). L'agente elabora solo i file nuovi o cambiati, quindi `update --full` si può lanciare spesso senza costi inutili.
 

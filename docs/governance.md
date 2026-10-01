@@ -11,11 +11,11 @@ La wiki è utile solo se ci si può fidare. Questo documento descrive ruoli, cic
 
 ### Ruoli
 
-| Ruolo | Responsabilità |
-| --- | --- |
-| Owner della wiki (lead Avanade) | Configurazione, pubblicazione, controllo periodico del lint, assegnazione delle revisioni |
-| Owner di pagina (campo `owner`) | Correttezza della pagina; risolve contraddizioni e drift della sua area |
-| Revisore | Verifica una pagina rispetto alle fonti e la porta a `reviewed` |
+| Ruolo                                            | Responsabilità                                                                             |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| Owner della wiki (lead Avanade)                  | Configurazione, pubblicazione, controllo periodico del lint, assegnazione delle revisioni  |
+| Owner di pagina (campo `owner`)                  | Correttezza della pagina; risolve contraddizioni e drift della sua area                    |
+| Revisore                                         | Verifica una pagina rispetto alle fonti e la porta a `reviewed`                            |
 | Certificatore (cliente o responsabile designato) | Approva formalmente una pagina e la porta a `certified`; elenco in `governance.certifiers` |
 
 ### Ciclo di vita
@@ -34,13 +34,13 @@ stateDiagram-v2
     deprecated --> [*]
 ```
 
-| Stato | Significato | Chi lo imposta |
-| --- | --- | --- |
-| `draft` | Contenuto generato o modificato, non verificato | Agente |
-| `reviewed` | Verificato da un revisore (`reviewed_by`) | Persona, tramite `update --review` |
-| `certified` | Approvato formalmente (`certified_by`, `certified_at`) | Persona, tramite `update --certify` |
-| `superseded` | Sostituito da un'altra pagina (collegata) | Owner di pagina |
-| `deprecated` | Non più valido | Owner di pagina |
+| Stato        | Significato                                            | Chi lo imposta                      |
+| ------------ | ------------------------------------------------------ | ----------------------------------- |
+| `draft`      | Contenuto generato o modificato, non verificato        | Agente                              |
+| `reviewed`   | Verificato da un revisore (`reviewed_by`)              | Persona, tramite `update --review`  |
+| `certified`  | Approvato formalmente (`certified_by`, `certified_at`) | Persona, tramite `update --certify` |
+| `superseded` | Sostituito da un'altra pagina (collegata)              | Owner di pagina                     |
+| `deprecated` | Non più valido                                         | Owner di pagina                     |
 
 Lo stato del work item o della decisione (Active, Closed, Accepted...) va nel campo `state`, non in `status`.
 
@@ -53,11 +53,11 @@ L'agente non riscrive mai una pagina certificata. Quando una nuova fonte la cont
 
 ### Cadenza consigliata
 
-| Quando | Attività |
-| --- | --- |
-| A ogni sprint | `update --full`, revisione delle pagine `draft` dello sprint, `update --sprint` |
-| Prima di UAT e go-live | Certificazione dei requisiti e delle pagine `code/` collegate; nessun errore di lint; drift chiusi |
-| Mensile | Controllo delle pagine non aggiornate (`STL001`), delle azioni scadute (`ACT001`) e dei requisiti senza implementazione (`TRC002`) |
+| Quando                 | Attività                                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| A ogni sprint          | `update --full`, revisione delle pagine `draft` dello sprint, `update --sprint`                                                    |
+| Prima di UAT e go-live | Certificazione dei requisiti e delle pagine `code/` collegate; nessun errore di lint; drift chiusi                                 |
+| Mensile                | Controllo delle pagine non aggiornate (`STL001`), delle azioni scadute (`ACT001`) e dei requisiti senza implementazione (`TRC002`) |
 
 ### Indicatori
 
