@@ -380,29 +380,63 @@ html.js .term-body .l {
 
 /* stats */
 .stats {
-  background: #fff;
+  background: var(--soft);
   border-bottom: 1px solid var(--line);
 }
 .stats-in {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  padding-top: 34px;
-  padding-bottom: 34px;
+  gap: 20px;
+  padding-top: 48px;
+  padding-bottom: 48px;
 }
 .stats-in div {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  padding: 26px 24px 24px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.stats-in div::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--cyan), var(--violet));
+}
+.stats-in div:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
 }
 .stats-in strong {
-  font-size: 40px;
+  font-size: 72px;
+  font-weight: 800;
   line-height: 1;
-  color: var(--indigo);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, var(--indigo), var(--violet) 55%, var(--cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.stats-in b {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
 }
 .stats-in span {
   font-size: 14px;
+  line-height: 1.45;
   color: var(--muted);
 }
 
@@ -811,6 +845,16 @@ html.js .reveal.in {
   .g3,
   .stats-in {
     grid-template-columns: 1fr;
+  }
+  .stats-in {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .stats-in div {
+    padding: 20px 16px 18px;
+  }
+  .stats-in strong {
+    font-size: 52px;
   }
   .section {
     padding: 72px 0;
