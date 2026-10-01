@@ -1,201 +1,99 @@
 ---
 name: ingest
-description: "Process a source file from llm-wiki/raw/ into the wiki: identify type (meeting / analysis / spec / ADR / generic), create the appropriate synthesis page, update related wiki pages, flag contradictions. Meetings produce a structured synthesis (participants, decisions, action items, blockers) — not a verbatim copy. Auto-detects type from path; user can override with --type."
-argument-hint: "<file-path-in-raw> [--type meeting|spec|analysis|adr|generic]"
+description: "Process one source from llm-wiki/raw/ into the wiki: meeting minutes and Teams transcripts (structured synthesis with decisions, action items, risks), FDD / functional analysis (one requirement page per REQ id), TDD / specs (design pages), ADRs, generic documents. Uses standard templates, updates related pages and the index, flags contradictions, records provenance. Auto-detects the type from the folder; --type overrides."
+argument-hint: "<file in llm-wiki/raw/> [--type meeting|fdd|tdd|adr|generic]"
 user-invocable: true
-disable-model-invocation: false
-context: fork
 ---
 
-# Ingest Source into LLM Wiki
+# Ingest a source
 
-Process a single markdown source from `llm-wiki/raw/` and integrate it into `llm-wiki/wiki/`. Auto-detects the source type and routes to the right synthesis flow.
-
-## When to Use
-
-- The user dropped a file in `llm-wiki/raw/` and asks to add it to the wiki
-- Processing meeting minutes from `raw/meetings/`
-- Ingesting analysis docs, specs, ADRs, or generic notes
-- Re-ingesting a source after the original was updated
-
-For bulk ingest of all unprocessed files in `raw/`, use `update --full` instead.
+Read `llm-wiki/AGENTS.md` first (page format, links, governance). Templates: `llm-wiki/templates/<name>.md` if present, otherwise `llm-wiki/.engine/templates/<name>.md`; translate headings to `project.language`. For many files at once use `update --full`.
 
 ## Ownership
 
-| Scope                          | Permission                                                       |
-| ------------------------------ | ---------------------------------------------------------------- |
-| `raw/`                         | **READ only** — never write, convert, or modify files in raw/    |
-| `wiki/meetings/`               | WRITE — create meeting synthesis pages                           |
-| `wiki/reference/sources/`      | WRITE — create generic source summary pages                      |
-| `wiki/reference/decisions/`    | WRITE — create/update ADRs                                       |
-| `wiki/` (other)                | WRITE — update related pages (features, projects, entities)      |
-| `wiki/index.md`                | WRITE — add new entries                                          |
-| `wiki/overview.md`             | WRITE — update if big picture changes                            |
-| `wiki/log.md`                  | APPEND only                                                      |
+| Scope | Permission |
+| --- | --- |
+| `llm-wiki/raw/` | READ only |
+| `llm-wiki/wiki/` | WRITE (create/update pages, `index.md`, `overview.md`; `log.md` append only) |
+| `llm-wiki/.state/` | WRITE through `Get-RawDelta.ps1 -MarkProcessed` |
 
-> **Important:** This skill does NOT convert files. If the source is not `.md`/`.txt`, a `.md` conversion must already exist alongside it (run `markitdown` first, or use `update --full` which converts automatically).
+## Step 1 - Readable input
 
-## Input
+The file must be `.md` or `.txt`. For other formats use the `.md` sibling with the same name; if missing, convert first (`markitdown <file> -o <file-without-ext>.md`, or the MarkItDown MCP tool) or stop and ask. For a Teams recording (`.mp4`) use a video-analysis skill to produce the transcript, or ask for the Teams transcript.
 
-- `FILE_PATH` — path to the markdown source inside `raw/` (e.g., `llm-wiki/raw/meetings/2026-04-28-sprint-review.md`).
-- `--type` (optional) — override the auto-detected type. Values: `meeting`, `spec`, `analysis`, `adr`, `generic`.
+## Step 2 - Type
 
-## Procedure
+| Path / content | Type | Template | Output |
+| --- | --- | --- | --- |
+| `raw/meetings/`, transcript, minutes | `meeting` | `meeting.md` | `wiki/meetings/<date>-<slug>.md` |
+| `raw/analysis/`, FDD, BBP, functional analysis | `fdd` | `requirement.md` | `wiki/requirements/<REQ-ID>-<slug>.md` (one per requirement) + source summary |
+| `raw/specs/`, TDD, technical spec | `tdd` | `design.md` | `wiki/design/<slug>.md` + source summary |
+| `raw/adrs/` or `# ADR-` heading | `adr` | `adr.md` | `wiki/reference/decisions/ADR-NNN-<slug>.md` |
+| `raw/{code,devops,dataverse,fno,github}/` | dump | - | stop: use `update --source ...` |
+| anything else | `generic` | `source.md` | `wiki/reference/sources/<slug>.md` |
 
-### Step 1 — Locate the readable file
+## Step 3 - Read
 
-1. Verify `FILE_PATH` exists.
-2. If it is not `.md` or `.txt`, check whether a `.md` conversion exists alongside it (same name, `.md` extension).
-3. If no markdown version is available, **stop** and ask the user to convert it (`markitdown <path>` or run `update --full`).
+Read the whole source, `wiki/index.md`, and the existing pages it is likely to affect (requirements, design, code pages, entities mentioned).
 
-### Step 2 — Detect type
+## Step 4 - Confirm (interactive only)
 
-Detection rules (`--type` overrides all):
+Summarise the source in 3-5 bullets and the pages you plan to create/update. Proceed after confirmation. Skip in headless mode.
 
-| Path / Heuristic                                                | Detected type |
-| --------------------------------------------------------------- | ------------- |
-| `raw/meetings/...`                                              | `meeting`     |
-| `raw/specs/...`                                                 | `spec`        |
-| `raw/analysis/...`                                              | `analysis`    |
-| `raw/adrs/...` or content has `# ADR-` heading                  | `adr`         |
-| `raw/devops/...`, `raw/github/...`, `raw/dataverse/...`         | `dump` (skip — use `update --source ...` instead) |
-| Anything else                                                   | `generic`     |
+## Step 5 - Synthesise by type
 
-If detection is `dump`, stop and tell the user to use the appropriate `update --source` mode.
+### Meeting
 
-### Step 3 — Pre-flight read
+- Synthesis, never a transcript copy: executive summary, participants (name, organisation, role), objective, discussion as **question -> answer** per agenda topic, decisions table, 🎯 action items with owner and due date, risks with impact and mitigation, follow-up, references.
+- Decisions that change scope or architecture: create or update an ADR and link it.
+- Requirements discussed: update the matching requirement pages (new rule, open question, contradiction).
+- Participants: create `reference/entities/<name>.md` only for recurring stakeholders (name, organisation, role - no contact data).
+- PII (`governance.pii_redaction`): no e-mail addresses, phone numbers or personal details; quotes only when the exact wording matters.
 
-1. Read the source content completely.
-2. Read `wiki/index.md` to know existing pages.
-3. For meetings, also read related feature/project/entity pages mentioned in the source so the synthesis can cross-reference correctly.
+### FDD / functional analysis
 
-### Step 4 — Discuss key takeaways (interactive mode only)
+- One page per requirement with a stable ID: reuse IDs from the document; otherwise generate `REQ-<AREA>-<NNN>` (area = 3-letter process code) and record the original section in `Source references`.
+- Fill business context, functional description, business rules, Given/When/Then acceptance criteria, non-functional requirements, open questions (🎯).
+- If a requirement page already exists, update it; changed rules on certified pages go to `## 🔄 Pending updates`.
+- Then check `wiki/code/` for components that implement each requirement (names, tables, objects): add links and `implements:` where the evidence is clear; otherwise leave the `Implementation` section to `update --source code`.
+- Also create a source summary (`source.md`) listing the requirement pages created.
 
-In interactive mode, summarise the source to the user and confirm the synthesis approach before writing. Skip in headless mode.
+### TDD / technical spec
 
-### Step 5 — Type-specific synthesis
+- `wiki/design/<slug>.md` with components, data model, integrations, security, deployment; `implements:` with the requirement IDs it covers.
+- Compare with `wiki/code/`: where the as-built code differs from the design, flag `⚠️ Drift` on both pages.
 
-#### A) Meeting
+### ADR
 
-Extract structured data:
-- **Participants** — who was present
-- **Decisions** — what was decided
-- **Action items** — who does what by when (flag with 🎯)
-- **Discussion points** — key topics and positions
-- **Blockers** — what is blocked and why (flag with 🚫)
+`wiki/reference/decisions/ADR-NNN-<slug>.md` (next free number if missing), linked from the affected requirement/design/code pages.
 
-Create `wiki/meetings/<date>-<slug>.md` with frontmatter:
+### Generic
 
-```yaml
----
-type: meeting
-date: YYYY-MM-DD
-participants: [Name1, Name2]
-status: active
-tags: [sprint-review, topic]
----
-```
+`wiki/reference/sources/<slug>.md` with TL;DR, key points, impact on the wiki, open questions.
 
-Sections: TL;DR, Participants, Decisions, Action Items, Discussion Points, Blockers, Cross-References, Source References.
+## Step 6 - Update related pages
 
-Update related pages:
-- **Feature pages** — decisions, action items, status changes
-- **Project pages** — what was discussed
-- **Entity pages** — action items per participant
-- **Decision pages** — create/update ADR if a formal decision was reached
+- Add links in both directions (relative Markdown links).
+- Contradictions: `> ⚠️ **Contradiction:** ...` on both pages; never overwrite.
+- New concepts, systems, teams: create `reference/concepts/` or `reference/entities/` pages before linking.
+- Every new page: `status: draft`, `updated: <today>`, `sources: [raw/...]`.
 
-#### B) ADR
+## Step 7 - Catalog and log
 
-Create or update `wiki/reference/decisions/ADR-NNN-<slug>.md` with frontmatter:
+1. Add every new page to `wiki/index.md` under its folder; update `overview.md` only for big-picture changes.
+2. Run `pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki` and fix errors on the pages you touched.
+3. `pwsh llm-wiki/.engine/scripts/Get-RawDelta.ps1 -RawPath llm-wiki/raw -MarkProcessed <file>`
+4. Append to `wiki/log.md`:
 
-```yaml
----
-type: decision
-adr_id: "ADR-NNN"
-date: YYYY-MM-DD
-status: proposed | accepted | superseded | deprecated
-tags: [topic]
----
-```
-
-Sections: Context, Decision, Consequences, Alternatives Considered, Source References. Link the ADR from the related feature/project pages.
-
-#### C) Spec
-
-Create `wiki/reference/sources/<slug>.md` with frontmatter (`type: source`, `tags: [spec]`). Synthesise:
-- Scope and out-of-scope
-- Functional requirements (linked to features when matching)
-- Non-functional requirements
-- Open questions / 🎯 action items
-- Cross-references
-
-#### D) Analysis
-
-Create `wiki/reference/sources/<slug>.md` with frontmatter (`type: source`, `tags: [analysis]`). Synthesise:
-- TL;DR
-- Findings
-- Recommendations
-- Open questions
-- Cross-references
-
-#### E) Generic
-
-Create `wiki/reference/sources/<slug>.md` with frontmatter (`type: source`). Sections: TL;DR, Key Points, Cross-References, Source References.
-
-### Step 6 — Update related pages
-
-For every page that should reference the new content:
-- Add a cross-reference under "Related" or in the relevant section.
-- Add new info to existing sections when applicable.
-- **Flag contradictions** with `> ⚠️ **Contradiction:** [[Page A]] says X, but the new source says Y. Unresolved.`
-- Keep existing content intact — never silently overwrite.
-
-### Step 7 — Create missing entity / concept / project pages
-
-If the source introduces a new person/team, system, technical concept, or project, create the corresponding page in `wiki/reference/entities/`, `wiki/reference/concepts/`, or `wiki/projects/` before linking to it.
-
-### Step 8 — Update catalogs
-
-1. **`wiki/index.md`** — add the new page under the right category (Meetings, Reference → Sources, Reference → Decisions, etc.).
-2. **`wiki/overview.md`** — update only if the source changes the big picture.
-
-### Step 9 — Bookkeeping
-
-Append to `llm-wiki/wiki/log.md`. Use the entry that matches the detected type:
-
-```
+```markdown
 ## [YYYY-MM-DD] ingest | <type> | <slug>
-- Source: `<FILE_PATH>`
-- Type: <meeting|spec|analysis|adr|generic>
-- Pages created: [[list]]
-- Pages updated: [[list]]
-- Contradictions flagged: <count>
-```
 
-For meetings, also include:
-
-```
-- Participants: <list>
-- Decisions: <count>, Action items: <count>, Blockers: <count>
+- Source: `raw/<path>`
+- Pages created: <links>
+- Pages updated: <links>
+- Requirements: created N, updated N; decisions N; actions N; contradictions/drift N
 ```
 
 ## Output
 
-Report to the user:
-- Source summary
-- Pages created and pages updated
-- Contradictions flagged for review
-- For meetings: decisions, action items (with owner + due date), blockers
-
-## Notes
-
-- **Never modifies `raw/` files.** Reads only. Conversions happen outside this skill.
-- **Synthesises, never copies.** Meeting pages must extract structured data, not paste the transcript.
-- **One pass per source.** Re-running on the same file produces an idempotent update (no duplicate sections, no duplicate index entries).
-- **Cross-references are mandatory.** Every new page must link to at least one existing wiki page; if no relevant page exists, create the entity/concept page first.
-- For MCP dump files (`raw/devops/`, `raw/github/`, `raw/dataverse/`), use `update --source ...` instead — those have dedicated processing logic.
-
-## Resources
-
-- See `update --full` to process every unprocessed file in `raw/` automatically.
-- See `query` to ask questions against the ingested content.
+Summary of the source, pages created/updated, decisions, action items (owner, due date), contradictions and drift to review.

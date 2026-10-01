@@ -1,21 +1,24 @@
 {
-  "//": "MCP servers used by LLM Wiki. Merge these into .mcp.json",
-  "mcpServers": {
-    "azure-devops": {
+  "//": "LLM Wiki MCP servers. Merge only the entries for the selected integrations into .vscode/mcp.json ('servers' section). Replace {organization}. Use ado-local only if the remote server is not available in the tenant.",
+  "servers": {
+    "ado-remote": {
+      "type": "http",
+      "url": "https://mcp.dev.azure.com/{organization}"
+    },
+    "ado-local": {
       "type": "stdio",
       "command": "npx",
       "args": [
         "-y",
-        "@azure-devops/mcp@latest",
-        "YOUR_DEVOPS_ORG",
+        "@azure-devops/mcp@2.10.0",
+        "{organization}",
         "-d",
-        "dev.azure.com"
-      ],
-      "envFile": "${workspaceFolder}/.env"
-    },
-    "github": {
-      "type": "http",
-      "url": "https://api.githubcopilot.com/mcp/"
+        "core",
+        "work",
+        "work-items",
+        "repositories",
+        "wiki"
+      ]
     },
     "markitdown": {
       "type": "stdio",

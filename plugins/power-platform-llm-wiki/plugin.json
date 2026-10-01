@@ -1,8 +1,14 @@
 {
   "name": "power-platform-llm-wiki",
-  "version": "2.0.0",
-  "description": "LLM Wiki — single-agent plugin that builds, maintains, ingests sources into, and publishes a persistent project knowledge base. Skills: init (scaffold), config (wizard), update (sync DevOps/GitHub/Dataverse + lint + publish + sprint snapshot), ingest (process raw/ sources), query (Q&A).",
-  "hooks": "hooks.json",
+  "version": "3.0.0",
+  "description": "LLM Wiki — code-first project knowledge base for Dynamics 365 (CE / Power Platform and Finance & Operations) delivery. Skills: init, config, update (code, work items, Dataverse, F&O metadata, lint, publish to Azure DevOps Wiki / GitHub Wiki), ingest (meetings, FDD, TDD, ADR), query.",
+  "license": "MIT",
+  "keywords": [
+    "documentation",
+    "wiki",
+    "dynamics-365",
+    "power-platform",
+    "azure-devops"
+  ],
   "mcpServers": ".mcp.json"
 }
-

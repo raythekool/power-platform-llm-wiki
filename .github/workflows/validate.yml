@@ -1,0 +1,23 @@
+name: Validate plugin
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate plugin structure
+        shell: pwsh
+        run: ./scripts/Validate-Plugin.ps1 -Human
+
+      - name: Run script tests
+        shell: pwsh
+        run: ./tests/Invoke-Tests.ps1

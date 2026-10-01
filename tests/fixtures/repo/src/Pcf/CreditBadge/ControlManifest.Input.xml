@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+    <control namespace="Contoso" constructor="CreditBadge" version="1.0.3" display-name-key="CreditBadge" control-type="virtual">
+        <property name="value" of-type="Decimal" usage="bound" required="true" />
+    </control>
+</manifest>

@@ -1,29 +1,41 @@
 name: "Copilot Setup Steps"
 
-on: copilot_setup
+# Prepares the Copilot cloud agent environment for LLM Wiki headless runs.
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
+  pull_request:
+    paths:
+      - .github/workflows/copilot-setup-steps.yml
 
 jobs:
-  copilot-setup:
+  # The job MUST be called copilot-setup-steps.
+  copilot-setup-steps:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
+      - name: Install markitdown (Office/PDF to Markdown)
+        run: pip install "markitdown[docx,pptx,xlsx,pdf]>=0.1.2,<0.2"
+
+      # Dataverse only - remove when the dataverse source is disabled.
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "8.x"
-
-      - name: Install markitdown
-        run: pip install "markitdown[all]>=0.1.0"
-
       - name: Install PAC CLI
         run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
 
       - name: Verify tools
         run: |
-          markitdown --version
-          gh --version
-          pac --version
+          pwsh --version
+          markitdown --version || true
+          git --version

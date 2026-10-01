@@ -1,167 +1,57 @@
 ---
 name: config
-description: "Reconfigure an existing LLM Wiki: edit wiki.config.yml (data-source filters, sprint settings, publish target, automation schedule), add/remove MCP server entries in .mcp.json, manage secrets in .env. Use after init when integrations, repos, or settings change. Does NOT create or modify wiki content."
-argument-hint: "Run in the project root where llm-wiki/ is already initialized"
+description: "Reconfigure an initialized LLM Wiki: add or remove sources (code repositories, Azure DevOps Boards, Dataverse, F&O metadata, GitHub, SharePoint), change profiles, language, governance, publish target (Azure DevOps Wiki / GitHub Wiki), automation, sprint settings; refresh the managed engine after a plugin update (--refresh-engine); migrate a v2 wiki to the v3 conventions (--migrate). Never changes wiki content except during --migrate."
+argument-hint: "[--refresh-engine] [--migrate]"
 user-invocable: true
-disable-model-invocation: true
-context: fork
 ---
 
 # Configure LLM Wiki
 
-## When to Use
-
-- Change which data sources are connected (add/remove DevOps, GitHub, Dataverse, SharePoint)
-- Update tracked repositories, area paths, solutions, or publisher prefixes
-- Change sprint duration or pattern
-- Enable/disable publishing or change the target wiki repo
-- Switch automation schedule (daily/weekly/manual) or disable it
-- Rotate or add secrets (PATs, client secrets)
-
-Use **`init`** instead if `wiki.config.yml` does not exist or the wiki scaffolding is missing.
+`<plugin>` is the plugin root: two folders above this `SKILL.md`. Use `init` instead when `llm-wiki/wiki.config.yml` does not exist.
 
 ## Ownership
 
-| Scope                     | Permission                                                |
-| ------------------------- | --------------------------------------------------------- |
-| `wiki.config.yml`         | WRITE — merge new values, preserve user-added fields      |
-| Host project `.mcp.json`  | WRITE — add/remove server entries (only those listed)     |
-| Host project `.env`       | WRITE — add/update/remove tracked secret keys             |
-| `.github/workflows/wiki.yml` | WRITE — update cron / create / remove                  |
-| `.github/copilot-setup-steps.yml` | WRITE — update only the PAC CLI step              |
-| `.gitignore`              | WRITE — ensure LLM Wiki section is present                |
-| `wiki/log.md`             | APPEND only                                               |
-| `wiki/` content pages     | NO ACCESS                                                 |
-| `raw/`                    | NO ACCESS                                                 |
+| Scope | Permission |
+| --- | --- |
+| `llm-wiki/wiki.config.yml` | WRITE - merge, keep user keys |
+| `llm-wiki/AGENTS.md`, `llm-wiki/.engine/` | WRITE via `Install-Engine.ps1` |
+| `.vscode/mcp.json`, `.github/copilot-instructions.md`, `.github/workflows/copilot-setup-steps.yml`, `.gitignore` | WRITE - only the LLM Wiki entries |
+| `llm-wiki/wiki/` | NO ACCESS, except `--migrate` (after confirmation) and `log.md` (append) |
+| `llm-wiki/raw/` | NO ACCESS |
 
-This skill never modifies wiki content pages and never deletes existing data.
+## Modes
 
-## Prerequisites
+### Default - change settings
 
-- `wiki.config.yml` already exists (run `init` first if not).
-- Read the current `wiki.config.yml`, `.mcp.json`, `.env` to pre-populate answers.
+1. Read `llm-wiki/wiki.config.yml`, `.vscode/mcp.json`, `llm-wiki/.engine/VERSION` and `<plugin>/plugin.json`. Show a compact summary (enabled sources, profiles, publish target, automation, engine version vs plugin version).
+2. Ask what to change (multi-select): sources, profiles / language, governance, publishing, automation, sprints, project conventions, view only.
+3. For each choice reuse the questions of `init` (wizard steps 2-7), pre-filled with current values. Removing a source sets `enabled: false` (or removes the repo entry) and leaves existing wiki pages untouched.
+4. Show a diff-style summary and ask for confirmation, then write only the affected files. Validate: YAML/JSON parse, MCP entries present for enabled sources.
+5. Append a `config` entry to `wiki/log.md` (operations, sources enabled/disabled, files updated).
 
-## Procedure
+### `--refresh-engine`
 
-### Step 1 — Detect current state
+Run after a plugin update, or when the agent reports that `llm-wiki/.engine/VERSION` differs from the plugin version:
 
-1. Parse `wiki.config.yml`. Determine which integrations are enabled (`devops`, `github`, `dataverse`, `sharepoint`, `publish`, `automation`).
-2. Parse `.mcp.json`. List currently configured MCP servers.
-3. Parse `.env`. List currently configured secret keys (do not display values).
-4. Present a compact summary of the current state to the user.
-
-### Step 2 — Operation selection
-
-> **"Cosa vuoi modificare?"** (multi-select)
-
-| Option                       | What it changes                                           |
-| ---------------------------- | --------------------------------------------------------- |
-| Add an integration           | Enable a new data source (DevOps / GitHub / Dataverse / SharePoint) |
-| Remove an integration        | Disable an existing data source                           |
-| Update integration settings  | Change repos, area paths, solutions, prefixes             |
-| Sprint settings              | Change duration or pattern                                |
-| Publishing                   | Enable/disable, change target repo                        |
-| Automation schedule          | Daily / Weekly / Manual                                   |
-| Rotate / add secrets         | Update `.env` keys                                        |
-| View full config             | Display resolved current settings, then exit              |
-
-### Step 3 — Per-operation wizard
-
-For each selected operation, run the matching mini-wizard. Use the same per-integration question batches as `init` (Step 3). When changing an existing field, pre-populate the prompt with the current value.
-
-#### Add an integration
-
-For each new integration: ask the same questions as `init` Step 3, then:
-- Update `wiki.config.yml` (enable the section, set values).
-- Merge the MCP server entry in `.mcp.json` (preserve unrelated servers).
-- Add the relevant secret keys to `.env` (prompt for values; never log them).
-- If automation is enabled, ensure the relevant tools are listed in `.github/copilot-setup-steps.yml`.
-
-#### Remove an integration
-
-> **"Sei sicuro di voler rimuovere `<integration>`? Le pagine wiki esistenti collegate rimarranno, ma non saranno più aggiornate."** (Yes / No)
-
-- Set the integration section in `wiki.config.yml` to `enabled: false` (do not delete user-added fields).
-- Remove the matching server entry from `.mcp.json`.
-- Ask whether to remove the related secrets from `.env`. Default: keep (in case the user re-enables later).
-
-#### Update integration settings
-
-Present the current values for the chosen integration. Re-ask only the fields the user wants to change. Update `wiki.config.yml` in place; never lose unrelated keys.
-
-#### Sprint settings
-
-| Field           | Current      | New           |
-| --------------- | ------------ | ------------- |
-| Sprint duration | `<weeks>`    | `<new value>` |
-| Sprint pattern  | `<pattern>`  | `<new value>` |
-
-#### Publishing
-
-- Toggle `publish.enabled`. If enabling, collect `repo` (`owner/repo`) and `project_name`.
-- Verify `gh repo view <owner/repo> --json hasWikiEnabled` returns `true`.
-
-#### Automation schedule
-
-| Option      | Cron        | Description                  |
-| ----------- | ----------- | ---------------------------- |
-| Daily       | `0 7 * * *` | Every day at 07:00 UTC       |
-| Weekly      | `0 7 * * 1` | Every Monday at 07:00 UTC    |
-| Manual only | —           | Remove the workflow          |
-
-- If switching to **Daily/Weekly**: install or patch `.github/workflows/wiki.yml` cron.
-- If switching to **Manual only**: do not delete the workflow file; comment out the `schedule:` trigger and leave `workflow_dispatch:` enabled. Ask before deleting the file.
-
-#### Rotate / add secrets
-
-For each selected key:
-- Prompt for the new value (input hidden if supported).
-- Update `.env` in place. Never echo the value back.
-- If the key did not exist in `.env`, add it under the right integration section.
-
-### Step 4 — Final confirmation
-
-Present a diff-like summary of what will change (sections updated, keys added/removed, secrets rotated — values redacted). Ask:
-
-> **"Procedere con le modifiche?"** (Yes / No)
-
-If **No**, abort without writing.
-
-### Step 5 — Apply changes (idempotent)
-
-Write only the files affected by the selected operations. Validate each file after writing:
-- `wiki.config.yml` → must be valid YAML
-- `.mcp.json` → must be valid JSON
-- `.env` → must be parseable as `KEY=VALUE` lines
-- `.github/workflows/wiki.yml` → must be valid YAML and contain a valid cron string
-
-If validation fails, restore the previous version and report the error.
-
-### Step 6 — Verification
-
-Conditional checklist of what was actually changed. Include the new resolved values (secrets redacted).
-
-## Bookkeeping
-
-Append to `llm-wiki/wiki/log.md`:
-
+```powershell
+pwsh -NoProfile -File "<plugin>/scripts/Install-Engine.ps1" -LlmWikiPath llm-wiki
 ```
-## [YYYY-MM-DD] config | <operation summary>
-- Operations: <list>
-- Integrations enabled: <list>
-- Integrations disabled: <list>
-- Secrets rotated: <key names only>
-- Files updated: <list>
-```
+
+Show the old and new version, then suggest `update --lint` because lint rules may have changed. Log `config --refresh-engine`.
+
+### `--migrate` (v2 -> v3 conventions)
+
+For wikis created with plugin 2.x. Run `Test-WikiLint.ps1` first and show the counts, then, after explicit confirmation, convert page by page:
+
+1. `[[path/page]]` and `[[Page|Alias]]` -> relative Markdown links `[Title](relative/path.md)`.
+2. `status: active|completed|blocked` -> move the value to `state:` and set `status: draft`; add `updated:` from `date:` when missing.
+3. Old config keys -> v3 (`github.repos` stays for activity; add a `code.repos` entry per repository whose code is documented; `publish.repo` -> `publish.target`).
+4. Record existing sources as processed: `Get-RawDelta.ps1 -RawPath llm-wiki/raw -Baseline`.
+5. Re-run the lint until it reports 0 errors; list remaining warnings for the user.
+
+Log `config --migrate` with the number of pages converted.
 
 ## Notes
 
-- Never delete user-added fields in `wiki.config.yml` — always merge.
-- Never overwrite unrelated server entries in `.mcp.json`.
-- Never log secret values.
-- If the user disables an integration, archived wiki pages are kept intact and just become read-only. They can be removed manually if desired.
-- Re-run `update` after a `config` change to ensure the wiki reflects the new settings.
-
-## Resources
-
-- See `init` for first-time setup.
+- Never write secrets into files. Azure DevOps uses Entra ID sign-in (MCP) and Git Credential Manager; CI uses repository secrets.
+- Turning `publish.headless` on lets scheduled runs push to a shared wiki: ask for explicit confirmation.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxModelInfo xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <DisplayName>Contoso Extensions</DisplayName>
+    <Layer>8</Layer>
+    <ModuleReferences xmlns:d2p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
+        <d2p1:string>ApplicationSuite</d2p1:string>
+        <d2p1:string>ApplicationPlatform</d2p1:string>
+    </ModuleReferences>
+    <Name>ContosoExt</Name>
+    <Publisher>Contoso</Publisher>
+</AxModelInfo>

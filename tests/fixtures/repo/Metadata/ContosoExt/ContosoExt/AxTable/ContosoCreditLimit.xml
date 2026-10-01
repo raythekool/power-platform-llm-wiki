@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>ContosoCreditLimit</Name>
+    <SourceCode>
+        <Declaration><![CDATA[
+public class ContosoCreditLimit extends common
+{
+}
+]]>        </Declaration>
+        <Methods>
+            <Method>
+                <Name>findByCustomer</Name>
+                <Source><![CDATA[public static ContosoCreditLimit findByCustomer(CustAccount _account) { return null; }]]></Source>
+            </Method>
+        </Methods>
+    </SourceCode>
+    <Fields>
+        <AxTableField xmlns="" i:type="AxTableFieldString">
+            <Name>CustAccount</Name>
+            <ExtendedDataType>CustAccount</ExtendedDataType>
+        </AxTableField>
+        <AxTableField xmlns="" i:type="AxTableFieldReal">
+            <Name>CreditLimit</Name>
+            <ExtendedDataType>AmountMST</ExtendedDataType>
+        </AxTableField>
+    </Fields>
+    <Indexes>
+        <AxTableIndex>
+            <Name>CustAccountIdx</Name>
+        </AxTableIndex>
+    </Indexes>
+    <Relations>
+        <AxTableRelation xmlns="" i:type="AxTableRelationForeignKey">
+            <Name>CustTable</Name>
+            <RelatedTable>CustTable</RelatedTable>
+        </AxTableRelation>
+    </Relations>
+</AxTable>

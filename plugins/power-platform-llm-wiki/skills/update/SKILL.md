@@ -1,266 +1,141 @@
 ---
 name: update
-description: "Unified wiki maintenance operation. Modes (combine via flags): sync from data sources (DevOps, GitHub, Dataverse) dumping to raw/ then processing into wiki/; full update orchestrating all sources + ingest of new raw/ files + sprint snapshot + lint + publish; lint-only health check; publish-only to GitHub Wiki; sprint snapshot for the current/specified sprint. Headless-mode friendly; safe to run in CI."
-argument-hint: "[--source devops|github|dataverse|all] [--full] [--lint] [--publish] [--sprint [<id>]]"
+description: "Maintain the LLM Wiki. Sync sources into raw/ and wiki/: code repositories (Azure Repos, GitHub, local clones; code-first as-built docs with requirement traceability and FDD-vs-code drift), Azure DevOps work items, Dataverse metadata, Dynamics 365 F&O metadata, GitHub activity. Also: full incremental run (--full), deterministic lint (--lint), publish to Azure DevOps Wiki or GitHub Wiki (--publish), sprint snapshot (--sprint), review/certify pages on human request (--review / --certify). Headless-safe."
+argument-hint: "[--source code|devops|dataverse|fno|github|all] [--full] [--lint] [--publish] [--sprint [<id>]] [--review|--certify <page> --by <name>]"
 user-invocable: true
-disable-model-invocation: true
-context: fork
 ---
 
 # Update LLM Wiki
 
-A single skill that consolidates the maintenance operations: data-source sync, full orchestration, lint, publish, and sprint snapshot. The agent invokes the right subset based on arguments and `wiki.config.yml`.
-
-## When to Use
-
-- Refresh the wiki from one or more data sources (DevOps / GitHub / Dataverse)
-- Run a full headless update (used by the scheduled GitHub Action)
-- Run a wiki health check (lint)
-- Publish the wiki to a GitHub Wiki repository
-- Generate a sprint snapshot report
+Read `llm-wiki/AGENTS.md` first. All scripts live in `llm-wiki/.engine/scripts/` and run with `pwsh`; they print JSON. Templates: `llm-wiki/templates/<name>.md` if present, otherwise `llm-wiki/.engine/templates/<name>.md`. Profiles: `llm-wiki/.engine/profiles/<profile>.md`.
 
 ## Modes
 
-The skill is **multi-mode** and the agent must combine flags as requested:
+| Flag | Action |
+| --- | --- |
+| `--source code` | Clone/pull configured repositories, run the code inventory, update `wiki/projects/` and `wiki/code/`, traceability and drift |
+| `--source devops` | Azure DevOps work items -> `wiki/features/`, `wiki/delivery/` |
+| `--source dataverse` | Dataverse solution metadata (pacx/pac) -> `wiki/code/` |
+| `--source fno` | F&O metadata folders -> `wiki/code/` |
+| `--source github` | GitHub PRs, issues, branches -> `wiki/projects/` |
+| `--source all` | Every enabled source, in the order code, fno, dataverse, devops, github |
+| `--full` | `--source all` + ingest new/changed `raw/` files + sprint snapshot (if a sprint ended) + `--lint` + `--publish` (only if `publish.enabled`, and in headless mode only if `publish.headless`) |
+| `--lint` | Deterministic lint + semantic review |
+| `--publish` | Export and push to the configured wiki |
+| `--sprint [<id>]` | Sprint snapshot |
+| `--review <page> --by <name>` / `--certify <page> --by <name>` | Lifecycle change requested by a person |
 
-| Flag                          | Action                                                                |
-| ----------------------------- | --------------------------------------------------------------------- |
-| `--source devops`             | Sync Azure DevOps work items (raw/devops/ → wiki/features/, projects/) |
-| `--source github`             | Sync GitHub repos + PRs + code analysis (raw/github/ → wiki/projects/, code/) |
-| `--source dataverse`          | Export and analyse Dataverse solutions (raw/dataverse/ → wiki/code/)  |
-| `--source all`                | Run all enabled sources from `wiki.config.yml`                        |
-| `--full`                      | Full update: all sources + ingest new raw/ files + sprint + lint + publish |
-| `--lint`                      | Health check only                                                     |
-| `--publish`                   | Publish to GitHub Wiki only                                           |
-| `--sprint [<id>]`             | Generate sprint snapshot (auto-detect sprint if not provided)         |
-
-If no flags are provided, ask the user which mode to run; default to `--full` in **headless mode** (see Headless section).
+Without flags: ask which mode (interactive) or run `--full` (headless).
 
 ## Ownership
 
-| Scope                                          | Permission                                              |
-| ---------------------------------------------- | ------------------------------------------------------- |
-| `wiki.config.yml`                              | READ only                                               |
-| `raw/devops/`, `raw/github/`, `raw/dataverse/` | WRITE — dump MCP/CLI query results (JSON + MD + extracts) |
-| `raw/` (other subfolders)                      | WRITE only for markitdown conversions (`.md` alongside originals) — `--full` mode only |
-| `wiki/`                                        | WRITE — create/update pages from dumped data            |
-| `wiki/lint-*.md`                               | WRITE — lint reports                                    |
-| `wiki/index.md`, `wiki/overview.md`            | WRITE — keep up to date                                 |
-| `wiki/log.md`                                  | APPEND only                                             |
-| External GitHub Wiki                           | WRITE — `--publish` mode only                           |
+| Scope | Permission |
+| --- | --- |
+| `llm-wiki/wiki.config.yml` | READ |
+| `llm-wiki/raw/{code,devops,dataverse,fno,github}/` | WRITE (dumps) |
+| other `llm-wiki/raw/` folders | WRITE only `.md` conversions next to originals (`--full`) |
+| `llm-wiki/.state/` | WRITE through `Get-RawDelta.ps1` |
+| `llm-wiki/wiki/` | WRITE (respecting the content governance rules in `AGENTS.md`) |
+| Clones of code repositories | READ (pull only; never commit or push to them) |
+| Target wiki repository | WRITE only in `--publish` |
 
-## Prerequisites (per mode)
+## Phase 0 - Bootstrap
 
-| Mode               | Required                                                                  |
-| ------------------ | ------------------------------------------------------------------------- |
-| `--source devops`  | Azure DevOps MCP server configured (`wit_query_by_wiql`, `wit_get_work_item`) |
-| `--source github`  | GitHub MCP + `gh` CLI authenticated (`gh auth status`) for non-default-branch reads |
-| `--source dataverse` | `pacx auth ping` succeeds; `pac` CLI installed                          |
-| `--full`           | All of the above for enabled sources + `markitdown` (CLI or MCP) for `raw/` conversions |
-| `--publish`        | `gh` CLI authenticated; target repo has wiki enabled                      |
+1. Read `llm-wiki/wiki.config.yml` and `llm-wiki/wiki/index.md`.
+2. Compare `llm-wiki/.engine/VERSION` with the plugin version (`plugin.json`, two folders above the plugin's skills). If they differ, tell the user to run `config --refresh-engine` (headless: continue with the installed engine and mention it in the PR).
+3. Expand the flags into an ordered list of phases.
 
-## Procedure
+## Phase 1 - Sources
 
-### Phase 0 — Bootstrap
+Each source follows the same pattern: **collect deterministically -> dump into `raw/<source>/` -> update pages -> record what changed**. Same-day dumps overwrite the previous one.
 
-1. Read `wiki.config.yml`. Determine which integrations are enabled.
-2. Read `wiki/index.md` to know what already exists in the wiki.
-3. Parse the requested flags. If `--full` is set, expand it to: `--source all`, `--sprint`, `--lint`, `--publish` (conditional on `wiki.config.yml`).
+### A) Code (`--source code`) - primary source of as-built knowledge
 
-### Phase 1 — Source sync (when `--source` is set)
+For each entry in `code.repos`:
 
-Run the matching sub-procedures in this order: **devops → github → dataverse**. Each sub-procedure has two stages: (a) **dump** to `raw/`, (b) **process** into `wiki/`.
+1. **Get the code.** If `path` exists: `git -C <path> fetch` and `git -C <path> checkout <branch>` + `git -C <path> pull --ff-only` (never discard local changes: if the working tree is dirty, stop and ask). Otherwise `git clone --branch <branch> <url> <path>` (Azure Repos and GitHub both work with Git Credential Manager; never put tokens in URLs). Record `HEAD`.
+2. **Skip unchanged repositories**: if the last `code` entry for the repo in `wiki/log.md` has the same commit, go to the next repo.
+3. **Inventory:**
 
-#### A) DevOps sync
-
-1. Read `wiki.config.yml` → `devops` section (`area_paths`, `iteration_prefix`, `work_item_types`, `excluded_states`).
-2. Query work items via MCP WIQL with the configured filters.
-3. Batch-get full work item details for the returned IDs.
-4. Write `raw/devops/work-items-YYYY-MM-DD.json` (full API response) and `raw/devops/work-items-YYYY-MM-DD.md` (human-readable tables grouped by type). Same-day re-syncs overwrite the previous file.
-5. For each Feature: create or update `wiki/features/<id>-<slug>.md` with frontmatter (`type: feature`, `devops_id`, `project`, `branch`, `sprint`, `status`, `tags`). Sections: TL;DR, User Stories, Tasks (table), Cross-References, Change Log.
-6. Map parent-child relationships (Feature → User Story → Task).
-7. Update related project pages with the new/changed work items.
-8. Detect drift (`> ⚠️ **Drift:**`) and blockers (`> 🚫 **Blocked:**`).
-9. Update `wiki/index.md` (Features section).
-
-#### B) GitHub sync
-
-1. Read `wiki.config.yml` → `github` section (`repos`, `branch_patterns`).
-2. For each tracked repo, collect via MCP: repo metadata, branches (filtered), open PRs, recent commits, open issues.
-3. For non-default-branch source reads, use `gh api`:
     ```powershell
-    gh api "repos/{owner}/{repo}/contents/{path}?ref={branch}" -H "Accept: application/vnd.github.v3.raw"
+    pwsh llm-wiki/.engine/scripts/Get-CodeInventory.ps1 -Path <path> -OutFile llm-wiki/raw/code/<repo>-<YYYY-MM-DD>.json
     ```
-    The GitHub MCP proxy does NOT support `ref`/`sha` parameters.
-4. Write `raw/github/<repo>-YYYY-MM-DD.json` and `raw/github/<repo>-YYYY-MM-DD.md`.
-5. For each repo: create or update `wiki/projects/<repo>.md` with frontmatter (`type: project`, `project`, `status`, `tags`). Sections: TL;DR, Repository Info, Branch Strategy, Code Components (with **functional descriptions**, not just file listings), Active Branches (table), Open PRs (table), Recent Activity, Related Features, Change Log.
-6. Cross-reference branch names with feature pages (`feature/F-42-auth` → `[[features/F-42-*]]`).
-7. Update `wiki/index.md` (Projects section).
 
-**Code analysis sub-mode** (when the user says "analyze code" / "update code wiki"):
-1. List all tracked branches via `gh api`.
-2. Get full file tree per branch (`git/trees/{branch}?recursive=1`).
-3. Download source files (skip binaries: `.snk`, `.png`, `package-lock.json`, etc.) into `raw/github/src/<repo>/`.
-4. Read all downloaded files and generate `wiki/code/index.md`, `wiki/code/architecture.md`, and one page per major component (`plugin.md`, `pcf.md`, `web-resources.md`, `batch.md`, etc.).
-5. Every `wiki/code/` page must include **at least one Mermaid diagram** (architecture: `graph TD`/`flowchart`/`erDiagram`; plugin/API: `sequenceDiagram`/`classDiagram`; pipelines: `flowchart LR`). Replace ASCII art with Mermaid equivalents.
+4. **Changed files since the last documented commit**: `git -C <path> diff --name-only <lastSha> HEAD`. On the first run, document everything; afterwards update only the pages whose components changed.
+5. **Pages** (follow the active profiles for the `wiki/code/` page set and use `code-component.md` for component pages):
+    - `wiki/projects/<repo>.md` (`type: project`): purpose, branch strategy, structure, components with links to `code/` pages, last documented commit.
+    - `wiki/code/*`: describe behaviour in business terms first, then technical detail, citing `<repo>@<sha>:<path>`; at least one Mermaid diagram per page. Open only the source files each page needs (inventory first).
+6. **Traceability and drift** (the main value of code-first documentation):
+    - For each `wiki/requirements/*.md`, look for implementing components (names, tables, messages, CoC targets, entities mentioned in the requirement). Add the requirement ID to the code page `implements:` and a row to its `Traceability` table; add the links in the requirement `## Implementation` section.
+    - When the code contradicts a requirement or a design page, add `> ⚠️ **Drift:** ...` to both pages with evidence (`file:line` or method). Never "fix" the requirement text.
+    - Components without a requirement: leave `implements: []`; the lint reports them as untraced.
 
-#### C) Dataverse sync
+### B) F&O metadata (`--source fno`)
 
-1. Read `wiki.config.yml` → `dataverse` section (`solutions`, `publisher_prefixes`, `components`).
-2. Verify connection: `pacx auth ping`. If it fails, ask the user to configure a profile.
-3. Resolve solution list (by `name`, `publisher`, or `pattern`).
-4. For each solution, into `raw/dataverse/<solution>-YYYY-MM-DD/`:
-    - **Export .zip** via `pac solution export --name <name> --path raw/dataverse/<name>-YYYY-MM-DD.zip --managed false` and extract.
-    - **Reverse-engineer** via `pacx script solution --solution <name> --output <dir>/ --includeStateFields`.
-    - **ER diagram** via `pacx table print --solution <name>` → embedded Mermaid `classDiagram`.
-    - **Plugins** via `pacx plugin list --solution <name>`.
-    - **Per-table metadata** via `pacx table exportMetadata --table <logicalname>` (one JSON per table).
-5. Write `raw/dataverse/<solution>-YYYY-MM-DD.md` summary.
-6. Generate / update `wiki/code/` pages based on `components` flags:
-    - `datamodel.md` — ER diagram, tables (columns, relationships, alt keys), global option sets, state/status codes
-    - `plugin.md` — class/entity/message/stage/mode/order matrix, sequence diagrams of execution order per entity
-    - `forms.md` — forms per entity (main, quick create, quick view, card) — fields, tabs, scripts
-    - `views.md` — system + personal views per entity — columns, sort, filter (FetchXML summary)
-    - `roles.md` — security role × entity × CRUD privilege matrix
-    - `flows.md` — Power Automate flows (trigger, actions, connections, status)
-    - `architecture.md` — solution dependency graph (`graph TD`), component inventory
-    - `index.md` — code wiki catalog with last-sync date
-7. Cross-reference Dataverse entities with `wiki/features/` (`dv:<table>` mentions) and plugins with project pages.
+Read `.engine/profiles/dynamics-fno.md`. For each path in `fno.metadata_paths` (custom packages only), run `Get-CodeInventory.ps1 -Path <path> -OutFile llm-wiki/raw/fno/<name>-<YYYY-MM-DD>.json`, then update the F&O `wiki/code/` pages (data model, extensions with CoC and `next`, classes, data entities, security, integrations) and the traceability as in A.6. When the metadata lives in a code repository already listed in `code.repos`, the code phase already produced the inventory: reuse it.
 
-### Phase 2 — Ingest new raw/ files (only when `--full`)
+### C) Dataverse (`--source dataverse`)
 
-1. Convert non-markdown files in `raw/` via `markitdown` (CLI or MCP). Write `.md` alongside originals. This is the **only** write to `raw/` outside of sync dumps.
-2. Scan `wiki/log.md` for already-processed files.
-3. For each new `.md` not yet in the log, run the matching ingest flow:
-    - `raw/meetings/*` → meeting ingest (see `ingest` skill — meeting branch)
-    - `raw/devops/*`, `raw/github/*`, `raw/dataverse/*` → already processed by Phase 1, skip
-    - Others → generic ingest (see `ingest` skill)
+Read `.engine/profiles/power-platform.md` and run its Dataverse commands (`pacx auth ping` first). Write the summary to `raw/dataverse/<solution>-<YYYY-MM-DD>.md`, then update `datamodel.md`, `plugins.md`, `flows.md`, `forms-views.md`, `security.md`, `alm.md`. When both the code inventory and the live metadata exist, flag differences (component in the environment but not in source control, or the opposite) as `⚠️ Drift`.
 
-(In multi-skill orchestration, prefer to delegate to the `ingest` skill rather than duplicating its logic.)
+### D) Azure DevOps work items (`--source devops`)
 
-### Phase 3 — Sprint snapshot (when `--sprint` is set, or `--full` and a sprint boundary was crossed)
+1. Use the Azure DevOps MCP server tools for WIQL queries and work item details (tool names vary with the server version: pick the work-item query and batch-get tools). Filters: `devops.area_paths`, `iteration_prefix`, `work_item_types`, `excluded_states`.
+2. Dump `raw/devops/work-items-<YYYY-MM-DD>.json` and a readable `.md` table.
+3. Update `wiki/features/<id>-<slug>.md` (`type: feature`, `devops_id`, `state`, `sprint`), `wiki/delivery/backlog-overview.md`, links from features to requirements (`REQ-...` mentioned in titles/descriptions, or shared tags) and to code pages (branches / PRs linked to work items). Flag `🚫 Blocked` items and `⚠️ Drift` when the wiki disagrees with the board.
 
-1. Determine sprint ID. If not provided, infer from the current date and `wiki.config.yml` → `sprints` pattern.
-2. Collect from `wiki/`:
-    - Active features matching the sprint (`features/*.md` with `status: active` and the sprint ID)
-    - Recent meetings in the sprint period
-    - Open 🎯 action items across all pages
-    - 🚫 blockers across all pages
-3. Generate `wiki/delivery/sprint-snapshots/<ID>.md` with frontmatter (`type: delivery`, `sprint`). Sections:
-    - Progress Summary (feature table: Feature, Status, Progress, Key Updates)
-    - Key Decisions This Sprint
-    - Open Action Items (Owner, Action, Due, Source)
-    - Blockers & Risks
-    - Meetings This Sprint
-4. Update `wiki/index.md` (Delivery section).
+### E) GitHub activity (`--source github`)
 
-### Phase 4 — Lint (when `--lint` is set, or always at the end of `--full`)
+Use the GitHub MCP tools (or `gh`) for branches matching `github.branch_patterns`, open PRs, recent merges and issues. Dump `raw/github/<repo>-<YYYY-MM-DD>.json` and update the `Activity` section of `wiki/projects/<repo>.md`. Source code analysis belongs to phase A, not here.
 
-1. Scan all pages in `wiki/` recursively.
-2. Check for:
+## Phase 2 - Ingest new sources (`--full`)
 
-    | Issue                                | Action                            |
-    | ------------------------------------ | --------------------------------- |
-    | Dead `[[references]]`                | Auto-fix when target is obvious, otherwise flag |
-    | Orphan pages (no backlinks)          | Report                            |
-    | Contradictions across pages          | Flag `> ⚠️ **Contradiction:**`     |
-    | Stale claims (>30 days, no update)   | Flag `> 🕐 **Stale:**`             |
-    | Overdue 🎯 action items              | Report with list                  |
-    | Missing concept pages                | Report                            |
-    | DevOps drift (wiki ≠ MCP)            | Flag `> ⚠️ **Drift:**`             |
-    | Missing YAML frontmatter             | Auto-fix                          |
+1. `pwsh llm-wiki/.engine/scripts/Get-RawDelta.ps1 -RawPath llm-wiki/raw`
+2. Convert every `needsConversion` file with markitdown (`markitdown <file> -o <same-name>.md`, or the MarkItDown MCP tool). Teams recordings (`.mp4`): use a video-analysis skill if available, otherwise ask for the transcript.
+3. For each `new` / `changed` file, run the `ingest` procedure (`.engine/skills/ingest/SKILL.md`).
+4. After each successful ingest: `Get-RawDelta.ps1 -RawPath llm-wiki/raw -MarkProcessed <file>`.
 
-3. Auto-fix safe issues. Flag unsafe ones for human review.
-4. Write `wiki/lint-YYYY-MM-DD.md` with sections per issue type.
+## Phase 3 - Sprint snapshot (`--sprint`, or `--full` after a sprint boundary)
 
-### Phase 5 — Publish (when `--publish` is set, or `--full` and `wiki.config.yml` → `publish.enabled: true`)
+Create `wiki/delivery/sprint-snapshots/<id>.md` (`type: delivery`): progress per feature, decisions of the sprint (from meetings / ADR), open 🎯 actions (owner, due), 🚫 blockers, drift found in the period, meetings held. Link it from `index.md`.
 
-1. Resolve target repo from CLI arg or `wiki.config.yml` → `publish.repo`. Verify `gh repo view <repo> --json hasWikiEnabled` is `true`.
-2. Clone `https://github.com/<owner>/<repo>.wiki.git` to a temp directory.
-3. Collect all wiki pages (recursive `.md`, excluding `log.md`, `lint-*.md`, and `publish.exclude` patterns).
-4. Build the **page map** — flatten paths to GitHub Wiki names:
+## Phase 4 - Lint (`--lint`, always at the end of `--full`)
 
-    | Local path                            | Wiki page name                |
-    | ------------------------------------- | ----------------------------- |
-    | `wiki/index.md`                       | `Home.md`                     |
-    | `wiki/overview.md`                    | `Overview.md`                 |
-    | `wiki/<category>/<slug>.md`           | `<Category>-<Slug>.md`        |
+1. Deterministic checks:
 
-    Rules: PascalCase per segment, hyphens preserved, path `/` → `-`. Example: `wiki/reference/sources/cr-foo.md` → `Reference-Sources-CR-Foo.md`.
+    ```powershell
+    pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki -StaleAfterDays <governance.stale_after_days> -ReportPath llm-wiki/wiki/lint-<YYYY-MM-DD>.md
+    ```
 
-5. Build the **link map**: rewrite every `[[original/path]]` to `[[Flat-Page-Name]]`. **Never use the pipe alias syntax** `[[Page|Alias]]` — GitHub Wiki silently breaks it.
-6. For each page: strip YAML frontmatter, rewrite links, write to the temp wiki directory with the flat name.
-7. Generate `_Sidebar.md`: group by category (Generale, Delivery, Progetti, Feature, Codice, Meeting, Riferimenti). Always include `[[Home]]` and `[[Overview]]` at the top. **No emoji** in `[[link]]` labels — GitHub Wiki breaks emoji links.
-8. Generate `_Footer.md` with the wiki generator credit + timestamp + project name.
-9. Validate (checklist): every `[[link]]` resolves, no pipe syntax, no emoji in links, `_Sidebar.md` links match actual filenames (case-sensitive), `Home.md` exists.
-10. `git add -A` + `git commit -m "docs(wiki): auto-update YYYY-MM-DD — N pages"` + `git push origin master`. Clean up temp directory.
+2. Fix the safe issues: missing front matter fields on draft pages, broken links with an obvious target, missing `index.md` entries, legacy `[[...]]` links. Re-run until no new safe fixes remain.
+3. Never auto-fix: `SEC001` (remove the secret and tell the user immediately - it may need rotation), certified pages, contradictions, drift.
+4. Semantic review (LLM, only pages changed since the previous lint): contradictions between pages, missing concept/entity pages, claims without sources.
+5. Summarise errors / warnings / status counts (draft, reviewed, certified) and requirement coverage.
 
-### Phase 6 — Bookkeeping (always)
+## Phase 5 - Publish (`--publish`)
 
-Append one entry per phase that ran:
+Read `.engine/publishing.md` and follow its procedure: lint without errors -> clone target wiki -> `Export-Wiki.ps1` -> review warnings -> confirm (interactive) or `publish.headless` (headless) -> push -> verify.
 
-```
-## [YYYY-MM-DD] update --source devops
-- Source: Azure DevOps MCP → `raw/devops/work-items-YYYY-MM-DD.json`
-- Work items: N Features, M User Stories, K Tasks
-- Pages created: [[list]]
-- Pages updated: [[list]]
-- Drift detected: <count>
+## Lifecycle requests (`--review`, `--certify`)
 
-## [YYYY-MM-DD] update --source github
-- Source: GitHub MCP + gh api → `raw/github/<repo>-YYYY-MM-DD.json`
-- Repos scanned: N, Active branches: M, Open PRs: K
-- Source files read via gh api: L
-- Pages created/updated: [[list]]
+Only on an explicit request from a person who names the reviewer/certifier. Set `status: reviewed` + `reviewed_by` or `status: certified` + `certified_by` + `certified_at` (today) on the named page, without changing its content; log the change. Never in headless mode. When a certified page has a `## 🔄 Pending updates` section, ask whether to apply the updates (status returns to `draft`) or keep them pending.
 
-## [YYYY-MM-DD] update --source dataverse
-- Source: PAC/PACX → `raw/dataverse/<solution>-YYYY-MM-DD/`
-- Solutions: N, Tables: M, Plugins: K, Flows: L
-- Pages created/updated: [[list]]
+## Phase 6 - Bookkeeping
 
-## [YYYY-MM-DD] update --sprint <ID>
-- Active features: N, Action items: M, Blockers: K
-- Page: [[delivery/sprint-snapshots/<ID>]]
+Append one entry per phase to `wiki/log.md`:
 
-## [YYYY-MM-DD] update --lint
-- Issues: N flagged, M auto-fixed
-- Report: [[lint-YYYY-MM-DD]]
+```markdown
+## [YYYY-MM-DD] update --source code | <repo>
 
-## [YYYY-MM-DD] update --publish
-- Target: <owner>/<repo>
-- Pages published: N
-- Commit: <sha>
+- Commit: <repo>@<sha> (previous <sha>)
+- Inventory: `raw/code/<repo>-<date>.json` (plugins N, PCF N, Ax objects N)
+- Pages created: <links>  Pages updated: <links>
+- Traceability: requirements linked N; drift flagged N
+- Files read: N
 ```
 
-For `--full`, also append a top-level summary:
+Lint entry: errors / warnings / info, report path. Publish entry: target, pages, pushed commit. `--full` adds a summary entry with `pendingKB` from `Get-RawDelta.ps1`.
 
-```
-## [YYYY-MM-DD] update --full | Headless run
-- See sub-entries above
-```
+## Headless rules
 
-CI commit message (when `--full` runs in CI): `docs(wiki): auto-update [YYYY-MM-DD] — N pages updated`.
-
-## Headless Mode
-
-When running without a human in the loop (scheduled GitHub Action / Copilot Coding Agent):
-
-- Default to `--full` if no flags are provided.
-- Skip interactive prompts; resolve all values from `wiki.config.yml`.
-- Auto-convert non-markdown files in `raw/` via `markitdown`.
-- Always run `--lint` at the end.
-- Always commit with the standard auto-update message.
-
-## Notes
-
-- **Same-day re-syncs are idempotent**: dump files overwrite the previous same-day file.
-- **Source-of-truth precedence**: `raw/` dumps are the source of truth for the sync time; wiki pages reflect the dumped data plus prior accumulated knowledge.
-- **Drift handling**: when wiki content disagrees with the latest dump, flag with `> ⚠️ **Drift:**` — do not silently overwrite human-curated content.
-- **Publish never modifies local files** — it only writes to the external GitHub Wiki repo.
-- **Mermaid coverage**: every `wiki/code/` page must include at least one Mermaid diagram.
-- **GitHub Wiki link rules**: never use pipe-alias syntax, never use emoji inside `[[link]]` labels.
-
-## Resources
-
-- See `ingest` for processing manually placed `raw/` sources.
-- See `query` for read-only Q&A.
+No questions; values from `wiki.config.yml`; dirty working trees and missing credentials are reported, not worked around; pages stay `draft`; no lifecycle changes; publish only with `publish.headless: true`; finish with lint and a pull request.

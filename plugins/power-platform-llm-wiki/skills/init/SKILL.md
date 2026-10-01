@@ -1,252 +1,106 @@
 ---
 name: init
-description: "Initialize an LLM Wiki in the host project: scaffold wiki/ and raw/ folder structure, copy plugin templates, generate wiki.config.yml, integrate with the host repository (.github/, .mcp.json, .env, .gitignore), and produce the first index. Use when setting up llm-wiki in a new project, after copying the llm-wiki/ folder, or to refresh missing scaffolding. Wizard-based; all data-source integrations are optional."
-argument-hint: "Run in the root of a project where you want to host the wiki"
+description: "Initialize an LLM Wiki in the current project: interactive wizard (project, profiles CE/Power Platform/F&O, code repositories, Azure DevOps, Dataverse, F&O metadata, publishing to Azure DevOps Wiki or GitHub Wiki, governance), scaffolds llm-wiki/ (raw/, wiki/, .state/), installs the managed engine (AGENTS.md, scripts, templates, profiles), writes wiki.config.yml, .vscode/mcp.json, copilot instructions and .gitignore. Use for first-time setup or to repair missing scaffolding."
+argument-hint: "Run from the root of the project that will host llm-wiki/"
 user-invocable: true
-disable-model-invocation: true
-context: fork
 ---
 
 # Initialize LLM Wiki
 
-## When to Use
-
-- First-time setup of LLM Wiki in a host project
-- After copying the `llm-wiki/` folder into a project
-- Onboarding a new contributor (regenerates missing integration files)
-- Resetting the wiki scaffold to defaults
-- When `wiki.config.yml` is missing or the wiki folder structure is incomplete
+This skill creates structure and configuration only; it never writes wiki content pages. Paths below are relative to the host project root. `<plugin>` is the plugin root: two folders above this `SKILL.md`.
 
 ## Ownership
 
-| Scope                                | Permission                                               |
-| ------------------------------------ | -------------------------------------------------------- |
-| Host project `.github/`              | WRITE — copilot-instructions, workflows, prompts, agents |
-| Host project root                    | WRITE — `.mcp.json`, `.env`, `.gitignore`                |
-| `wiki.config.yml`                    | WRITE — populate from user input                         |
-| `wiki/` (skeleton + `index.md`, `overview.md`, `log.md`) | WRITE — create empty scaffolding         |
-| `raw/` (skeleton)                    | WRITE — create empty subfolders only                     |
-| `wiki/` (content pages)              | NO ACCESS — content is created by `ingest` / `update`    |
-
-This skill creates structure only. It never writes wiki content pages.
+| Scope | Permission |
+| --- | --- |
+| `llm-wiki/` skeleton, `llm-wiki/wiki.config.yml`, seed `index.md` / `overview.md` / `log.md` | WRITE (create only if missing) |
+| `llm-wiki/AGENTS.md`, `llm-wiki/.engine/` | WRITE via `Install-Engine.ps1` |
+| `.vscode/mcp.json`, `.github/copilot-instructions.md`, `.gitignore`, `.github/workflows/copilot-setup-steps.yml` | WRITE (merge, never overwrite unrelated content) |
+| Existing wiki content pages, `llm-wiki/raw/` files | NO ACCESS |
 
 ## Prerequisites
 
-- Run from the **project root** (the folder that contains, or will contain, `llm-wiki/`).
-- Recommended tools (detect, do not auto-install — report missing):
-  - `gh` CLI authenticated (`gh auth status`) — required for GitHub sync and `gh api` fallback
-  - `npx --version` — required for Azure DevOps MCP server
-  - `markitdown` / `markitdown-mcp` (optional, for converting Office/PDF sources)
+Detect and report (never install silently):
 
-## Bundled templates
+| Tool | Needed for | Check |
+| --- | --- | --- |
+| PowerShell 7 | all deterministic scripts | `pwsh --version` |
+| git | code analysis, publishing | `git --version` |
+| Git Credential Manager | Azure Repos clone, Azure DevOps Wiki push | `git credential-manager --version` |
+| pacx / pac | Dataverse source | `pacx --version`, `pac help` |
+| gh | GitHub source / GitHub Wiki | `gh auth status` |
+| markitdown | Office / PDF sources | `markitdown --version` |
 
-Canonical template files ship with this skill under `${CLAUDE_PLUGIN_ROOT}/skills/init/assets/`. Copy from these (don't regenerate from memory) when writing the host integration files:
+If `pwsh` is missing, stop: the engine cannot run without it.
 
-| Asset                          | Copied to (host)                              |
-| ------------------------------ | --------------------------------------------- |
-| `copilot-snippet.md`           | appended to `.github/copilot-instructions.md` |
-| `mcp-servers.json`             | merged into `.mcp.json`                        |
-| `wiki.yml`                     | `.github/workflows/wiki.yml`                   |
-| `copilot-setup-steps.yml`      | `.github/copilot-setup-steps.yml`              |
-| `llm-wiki.prompt.md`           | `.github/prompts/llm-wiki.prompt.md`           |
-| `llm-wiki-setup.prompt.md`     | `.github/prompts/llm-wiki-setup.prompt.md`     |
-| `llm-wiki.agent.md`            | `.github/agents/llm-wiki.agent.md`             |
-| `env.sample`                   | basis for `.env`                               |
-| `AGENTS.md`                    | `llm-wiki/AGENTS.md`                            |
-| `wiki.config.yml`              | basis for `llm-wiki/wiki.config.yml`           |
+## Wizard
 
-## Procedure
+Ask one step at a time, offering **Yes** before **No**. Pre-fill answers from an existing `llm-wiki/wiki.config.yml`.
 
-Run the wizard in numbered steps. Ask only the questions for the current step. Answer options for yes/no questions must be presented as **Yes** first, **No** second.
+1. **Mode** - guided, or self-service (write the commented `wiki.config.yml` from `assets/wiki.config.yml`, install the engine, stop and ask the user to fill the file and run `config`).
+2. **Project** - name; content language (default `it`); profiles (multi-select): `power-platform` (Dynamics 365 CE / Dataverse), `dynamics-fno` (Finance & Operations), `generic` (integrations, Azure, .NET).
+3. **Sources** (multi-select, all optional):
+    - Code repositories (recommended: code is the primary source) - for each: name, provider (`azure-devops` / `github` / `local`), clone URL, local path, branch, optional include/exclude globs.
+    - Azure DevOps Boards - organization, project, optional area paths and iteration prefix. Authentication is Microsoft Entra ID through the MCP server: **do not ask for a PAT**.
+    - Dataverse - solution unique names, publisher prefixes (connection: the active `pacx auth` profile).
+    - F&O metadata - folders of the **custom** packages (e.g. `<repo>/Metadata/<Package>`), optional model filter.
+    - GitHub activity - `owner/repo` list (PRs, issues, branches).
+    - SharePoint - site URL and libraries (documents are downloaded into `raw/` manually or through an MCP server approved by the tenant).
+4. **Publishing** - Azure DevOps Wiki (project wiki: organization, project, wiki name; code wiki: repo, branch, folder; optional mount folder), GitHub Wiki (`owner/repo`), or none. Default `publish.headless: false`.
+5. **Governance** - PII redaction (default Yes), stale threshold in days (default 30), names of the people who certify pages (optional).
+6. **Automation** - only when the host repository is on GitHub: weekly / daily / manual. Explain that it uses a **Copilot cloud agent automation** (repository -> Agents -> Automations), available for private or internal repositories.
+7. **Sprints** - only when Azure DevOps Boards is enabled: duration and pattern (defaults 2 weeks, `YYYY-SNN`).
+8. **Confirm** - show the resolved configuration and the files that will be created or changed. Abort on No.
 
-### Step 1 — Setup mode
+## File generation (idempotent)
 
-> **"Vuoi una configurazione guidata passo-passo, oppure preferisci compilare il file `wiki.config.yml` in autonomia?"**
+1. **Skeleton** - create missing folders (add `.placeholder` to empty ones):
+    - `llm-wiki/raw/{meetings,analysis,specs,adrs,assets}`, plus `code`, `devops`, `dataverse`, `fno`, `github` only for the selected sources;
+    - `llm-wiki/wiki/{requirements,design,code,meetings,reference/decisions,reference/concepts,reference/entities,reference/sources,reference/queries}`, plus `features` and `delivery` (Boards) and `projects` (code repositories);
+    - `llm-wiki/.state/`.
+2. **Engine** - install the managed files (AGENTS.md, scripts, templates, profiles, headless skill copies):
 
-- **Guided** → continue with Step 2.
-- **Self-service** → generate a fully commented `wiki.config.yml`, write minimal `.gitignore` entries, instruct the user to fill in `wiki.config.yml` and re-run this skill (or run `/config`). Stop here.
-
-### Step 2 — Integration selection
-
-> **"Quali fonti dati vuoi collegare alla wiki?"** (multi-select)
-
-| Option        | Enables                                   |
-| ------------- | ----------------------------------------- |
-| Azure DevOps  | Work items, sprint tracking, backlog sync |
-| GitHub        | Repos, PRs, branches, code analysis       |
-| Dataverse     | Solution analysis, data model, plugins    |
-| SharePoint    | Document libraries, analysis docs         |
-| None          | Manual ingest only (from `raw/`)          |
-
-If **None** is selected, skip Step 3 and go to Step 4.
-
-### Step 3 — Per-integration details
-
-Batch the questions per selected integration. Ask only the integrations chosen in Step 2.
-
-**Azure DevOps:** organization (required), project (required), PAT (required, stored in `.env`), optional area path filter, optional iteration prefix.
-
-**GitHub:** repos to track (required, comma-separated `owner/repo`), optional PAT for CI (stored in `.env`). Note: VS Code Copilot already provides a token; a separate PAT is only required for unattended CI runs.
-
-**Dataverse:** solution name(s) (required), publisher prefix(es) (optional, e.g. `ava_`). Note: connection is configured externally via `pacx auth create`.
-
-**SharePoint:** site URL (required), document library paths (required), tenant ID, client ID, client secret (all stored in `.env`).
-
-### Step 4 — Publishing
-
-> **"Vuoi pubblicare la wiki su GitHub Wiki?"**
-
-- **Yes** → collect target repo (`owner/repo`) and project name (for sidebar header).
-- **No** → set `publish.enabled: false` in `wiki.config.yml`.
-
-### Step 5 — Automated updates
-
-Only ask if at least one data-source integration was selected.
-
-> **"Vuoi configurare un aggiornamento automatico della wiki?"**
-
-Explain: "Un GitHub Action crea un issue periodico assegnato al Copilot Coding Agent, che esegue il sync e apre una PR con le modifiche."
-
-| Option      | Cron        | Description                  |
-| ----------- | ----------- | ---------------------------- |
-| Daily       | `0 7 * * *` | Every day at 07:00 UTC (default) |
-| Weekly      | `0 7 * * 1` | Every Monday at 07:00 UTC    |
-| Manual only | —           | No scheduled workflow        |
-
-### Step 6 — Sprint settings
-
-Only ask if Azure DevOps or GitHub was selected.
-
-| Field           | Default    | Example    |
-| --------------- | ---------- | ---------- |
-| Sprint duration | 2 weeks    | `3`        |
-| Sprint pattern  | `YYYY-SNN` | `YYYY-SNN` |
-
-Accept defaults silently if the user has no preference.
-
-### Step 7 — Final confirmation
-
-Present a compact summary of resolved inputs (with secrets redacted) and ask:
-
-> **"Procedere con la creazione della scaffolding e l'integrazione nel repo?"** (Yes / No)
-
-If **No**, abort without writing anything.
-
-### Step 8 — File generation (idempotent)
-
-Perform each step idempotently — if a target file already contains an `## LLM Wiki` marker section, patch it instead of re-appending. Skip entries that depend on integrations the user did not select.
-
-1. **Create `llm-wiki/` folder skeleton** (only missing folders, never overwrite):
-
-    ```
-    llm-wiki/
-    ├── raw/
-    │   ├── meetings/
-    │   ├── analysis/
-    │   ├── specs/
-    │   ├── adrs/
-    │   ├── assets/
-    │   ├── devops/        # only if Azure DevOps selected
-    │   ├── github/        # only if GitHub selected
-    │   └── dataverse/     # only if Dataverse selected
-    └── wiki/
-        ├── index.md       # seed catalog
-        ├── overview.md    # one-paragraph stub
-        ├── log.md         # append-only header
-        ├── delivery/      # only if DevOps or GitHub selected
-        ├── projects/      # only if GitHub selected
-        ├── features/      # only if DevOps selected
-        ├── code/          # only if Dataverse or GitHub-code-analysis selected
-        ├── meetings/
-        └── reference/{decisions, concepts, entities, sources, queries}/
+    ```powershell
+    pwsh -NoProfile -File "<plugin>/scripts/Install-Engine.ps1" -LlmWikiPath llm-wiki
     ```
 
-    Empty folders get a `.placeholder` file so Git tracks them.
+3. **Seed pages** (only if missing): `wiki/index.md` from `assets/wiki-index.md`; `wiki/overview.md` (`type: overview`, `updated`, title, one-paragraph stub from the wizard answers); `wiki/log.md` (`type: log`, `updated`, `# Log`). Fill the `{{...}}` placeholders.
+4. **`llm-wiki/wiki.config.yml`** - from `assets/wiki.config.yml`, enabling only the selected sections. If the file exists, merge without dropping user keys.
+5. **`.vscode/mcp.json`** - merge into `servers` only what is needed, from `assets/mcp-servers.json`:
+    - Boards selected: `ado-remote` with the organization (Microsoft-hosted, Entra ID sign-in). If the remote server is not available in the tenant, use `ado-local` (pinned version) instead.
+    - `markitdown` only if `markitdown-mcp` is installed.
+    - Keep unrelated servers untouched.
+6. **`.github/copilot-instructions.md`** - append `assets/copilot-snippet.md`, or replace an existing `## LLM Wiki` section up to the next `## ` heading.
+7. **`.gitignore`** - ensure a `# LLM Wiki` block with `llm-wiki/dist/`, `llm-wiki/wiki/lint-*.md`, `llm-wiki/raw/dataverse/*.zip`, `.env`.
+8. **Automation** (GitHub host only, schedule not manual): copy `assets/copilot-setup-steps.yml` to `.github/workflows/copilot-setup-steps.yml` (drop the .NET / PAC steps when Dataverse is not selected; if the file exists, add only missing steps). Then give the user the prompt in `assets/automation-prompt.md` and the steps: repository -> **Agents** -> **Automations** -> **Create new**, trigger "On a schedule", tools: push changes and create pull request.
+9. **Existing sources** - if `llm-wiki/raw/` already contains files, ask whether to process them now (`update --full`) or record them as already processed:
 
-2. **`.github/copilot-instructions.md`** — append the LLM Wiki section (or patch the existing marker block). Source template: bundled `references/AGENTS.md` summary.
-
-3. **`.mcp.json`** — merge only the selected MCP server entries (azure-devops, github, sharepoint, markitdown). Never overwrite unrelated servers. Substitute placeholders (`YOUR_DEVOPS_ORG`).
-
-4. **`.github/workflows/wiki.yml`** — install only if Step 5 chose Daily or Weekly. Set the cron from the chosen schedule. If destination exists and was customised, write `.github/workflows/wiki.yml.new` and ask the user to merge.
-
-5. **`.github/copilot-setup-steps.yml`** — install only when automation is enabled. Remove PAC CLI installation if Dataverse was not selected.
-
-6. **`.github/prompts/llm-wiki.prompt.md`** — always install/overwrite.
-
-7. **`.github/agents/llm-wiki.agent.md`** — always install/overwrite. Create `.github/agents/` if it does not exist.
-
-8. **`.env`** — only if any integration needs secrets. Add/update only the missing keys (`AZURE_DEVOPS_PAT`, `GITHUB_PERSONAL_ACCESS_TOKEN`, `TENANT_ID`, `CLIENT_ID`, `CLIENT_SECRET`). Never log secret values back to the user.
-
-9. **`.gitignore`** — ensure a `# LLM Wiki` section exists with:
-    ```
-    .env
-    llm-wiki/wiki/lint-*.md
-    llm-wiki/raw/dataverse/*.zip
-    __pycache__/
-    *.pyc
+    ```powershell
+    pwsh llm-wiki/.engine/scripts/Get-RawDelta.ps1 -RawPath llm-wiki/raw -Baseline
     ```
 
-10. **`wiki.config.yml`** — generate based on user choices. Enable only the sections that match the selected integrations. Preserve any existing user-added fields.
+## Verification
 
-11. **`llm-wiki/wiki/index.md`** — seed with a catalog header and empty category sections (Delivery, Projects, Features, Code, Meetings, Reference). Populate as ingest/sync skills run.
+Run `pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`: it must report 0 errors. Print a checklist with only the applicable items: engine version (`llm-wiki/.engine/VERSION`), config sections enabled, MCP servers added, instructions updated, `.gitignore`, automation.
 
-12. **`llm-wiki/wiki/log.md`** — seed with a header. Append the initial `setup` entry (see Bookkeeping below).
+## Next steps message
 
-### Step 9 — Verification
-
-Report a conditional checklist. Only include items for the chosen integrations:
-
-- [ ] `wiki.config.yml` populated
-- [ ] `wiki/index.md`, `wiki/overview.md`, `wiki/log.md` created
-- [ ] `raw/` skeleton created
-- [ ] `.github/copilot-instructions.md` contains the LLM Wiki section
-- [ ] `.github/prompts/llm-wiki.prompt.md` installed
-- [ ] `.github/agents/llm-wiki.agent.md` installed
-- [ ] `.gitignore` updated
-- [ ] `.mcp.json` contains: `<list of selected servers>` (if any integration selected)
-- [ ] `.env` populated with secrets (values redacted in report) (if any integration needs secrets)
-- [ ] `.github/workflows/wiki.yml` exists with schedule `<daily|weekly>` (if automation enabled)
-- [ ] `.github/copilot-setup-steps.yml` exists (if automation enabled)
-- [ ] `wiki.config.yml` → `publish.repo = <value>` (if publish enabled)
-
-### Step 10 — Next steps message
-
-Tailor the message to the chosen integrations:
-
-> Setup complete. Switch to the **LLM Wiki** agent to start using the wiki.
-
-Append the relevant suggestions:
-
-- **DevOps enabled:** "Run `update --source devops` to import work items."
-- **GitHub enabled:** "Run `update --source github` to analyse the repositories."
-- **Dataverse enabled:** "Run `update --source dataverse` (ensure `pacx auth ping` works)."
-- **No integration:** "Drop files in `llm-wiki/raw/...` then run `ingest`."
-- **Automation enabled:** "The GitHub Action will create a `<daily|weekly>` issue assigned to Copilot, which opens a PR. Manual trigger: `gh workflow run wiki.yml`."
-- **Publish enabled:** "When the wiki has content, run `update --publish`."
-- Always: "You can run `/config` later to reconfigure, `/ingest` to add sources, `/query` to ask, and `update --lint`."
+- Code repositories: `update --source code` (builds `wiki/code/` and `wiki/projects/`).
+- Boards: `update --source devops`. Dataverse: `update --source dataverse` (check `pacx auth ping`). F&O: `update --source fno`.
+- Documents and minutes: drop files in `llm-wiki/raw/<folder>/`, then `ingest <file>` or `update --full`.
+- Publishing: `update --publish` once the lint is clean.
+- Always available: `query <question>`, `update --lint`, `config`.
 
 ## Bookkeeping
 
 Append to `llm-wiki/wiki/log.md`:
 
-```
-## [YYYY-MM-DD] init | Integration
-- Integrations: <DevOps|GitHub|Dataverse|SharePoint|none>
-- DevOps: <org/project or "not configured">
-- GitHub repos: <list or "not configured">
-- Automation: <daily|weekly|manual>
-- Publish: <repo or "not configured">
+```markdown
+## [YYYY-MM-DD] init | <project name>
+
+- Engine: <version>
+- Profiles: <list>
+- Sources: <code | devops | dataverse | fno | github | sharepoint | none>
+- Publish: <target or none>
 - Files created/updated: <list>
 ```
-
-## Notes
-
-- Idempotent — existing files are patched, never blindly overwritten.
-- All integrations are optional. Manual-ingest-only mode is fully supported.
-- This skill creates **structure**. Use `config` to change settings later, `ingest` to add sources, `update` to refresh from data sources.
-- The wizard order matters — never ask credentials for integrations the user did not opt into.
-
-## Resources
-
-- Bundled templates: `${CLAUDE_PLUGIN_ROOT}/skills/init/assets/`
-- Reference docs: `${CLAUDE_PLUGIN_ROOT}/references/AGENTS.md`

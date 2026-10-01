@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxDataEntityView xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>ContosoCreditLimitEntity</Name>
+    <IsPublic>Yes</IsPublic>
+    <PublicCollectionName>ContosoCreditLimits</PublicCollectionName>
+    <PublicEntityName>ContosoCreditLimit</PublicEntityName>
+    <Fields>
+        <AxDataEntityViewField xmlns="" i:type="AxDataEntityViewMappedField">
+            <Name>CustomerAccount</Name>
+            <DataField>CustAccount</DataField>
+            <DataSource>ContosoCreditLimit</DataSource>
+        </AxDataEntityViewField>
+    </Fields>
+    <ViewMetadata>
+        <Name>Metadata</Name>
+        <DataSources>
+            <AxQuerySimpleRootDataSource>
+                <Name>ContosoCreditLimit</Name>
+                <Table>ContosoCreditLimit</Table>
+            </AxQuerySimpleRootDataSource>
+        </DataSources>
+    </ViewMetadata>
+</AxDataEntityView>

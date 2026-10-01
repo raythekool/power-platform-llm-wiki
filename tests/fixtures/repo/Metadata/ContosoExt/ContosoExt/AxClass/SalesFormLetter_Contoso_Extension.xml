@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+    <Name>SalesFormLetter_Contoso_Extension</Name>
+    <SourceCode>
+        <Declaration><![CDATA[
+[ExtensionOf(classStr(SalesFormLetter))]
+final class SalesFormLetter_Contoso_Extension
+{
+}
+]]>        </Declaration>
+        <Methods>
+            <Method>
+                <Name>run</Name>
+                <Source><![CDATA[
+public void run()
+{
+    // credit check before posting
+    next run();
+}
+]]>                </Source>
+            </Method>
+        </Methods>
+    </SourceCode>
+</AxClass>

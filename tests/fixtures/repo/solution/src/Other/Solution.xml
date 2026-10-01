@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2" SolutionPackageVersion="9.2">
+    <SolutionManifest>
+        <UniqueName>ContosoSales</UniqueName>
+        <Version>1.4.0.0</Version>
+        <Managed>0</Managed>
+        <Publisher>
+            <UniqueName>contoso</UniqueName>
+            <CustomizationPrefix>cts</CustomizationPrefix>
+        </Publisher>
+    </SolutionManifest>
+</ImportExportXml>

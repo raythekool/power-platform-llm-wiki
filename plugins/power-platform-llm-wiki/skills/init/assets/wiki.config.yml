@@ -1,123 +1,86 @@
-# wiki.config.yml — What the wiki tracks
-#
-# This file tells the LLM agent which items to filter during sync.
-# Connection settings (org, project, PAT) are in .mcp.json.
+# llm-wiki/wiki.config.yml - what the LLM Wiki tracks and how it publishes.
+# Owned by the project team. Secrets never go here (use Git Credential Manager, `az login`,
+# `pacx auth`, or CI secrets).
 
-# ─────────────────────────────────────────────────────────────────────
-# Azure DevOps — filtering only (connection is in .mcp.json)
-# ─────────────────────────────────────────────────────────────────────
-devops:
-  # Area paths to include (empty list = all areas)
-  area_paths: []
-  # Example:
-  # area_paths:
-  #   - "Project\\Backend"
-  #   - "Project\\Frontend"
+schema_version: 3
 
-  # Iteration prefix to filter sprints (empty = all iterations)
-  iteration_prefix: ""
-  # Example: "Project\\2026"
+project:
+  name: "" # shown in published wiki headers
+  language: it # language of wiki content (it | en | ...)
+  profiles: [power-platform] # power-platform | dynamics-fno | generic (one or more)
 
-  # Work item types to sync
-  work_item_types:
-    - Feature
-    - User Story
-    - Task
-
-  # States to exclude from sync
-  excluded_states:
-    - Removed
-
-# ─────────────────────────────────────────────────────────────────────
-# Dataverse — solution analysis (connection via pacx auth profile)
-# ─────────────────────────────────────────────────────────────────────
-dataverse:
-  # Solutions to analyze — by name, publisher, or pattern
-  solutions: []
-  # Example:
-  # solutions:
-  #   - name: "MySolutionUniqueName"   # exact unique name
-  #   - publisher: "ava"               # all solutions by this publisher
-  #   - pattern: "ava_*"               # glob pattern match
-
-  # Custom table prefixes (used by pacx script for filtering)
-  publisher_prefixes: []
-  # Example:
-  # publisher_prefixes:
-  #   - "ava_"
-  #   - "ray_"
-
-  # Components to analyze (all enabled by default)
-  components:
-    tables: true
-    plugins: true
-    forms: true
-    views: true
-    security_roles: true
-    business_rules: true
-    flows: true
-    option_sets: true
-
-# ─────────────────────────────────────────────────────────────────────
-# GitHub — filtering only (authentication is in .mcp.json)
-# ─────────────────────────────────────────────────────────────────────
-github:
-  # Owner/org + repos to track (empty list = discover via MCP)
+# Source code is the primary source for as-built documentation.
+code:
   repos: []
-  # Example:
-  # repos:
-  #   - owner/repo-backend
-  #   - owner/repo-frontend
-  #   - owner/repo-infra
+  # - name: crm-solution
+  #   provider: azure-devops        # azure-devops | github | local
+  #   url: https://dev.azure.com/contoso/Sales/_git/crm-solution
+  #   path: ../crm-solution          # local clone used for analysis (cloned/pulled by `update --source code`)
+  #   branch: develop
+  #   include: ["src/**", "solution/**"]
+  #   exclude: ["**/tests/**"]
 
-  # Branch patterns to track (regex, empty = all branches)
-  branch_patterns:
-    - "^main$"
-    - "^develop$"
-    - "^feature/"
-    - "^release/"
-    - "^hotfix/"
+# Azure DevOps work items (Boards). Authentication: Microsoft Entra ID via the MCP server - no PAT.
+devops:
+  enabled: false
+  organization: ""
+  project: ""
+  area_paths: [] # empty = all
+  iteration_prefix: "" # e.g. "Sales\\2026"
+  work_item_types: [Epic, Feature, User Story, Bug]
+  excluded_states: [Removed]
 
-# ─────────────────────────────────────────────────────────────────────
-# SharePoint (optional)
-# ─────────────────────────────────────────────────────────────────────
+# Dataverse (Power Platform) live metadata, via the active pacx/pac profile.
+dataverse:
+  enabled: false
+  solutions: [] # unique names
+  publisher_prefixes: [] # e.g. [cts_]
+
+# Dynamics 365 Finance & Operations metadata (custom packages only).
+fno:
+  enabled: false
+  metadata_paths: [] # e.g. ["../fno-repo/Metadata/ContosoExt"]
+  models: [] # optional filter on model names
+
+# GitHub activity (PRs, issues, branches) for repositories hosted on GitHub.
+github:
+  enabled: false
+  repos: [] # owner/repo
+  branch_patterns: ["^main$", "^develop$", "^release/", "^feature/"]
+
 sharepoint:
   enabled: false
   site_url: ""
-  # Document libraries to scan
   document_libraries: []
-  # Example:
-  # document_libraries:
-  #   - "Shared Documents/Analysis"
-  #   - "Shared Documents/Specs"
 
-  # ─────────────────────────────────────────────────────────────────────
-  # Sprint settings
-  # ─────────────────────────────────────────────────────────────────────
 sprints:
-  # Sprint duration in weeks
   duration_weeks: 2
-  # Sprint naming pattern (used in frontmatter)
   pattern: "YYYY-SNN"
 
-# ─────────────────────────────────────────────────────────────────────
-# Automated updates — GitHub Action schedule
-# ─────────────────────────────────────────────────────────────────────
-automation:
-  enabled: true
-  # Schedule: daily | weekly | manual
-  schedule: daily
+governance:
+  pii_redaction: true # keep only participant names/roles; never copy personal data
+  stale_after_days: 30 # lint threshold for pages not updated
+  certifiers: [] # people allowed to certify pages (informative)
 
-# ─────────────────────────────────────────────────────────────────────
-# Publishing — push wiki to GitHub Wiki
-# ─────────────────────────────────────────────────────────────────────
+# Project-specific rules the agent must follow (free text, one per line).
+conventions: []
+
 publish:
   enabled: false
-  # Target GitHub Wiki repo (owner/repo)
-  repo: ""
-  # Project name displayed in sidebar header
-  project_name: ""
-  # Files/patterns to exclude from publishing
-  exclude:
-    - "wiki/log.md"
-    - "wiki/lint-*.md"
+  headless: false # allow scheduled runs to push to the wiki
+  exclude: ["log.md", "lint-*.md"]
+  target:
+    type: azure-devops-wiki # azure-devops-wiki | github-wiki
+    # Azure DevOps project wiki:  https://dev.azure.com/<organization>/<project>/_git/<wiki_name>.wiki (branch wikiMaster)
+    organization: ""
+    project: ""
+    wiki_type: project # project | code
+    wiki_name: "" # project wiki: "<Project>.wiki" name without the suffix
+    repo: "" # code wiki: Azure Repos repo; github-wiki: owner/repo
+    branch: "" # code wiki branch
+    path: "" # code wiki folder
+    mount_folder: "" # optional parent page, e.g. "Knowledge Base"
+
+automation:
+  enabled: false # GitHub-hosted host repos only (Copilot coding agent)
+  schedule: weekly # daily | weekly | manual
