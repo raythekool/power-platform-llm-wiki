@@ -1,3 +1,6 @@
+[![Validate plugin](https://github.com/raythekool/power-platform-llm-wiki/actions/workflows/validate.yml/badge.svg)](https://github.com/raythekool/power-platform-llm-wiki/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 <p align="center">
   <img src="docs/images/banner.svg" alt="LLM Wiki - code-first knowledge base for Dynamics 365 delivery" width="100%">
 </p>
