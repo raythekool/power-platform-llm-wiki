@@ -104,6 +104,34 @@ foreach ($f in $distributed) {
     }
 }
 
+# 7. Documentation: relative links / images exist, SVGs are well-formed
+$docFiles = @(Join-Path $RepoRoot 'README.md'; Join-Path $RepoRoot 'CONTRIBUTING.md'; Join-Path $pluginRoot 'README.md')
+$docsDir = Join-Path $RepoRoot 'docs'
+if (Test-Path -LiteralPath $docsDir) { $docFiles += (Get-ChildItem -LiteralPath $docsDir -Filter '*.md' -File).FullName }
+foreach ($d in $docFiles) {
+    if (-not (Test-Path -LiteralPath $d)) { $errors.Add("Missing documentation file: $([IO.Path]::GetRelativePath($RepoRoot, $d))"); continue }
+    $text = Get-Content -LiteralPath $d -Raw
+    $text = [regex]::Replace($text, '(?ms)^[ \t]*```.*?^[ \t]*```', '')
+    $text = [regex]::Replace($text, '`[^`\r\n]*`', '')
+    $targets = @([regex]::Matches($text, '(?<!\!)\]\(([^)\s#]+)(?:#[^)]*)?\)') | ForEach-Object { $_.Groups[1].Value }) +
+    @([regex]::Matches($text, '(?:src|href)="([^"#]+)(?:#[^"]*)?"') | ForEach-Object { $_.Groups[1].Value }) +
+    @([regex]::Matches($text, '!\[[^\]]*\]\(([^)\s#]+)\)') | ForEach-Object { $_.Groups[1].Value })
+    foreach ($t in ($targets | Sort-Object -Unique)) {
+        if ($t -match '^[A-Za-z][A-Za-z0-9+.\-]*:' -or $t.StartsWith('#')) { continue }
+        $resolved = [IO.Path]::GetFullPath([IO.Path]::Combine((Split-Path -Parent $d), [Uri]::UnescapeDataString($t)))
+        if (-not (Test-Path -LiteralPath $resolved)) { $errors.Add("Broken link '$t' in $([IO.Path]::GetRelativePath($RepoRoot, $d))") }
+    }
+}
+if (Test-Path -LiteralPath (Join-Path $docsDir 'images')) {
+    foreach ($svg in (Get-ChildItem -LiteralPath (Join-Path $docsDir 'images') -Filter '*.svg' -File)) {
+        try {
+            $x = [xml](Get-Content -LiteralPath $svg.FullName -Raw)
+            if (-not $x.svg.title -or -not $x.svg.desc) { $warnings.Add("SVG without title/desc (accessibility): docs/images/$($svg.Name)") }
+        }
+        catch { $errors.Add("Invalid SVG: docs/images/$($svg.Name) ($($_.Exception.Message))") }
+    }
+}
+
 $ok = $errors.Count -eq 0
 if ($Human) {
     Write-Host "=== LLM Wiki plugin validation ($(if ($plugin) { $plugin.version }))"

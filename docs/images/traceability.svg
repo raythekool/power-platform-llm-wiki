@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <title id="title">Code-first traceability and drift</title>
+    <desc id="desc">Example: a requirement is implemented by a Dataverse plugin and an F&amp;O extension. When the code disagrees with the requirement, both pages are flagged as drift.</desc>
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#4F46E5"/>
+        </marker>
+    </defs>
+    <rect x="1" y="1" width="1198" height="438" rx="20" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <text x="600" y="42" font-size="24" font-weight="700" fill="#0F172A" text-anchor="middle">Requirements traced to code, drift made visible</text>
+
+    <!-- requirement -->
+    <rect x="50" y="80" width="340" height="240" rx="16" fill="#FFFFFF" stroke="#C7D2FE" stroke-width="2"/>
+    <rect x="50" y="80" width="340" height="44" rx="16" fill="#4F46E5"/>
+    <rect x="50" y="104" width="340" height="20" fill="#4F46E5"/>
+    <text x="70" y="109" font-size="18" font-weight="700" fill="#FFFFFF">Requirement (from the FDD)</text>
+    <text x="70" y="158" font-size="20" font-weight="700" font-family="Consolas, Menlo, monospace" fill="#3730A3">REQ-SAL-001</text>
+    <text x="70" y="188" font-size="18" font-weight="600" fill="#0F172A">Credit check</text>
+    <text x="70" y="218" font-size="14" fill="#334155">Block the order confirmation when the</text>
+    <text x="70" y="238" font-size="14" fill="#334155">open balance plus the order total</text>
+    <text x="70" y="258" font-size="14" fill="#334155">exceeds the customer credit limit.</text>
+    <rect x="70" y="276" width="92" height="24" rx="12" fill="#DCFCE7"/>
+    <text x="116" y="292" font-size="12" font-weight="700" fill="#166534" text-anchor="middle">certified</text>
+
+    <!-- code A -->
+    <rect x="810" y="80" width="340" height="112" rx="16" fill="#FFFFFF" stroke="#99F6E4" stroke-width="2"/>
+    <rect x="810" y="80" width="340" height="34" rx="16" fill="#0D9488"/>
+    <rect x="810" y="98" width="340" height="16" fill="#0D9488"/>
+    <text x="830" y="103" font-size="15" font-weight="700" fill="#FFFFFF">Dataverse plugin</text>
+    <text x="830" y="140" font-size="15" font-weight="700" font-family="Consolas, Menlo, monospace" fill="#0F172A">CreditCheckPlugin</text>
+    <text x="830" y="162" font-size="13" fill="#334155">salesorder · Update · PreOperation</text>
+    <text x="830" y="180" font-size="12" font-family="Consolas, Menlo, monospace" fill="#64748B">src/Plugins/CreditCheckPlugin.cs</text>
+
+    <!-- code B -->
+    <rect x="810" y="208" width="340" height="112" rx="16" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="2"/>
+    <rect x="810" y="208" width="340" height="34" rx="16" fill="#7C3AED"/>
+    <rect x="810" y="226" width="340" height="16" fill="#7C3AED"/>
+    <text x="830" y="231" font-size="15" font-weight="700" fill="#FFFFFF">F&amp;O extension (Chain of Command)</text>
+    <text x="830" y="268" font-size="14" font-weight="700" font-family="Consolas, Menlo, monospace" fill="#0F172A">SalesFormLetter_Contoso_Extension</text>
+    <text x="830" y="290" font-size="13" fill="#334155">run() · standard logic still runs (next)</text>
+    <text x="830" y="308" font-size="12" font-family="Consolas, Menlo, monospace" fill="#64748B">Metadata/ContosoExt/AxClass/</text>
+
+    <!-- implements -->
+    <line x1="392" y1="136" x2="806" y2="136" stroke="#4F46E5" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <rect x="544" y="122" width="110" height="28" rx="14" fill="#EEF2FF" stroke="#C7D2FE"/>
+    <text x="599" y="141" font-size="13" font-weight="600" fill="#4338CA" text-anchor="middle">implements</text>
+    <line x1="392" y1="264" x2="806" y2="264" stroke="#4F46E5" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <rect x="544" y="250" width="110" height="28" rx="14" fill="#EEF2FF" stroke="#C7D2FE"/>
+    <text x="599" y="269" font-size="13" font-weight="600" fill="#4338CA" text-anchor="middle">implements</text>
+
+    <!-- drift -->
+    <rect x="50" y="348" width="1100" height="64" rx="14" fill="#FFFBEB" stroke="#F59E0B" stroke-width="2"/>
+    <polygon points="92,362 114,398 70,398" fill="#F59E0B"/>
+    <text x="92" y="393" font-size="20" font-weight="700" fill="#FFFFFF" text-anchor="middle">!</text>
+    <text x="136" y="376" font-size="18" font-weight="700" fill="#92400E">Drift detected (example)</text>
+    <text x="136" y="397" font-size="14" fill="#78350F">The FDD blocks the order above the limit; the code only logs a warning (CreditCheckPlugin.cs:87). Both pages are flagged and the team decides.</text>
+</svg>

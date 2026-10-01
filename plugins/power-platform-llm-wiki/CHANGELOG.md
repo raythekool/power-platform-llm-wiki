@@ -4,7 +4,7 @@
 
 This repository is now the primary source of the plugin (no longer an export of another repository).
 
-### Breaking
+### 💥 Breaking
 
 - **Links:** wiki pages use relative Markdown links (`[Title](../folder/page.md)`) instead of `[[wiki links]]`; the publish step converts them per target. `config --migrate` converts v2 wikis.
 - **Front matter:** `status` is now the content lifecycle (`draft | reviewed | certified | superseded | deprecated`); work-item / decision state moves to `state`. New fields: `owner`, `updated`, `sources`, `reviewed_by`, `certified_by`, `certified_at`, `req_id`, `implements`, `implemented_by`.
@@ -12,7 +12,7 @@ This repository is now the primary source of the plugin (no longer an export of 
 - **Host integration:** the engine (AGENTS.md, scripts, templates, profiles, headless skill copies) is installed into `llm-wiki/` by `Install-Engine.ps1`; `.vscode/mcp.json` replaces `.mcp.json`; the host agent and prompt copies are no longer installed.
 - **Automation:** the issue-creating workflow is replaced by a Copilot cloud agent automation prompt and a correct `.github/workflows/copilot-setup-steps.yml`.
 
-### Added
+### ✨ Added
 
 - Code-first documentation: `update --source code` for Azure Repos, GitHub and local clones, incremental by commit, with requirement traceability and `⚠️ Drift` between FDD/TDD and code.
 - Dynamics 365 Finance & Operations profile and `update --source fno` (Ax* metadata: tables, extensions, Chain of Command, data entities, security, model descriptors).
@@ -22,9 +22,9 @@ This repository is now the primary source of the plugin (no longer an export of 
 - Content governance: lifecycle and certification (`update --review` / `--certify`), pending updates for certified pages, PII redaction, provenance.
 - Deterministic scripts: `Get-RawDelta.ps1` (incremental sources), `Get-CodeInventory.ps1`, `Test-WikiLint.ps1`, `Export-Wiki.ps1`, `Install-Engine.ps1`.
 - Tests (`tests/Invoke-Tests.ps1` with CE and F&O fixtures) and CI (`.github/workflows/validate.yml`).
-- Documentation: user guide, governance and v2 -> v3 migration in `docs/` (Italian), `CONTRIBUTING.md`.
+- Documentation: user guide, governance and v2 -> v3 migration in `docs/` (Italian), `CONTRIBUTING.md`, illustrated READMEs with SVG images in `docs/images/`.
 
-### Fixed / removed
+### 🛠️ Fixed / removed
 
 - Removed customer-specific identifiers from the distributed docs; the validator now blocks them.
 - Removed the SessionStart staleness hook (checked wrong paths and ran `git fetch` in the host repository).

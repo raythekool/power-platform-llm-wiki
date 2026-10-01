@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <title id="title">Content lifecycle</title>
+    <desc id="desc">Pages start as draft written by the agent, become reviewed after a named reviewer checks them, and become certified after formal approval. Certified pages are never rewritten by the agent.</desc>
+    <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="#64748B"/>
+        </marker>
+    </defs>
+    <rect x="1" y="1" width="1198" height="438" rx="20" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <text x="600" y="42" font-size="24" font-weight="700" fill="#0F172A" text-anchor="middle">The agent drafts, people certify</text>
+
+    <!-- back arrow reviewed -> draft -->
+    <path d="M 600 150 C 600 86, 195 86, 195 148" fill="none" stroke="#94A3B8" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#arrow)"/>
+    <text x="397" y="92" font-size="13" fill="#64748B" text-anchor="middle">substantial change</text>
+
+    <!-- draft -->
+    <rect x="60" y="150" width="270" height="170" rx="18" fill="#FFFBEB" stroke="#F59E0B" stroke-width="2.5"/>
+    <circle cx="100" cy="194" r="22" fill="#F59E0B"/>
+    <g fill="#FFFFFF">
+        <circle cx="91" cy="194" r="3.5"/>
+        <circle cx="100" cy="194" r="3.5"/>
+        <circle cx="109" cy="194" r="3.5"/>
+    </g>
+    <text x="136" y="203" font-size="26" font-weight="700" fill="#92400E">draft</text>
+    <text x="80" y="240" font-size="14" fill="#78350F">Written or updated by the agent</text>
+    <text x="80" y="264" font-size="13" font-family="Consolas, Menlo, monospace" fill="#92400E">status: draft</text>
+    <text x="80" y="288" font-size="12" fill="#92400E">Safe to regenerate at any time</text>
+
+    <!-- reviewed -->
+    <rect x="465" y="150" width="270" height="170" rx="18" fill="#F0F9FF" stroke="#0EA5E9" stroke-width="2.5"/>
+    <circle cx="505" cy="194" r="22" fill="#0EA5E9"/>
+    <path d="M497,194 L503,201 L514,188" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="541" y="203" font-size="26" font-weight="700" fill="#075985">reviewed</text>
+    <text x="485" y="240" font-size="14" fill="#0C4A6E">Checked against the sources</text>
+    <text x="485" y="264" font-size="13" font-family="Consolas, Menlo, monospace" fill="#075985">reviewed_by: &lt;name&gt;</text>
+    <text x="485" y="288" font-size="12" fill="#075985">Needs a named reviewer</text>
+
+    <!-- certified -->
+    <rect x="870" y="150" width="270" height="170" rx="18" fill="#F0FDF4" stroke="#22C55E" stroke-width="2.5"/>
+    <circle cx="910" cy="194" r="22" fill="#22C55E"/>
+    <circle cx="910" cy="194" r="16" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+    <path d="M903,194 L908,200 L918,188" fill="none" stroke="#FFFFFF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="946" y="203" font-size="26" font-weight="700" fill="#166534">certified</text>
+    <text x="890" y="240" font-size="14" fill="#14532D">Formally approved</text>
+    <text x="890" y="264" font-size="13" font-family="Consolas, Menlo, monospace" fill="#166534">certified_by · certified_at</text>
+    <text x="890" y="288" font-size="12" fill="#166534">Never rewritten by the agent:</text>
+    <text x="890" y="304" font-size="12" fill="#166534">changes go to "Pending updates"</text>
+
+    <!-- arrows -->
+    <line x1="332" y1="235" x2="461" y2="235" stroke="#64748B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <text x="397" y="218" font-size="13" font-family="Consolas, Menlo, monospace" fill="#334155" text-anchor="middle">update --review</text>
+    <text x="397" y="260" font-size="12" fill="#64748B" text-anchor="middle">by a reviewer</text>
+
+    <line x1="737" y1="235" x2="866" y2="235" stroke="#64748B" stroke-width="3" stroke-linecap="round" marker-end="url(#arrow)"/>
+    <text x="802" y="218" font-size="13" font-family="Consolas, Menlo, monospace" fill="#334155" text-anchor="middle">update --certify</text>
+    <text x="802" y="260" font-size="12" fill="#64748B" text-anchor="middle">by the customer</text>
+
+    <!-- roles -->
+    <g font-size="14" font-weight="700" text-anchor="middle">
+        <rect x="125" y="340" width="140" height="34" rx="17" fill="#FDE68A"/>
+        <text x="195" y="362" fill="#78350F">Agent</text>
+        <rect x="530" y="340" width="140" height="34" rx="17" fill="#BAE6FD"/>
+        <text x="600" y="362" fill="#0C4A6E">Reviewer</text>
+        <rect x="935" y="340" width="140" height="34" rx="17" fill="#BBF7D0"/>
+        <text x="1005" y="362" fill="#14532D">Certifier</text>
+    </g>
+
+    <text x="600" y="414" font-size="13" fill="#64748B" text-anchor="middle">Also: superseded (replaced by another page) · deprecated (no longer valid)</text>
+</svg>

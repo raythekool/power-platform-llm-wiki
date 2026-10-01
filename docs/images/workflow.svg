@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="290" viewBox="0 0 1200 290" role="img" aria-labelledby="title desc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <title id="title">The six steps</title>
+    <desc id="desc">init, update --source code, ingest, update --lint, update --publish, query.</desc>
+    <rect x="1" y="1" width="1198" height="288" rx="20" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
+    <text x="600" y="42" font-size="24" font-weight="700" fill="#0F172A" text-anchor="middle">From zero to a published wiki in six steps</text>
+
+    <line x1="100" y1="110" x2="1100" y2="110" stroke="#CBD5E1" stroke-width="5" stroke-linecap="round"/>
+
+    <g font-size="26" font-weight="700" fill="#FFFFFF" text-anchor="middle">
+        <circle cx="100" cy="110" r="30" fill="#6366F1"/>
+        <text x="100" y="119">1</text>
+        <circle cx="300" cy="110" r="30" fill="#0EA5E9"/>
+        <text x="300" y="119">2</text>
+        <circle cx="500" cy="110" r="30" fill="#14B8A6"/>
+        <text x="500" y="119">3</text>
+        <circle cx="700" cy="110" r="30" fill="#F59E0B"/>
+        <text x="700" y="119">4</text>
+        <circle cx="900" cy="110" r="30" fill="#EC4899"/>
+        <text x="900" y="119">5</text>
+        <circle cx="1100" cy="110" r="30" fill="#8B5CF6"/>
+        <text x="1100" y="119">6</text>
+    </g>
+
+    <g font-size="15" font-weight="700" font-family="Consolas, Menlo, monospace" fill="#0F172A" text-anchor="middle">
+        <text x="100" y="176">init</text>
+        <text x="300" y="176">update --source code</text>
+        <text x="500" y="176">ingest &lt;file&gt;</text>
+        <text x="700" y="176">update --lint</text>
+        <text x="900" y="176">update --publish</text>
+        <text x="1100" y="176">query &lt;question&gt;</text>
+    </g>
+    <g font-size="13" fill="#475569" text-anchor="middle">
+        <text x="100" y="204">Wizard: sources, profiles,</text>
+        <text x="100" y="222">publish target, governance</text>
+        <text x="300" y="204">Inventory + as-built pages</text>
+        <text x="300" y="222">with diagrams</text>
+        <text x="500" y="204">FDD, TDD, minutes, ADR</text>
+        <text x="500" y="222">into linked wiki pages</text>
+        <text x="700" y="204">Links, lifecycle, drift,</text>
+        <text x="700" y="222">traceability, secrets</text>
+        <text x="900" y="204">Azure DevOps Wiki</text>
+        <text x="900" y="222">or GitHub Wiki</text>
+        <text x="1100" y="204">Answers with citations</text>
+        <text x="1100" y="222">from the wiki only</text>
+    </g>
+    <text x="600" y="266" font-size="13" fill="#64748B" text-anchor="middle">Later: update --full re-runs everything incrementally; only new or changed sources are processed.</text>
+</svg>
