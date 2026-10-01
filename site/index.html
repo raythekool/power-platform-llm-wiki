@@ -1,0 +1,893 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LLM Wiki - Documentation that stays aligned with the code</title>
+    <meta
+      name="description"
+      content="LLM Wiki turns code, metadata, work items, FDD/TDD and meeting minutes into a governed, cross-linked wiki for Dynamics 365 projects and publishes it to Azure DevOps Wiki or GitHub Wiki."
+    />
+    <meta name="theme-color" content="#0b1220" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="LLM Wiki - Documentation that stays aligned with the code"
+    />
+    <meta
+      property="og:description"
+      content="Code-first knowledge base for Dynamics 365 delivery: Power Platform, Finance &amp; Operations, Azure DevOps Wiki."
+    />
+    <meta property="og:url" content="{{BASE_URL}}/" />
+    <meta property="og:image" content="{{BASE_URL}}/assets/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="{{BASE_URL}}/" />
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("llmwiki-lang");
+          var lang =
+            saved ||
+            ((navigator.language || "en").toLowerCase().indexOf("it") === 0
+              ? "it"
+              : "en");
+          document.documentElement.dataset.lang = lang;
+          document.documentElement.lang = lang;
+          document.documentElement.classList.add("js");
+        } catch (e) {
+          document.documentElement.classList.add("js");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main"
+      ><span lang="en">Skip to content</span
+      ><span lang="it">Vai al contenuto</span></a
+    >
+
+    <header class="nav">
+      <div class="wrap nav-in">
+        <a class="brand" href="#top" aria-label="LLM Wiki">
+          <img src="favicon.svg" alt="" width="28" height="28" />
+          <span>LLM Wiki</span>
+        </a>
+        <nav class="links" aria-label="Main">
+          <a href="#why"
+            ><span lang="en">Why</span><span lang="it">Perché</span></a
+          >
+          <a href="#features"
+            ><span lang="en">Features</span><span lang="it">Funzioni</span></a
+          >
+          <a href="#how"
+            ><span lang="en">How it works</span
+            ><span lang="it">Come funziona</span></a
+          >
+          <a href="#code-first"
+            ><span lang="en">Code-first</span
+            ><span lang="it">Code-first</span></a
+          >
+          <a href="#governance"
+            ><span lang="en">Governance</span
+            ><span lang="it">Governance</span></a
+          >
+          <a href="#start"
+            ><span lang="en">Get started</span><span lang="it">Inizia</span></a
+          >
+        </nav>
+        <div class="nav-right">
+          <div class="lang" role="group" aria-label="Language">
+            <button type="button" data-set-lang="en" aria-pressed="true">
+              EN
+            </button>
+            <button type="button" data-set-lang="it" aria-pressed="false">
+              IT
+            </button>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="{{REPO_URL}}">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section class="hero" id="top">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="wrap hero-in">
+          <div class="hero-copy">
+            <p class="badge">
+              <span>v{{VERSION}}</span>
+              <span lang="en">GitHub Copilot plugin for VS Code</span>
+              <span lang="it">Plugin GitHub Copilot per VS Code</span>
+            </p>
+            <h1>
+              <span lang="en"
+                >Documentation that stays <em>aligned with the code.</em></span
+              >
+              <span lang="it"
+                >Documentazione sempre <em>allineata al codice.</em></span
+              >
+            </h1>
+            <p class="lead" lang="en">
+              LLM Wiki turns code, platform metadata, work items, FDD/TDD and
+              meeting minutes into a governed, cross-linked wiki for Dynamics
+              365 projects, and publishes it to Azure DevOps Wiki or GitHub
+              Wiki.
+            </p>
+            <p class="lead" lang="it">
+              LLM Wiki trasforma codice, metadati della piattaforma, work item,
+              FDD/TDD e verbali in una wiki collegata e governata per i progetti
+              Dynamics 365, e la pubblica su Azure DevOps Wiki o GitHub Wiki.
+            </p>
+            <div class="cta">
+              <a class="btn btn-primary" href="#start"
+                ><span lang="en">Get started</span
+                ><span lang="it">Inizia subito</span></a
+              >
+              <a class="btn btn-ghost" href="{{REPO_URL}}"
+                ><span lang="en">View on GitHub</span
+                ><span lang="it">Vedi su GitHub</span></a
+              >
+            </div>
+            <ul class="chips" aria-label="Platforms">
+              <li>Power Platform</li>
+              <li>Finance &amp; Operations</li>
+              <li>Azure DevOps</li>
+              <li>GitHub Copilot</li>
+            </ul>
+          </div>
+
+          <figure class="term-wrap">
+            <div
+              class="term"
+              role="img"
+              aria-label="Example session: init, update --source code, update --lint"
+            >
+              <div class="term-bar">
+                <i></i><i></i><i></i><span>LLM Wiki · VS Code</span>
+              </div>
+              <div class="term-body">
+                <div class="l p" style="--d: 0">&gt; init</div>
+                <div class="l ok" style="--d: 1">
+                  ✔ Profiles: power-platform · dynamics-fno
+                </div>
+                <div class="l ok" style="--d: 2">
+                  ✔ Engine installed (v{{VERSION}})
+                </div>
+                <div class="l p" style="--d: 3">&gt; update --source code</div>
+                <div class="l ok" style="--d: 4">
+                  ✔ Inventory: 14 plugins · 3 PCF · 212 Ax objects
+                </div>
+                <div class="l ok" style="--d: 5">
+                  ✔ Pages: code/plugins.md · code/datamodel.md · …
+                </div>
+                <div class="l warn" style="--d: 6">
+                  ⚠ Drift: REQ-SAL-001 ≠ CreditCheckPlugin.cs:87
+                </div>
+                <div class="l p" style="--d: 7">&gt; update --lint</div>
+                <div class="l ok" style="--d: 8">
+                  ✔ 0 errors · 3 warnings · 4 certified · 12 draft
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <span lang="en">Illustrative output.</span
+              ><span lang="it">Output a scopo illustrativo.</span>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- STATS -->
+      <section class="stats" aria-label="At a glance">
+        <div class="wrap stats-in">
+          <div>
+            <strong>5</strong
+            ><span lang="en">skills: init, config, update, ingest, query</span
+            ><span lang="it">skill: init, config, update, ingest, query</span>
+          </div>
+          <div>
+            <strong>3</strong
+            ><span lang="en">profiles: Power Platform, F&amp;O, generic</span
+            ><span lang="it">profili: Power Platform, F&amp;O, generico</span>
+          </div>
+          <div>
+            <strong>6</strong
+            ><span lang="en">standard templates: FDD, TDD, ADR, minutes…</span
+            ><span lang="it">template standard: FDD, TDD, ADR, verbali…</span>
+          </div>
+          <div>
+            <strong>0</strong
+            ><span lang="en"
+              >tokens for inventory, delta, lint and publish scripts</span
+            ><span lang="it"
+              >token per gli script di inventario, delta, lint e
+              pubblicazione</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- WHY -->
+      <section class="section" id="why">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">Why it matters</span
+              ><span lang="it">Perché serve</span>
+            </p>
+            <h2 lang="en">
+              Documentation usually loses against the delivery pace.
+            </h2>
+            <h2 lang="it">
+              La documentazione di solito perde contro il ritmo di delivery.
+            </h2>
+            <p lang="en">LLM Wiki attacks the four reasons why.</p>
+            <p lang="it">LLM Wiki affronta i quattro motivi.</p>
+          </header>
+          <div class="grid g4">
+            <article class="card reveal">
+              <div class="ico i-amber">🧭</div>
+              <h3 lang="en">Docs drift from reality</h3>
+              <h3 lang="it">I documenti si disallineano</h3>
+              <p lang="en">
+                FDD and TDD describe intent; the code is what runs. As-built
+                pages are generated from the code and every gap is flagged as
+                drift.
+              </p>
+              <p lang="it">
+                FDD e TDD descrivono l'intenzione; il codice è ciò che gira. Le
+                pagine as-built nascono dal codice e ogni differenza è segnalata
+                come drift.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-sky">🧩</div>
+              <h3 lang="en">Knowledge is scattered</h3>
+              <h3 lang="it">La conoscenza è dispersa</h3>
+              <p lang="en">
+                Minutes, transcripts, specs, work items and repositories live in
+                different tools. One Markdown wiki, one catalog, one place to
+                ask.
+              </p>
+              <p lang="it">
+                Verbali, trascrizioni, specifiche, work item e repository vivono
+                in strumenti diversi. Una wiki Markdown, un indice, un solo
+                posto dove chiedere.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-violet">📐</div>
+              <h3 lang="en">Every project, a new format</h3>
+              <h3 lang="it">Ogni progetto, un formato</h3>
+              <p lang="en">
+                Standard templates for requirements, design, ADR, minutes and
+                code components give every team the same structure.
+              </p>
+              <p lang="it">
+                Template standard per requisiti, design, ADR, verbali e
+                componenti di codice danno a tutti i team la stessa struttura.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-green">💸</div>
+              <h3 lang="en">AI cost surprises</h3>
+              <h3 lang="it">Costi AI imprevisti</h3>
+              <p lang="en">
+                Scripts do the mechanical work. The agent only reads inventories
+                and files that changed, and every run logs what it processed.
+              </p>
+              <p lang="it">
+                Gli script fanno il lavoro meccanico. L'agente legge solo
+                inventari e file cambiati, e ogni esecuzione registra cosa ha
+                elaborato.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section class="section soft" id="features">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">What you get</span
+              ><span lang="it">Cosa ottieni</span>
+            </p>
+            <h2 lang="en">Built for Dynamics 365 delivery teams.</h2>
+            <h2 lang="it">Pensata per i team di delivery Dynamics 365.</h2>
+          </header>
+          <div class="grid g3">
+            <article class="card reveal">
+              <div class="ico i-indigo">🧬</div>
+              <h3 lang="en">Code-first as-built</h3>
+              <h3 lang="it">As-built dal codice</h3>
+              <p lang="en">
+                Azure Repos, GitHub or local clones: plugins, PCF, web
+                resources, flows, pipelines and X++ are inventoried and
+                documented with diagrams.
+              </p>
+              <p lang="it">
+                Azure Repos, GitHub o cloni locali: plugin, PCF, web resource,
+                flow, pipeline e X++ vengono inventariati e documentati con
+                diagrammi.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-sky">🏭</div>
+              <h3 lang="en">Dataverse and F&amp;O aware</h3>
+              <h3 lang="it">Dataverse e F&amp;O</h3>
+              <p lang="en">
+                Ax* metadata, Chain of Command extensions, data entities and
+                security on one side; solutions, plugins and data model on the
+                other.
+              </p>
+              <p lang="it">
+                Metadati Ax*, estensioni Chain of Command, data entity e
+                sicurezza da una parte; soluzioni, plugin e modello dati
+                dall'altra.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-amber">📥</div>
+              <h3 lang="en">FDD, TDD and minutes in</h3>
+              <h3 lang="it">FDD, TDD e verbali in ingresso</h3>
+              <p lang="en">
+                One page per requirement, design pages, ADRs and meeting
+                syntheses with decisions, actions and risks. Word, PDF and Excel
+                are converted automatically.
+              </p>
+              <p lang="it">
+                Una pagina per requisito, pagine di design, ADR e sintesi delle
+                riunioni con decisioni, azioni e rischi. Word, PDF ed Excel
+                vengono convertiti in automatico.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-green">🛡️</div>
+              <h3 lang="en">Governed content</h3>
+              <h3 lang="it">Contenuti governati</h3>
+              <p lang="en">
+                Owner, sources and lifecycle on every page. The agent drafts;
+                people review and certify. Certified pages are never rewritten.
+              </p>
+              <p lang="it">
+                Owner, fonti e ciclo di vita su ogni pagina. L'agente scrive le
+                bozze; le persone revisionano e certificano. Le pagine
+                certificate non vengono mai riscritte.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-violet">🌐</div>
+              <h3 lang="en">Publish anywhere</h3>
+              <h3 lang="it">Pubblica ovunque</h3>
+              <p lang="en">
+                Azure DevOps Wiki (project or code wiki) and GitHub Wiki are
+                generated from the same Markdown, with ordering, links and
+                attachments handled.
+              </p>
+              <p lang="it">
+                Azure DevOps Wiki (project o code wiki) e GitHub Wiki sono
+                generate dallo stesso Markdown, con ordine, link e allegati
+                gestiti.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-pink">💬</div>
+              <h3 lang="en">Ask the wiki</h3>
+              <h3 lang="it">Chiedi alla wiki</h3>
+              <p lang="en">
+                Answers come only from the wiki, with citations and the
+                certification status of each source. Perfect for UAT and
+                training questions.
+              </p>
+              <p lang="it">
+                Le risposte arrivano solo dalla wiki, con citazioni e stato di
+                certificazione di ogni fonte. Ideale per le domande di UAT e
+                formazione.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW -->
+      <section class="section" id="how">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">How it works</span
+              ><span lang="it">Come funziona</span>
+            </p>
+            <h2 lang="en">One engine between your sources and your readers.</h2>
+            <h2 lang="it">Un motore tra le tue fonti e chi legge.</h2>
+          </header>
+          <figure class="shot reveal">
+            <img
+              src="images/architecture.svg"
+              width="1200"
+              height="540"
+              loading="lazy"
+              alt="Sources are processed by the engine into the wiki, which is published to Azure DevOps Wiki, GitHub Wiki, Copilot and VS Code"
+              data-alt-it="Le fonti vengono elaborate dal motore in una wiki, pubblicata su Azure DevOps Wiki, GitHub Wiki, Copilot e VS Code"
+            />
+          </figure>
+          <figure class="shot reveal">
+            <img
+              src="images/workflow.svg"
+              width="1200"
+              height="290"
+              loading="lazy"
+              alt="The six steps: init, update --source code, ingest, update --lint, update --publish, query"
+              data-alt-it="I sei passi: init, update --source code, ingest, update --lint, update --publish, query"
+            />
+          </figure>
+
+          <div class="grid g3 scripts reveal">
+            <div class="mini">
+              <code>Get-CodeInventory</code
+              ><span lang="en"
+                >Plugins, PCF, flows, pipelines, X++ objects as JSON.</span
+              ><span lang="it"
+                >Plugin, PCF, flow, pipeline e oggetti X++ in JSON.</span
+              >
+            </div>
+            <div class="mini">
+              <code>Get-RawDelta</code
+              ><span lang="en"
+                >Hash manifest: only new or changed sources are processed.</span
+              ><span lang="it"
+                >Manifest di hash: si elaborano solo fonti nuove o
+                modificate.</span
+              >
+            </div>
+            <div class="mini">
+              <code>Test-WikiLint</code
+              ><span lang="en"
+                >Links, lifecycle, drift, traceability, overdue actions,
+                secrets.</span
+              ><span lang="it"
+                >Link, ciclo di vita, drift, tracciabilità, azioni scadute,
+                segreti.</span
+              >
+            </div>
+            <div class="mini">
+              <code>Export-Wiki</code
+              ><span lang="en"
+                >Azure DevOps Wiki or GitHub Wiki, ready to push.</span
+              ><span lang="it"
+                >Azure DevOps Wiki o GitHub Wiki, pronte al push.</span
+              >
+            </div>
+            <div class="mini">
+              <code>Install-Engine</code
+              ><span lang="en"
+                >Vendors the engine into the project for headless runs.</span
+              ><span lang="it"
+                >Copia il motore nel progetto per le esecuzioni headless.</span
+              >
+            </div>
+            <div class="mini mini-note">
+              <strong>0</strong
+              ><span lang="en">tokens spent on mechanical work</span
+              ><span lang="it">token spesi sul lavoro meccanico</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CODE FIRST -->
+      <section class="section soft" id="code-first">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">Code-first</p>
+            <h2 lang="en">Trust the code, question the document.</h2>
+            <h2 lang="it">Fidati del codice, metti in dubbio il documento.</h2>
+            <p lang="en">
+              Requirement pages carry an ID, code pages declare what they
+              implement. The lint tells you what is missing, the update flags
+              what disagrees.
+            </p>
+            <p lang="it">
+              Le pagine dei requisiti hanno un ID, le pagine di codice
+              dichiarano cosa implementano. Il lint dice cosa manca, l'update
+              segnala cosa non coincide.
+            </p>
+          </header>
+          <figure class="shot reveal">
+            <img
+              src="images/traceability.svg"
+              width="1200"
+              height="440"
+              loading="lazy"
+              alt="A requirement implemented by a Dataverse plugin and an F&amp;O extension, with a drift warning when the code disagrees"
+              data-alt-it="Un requisito implementato da un plugin Dataverse e da un'estensione F&amp;O, con un avviso di drift quando il codice non coincide"
+            />
+          </figure>
+          <ul class="ticks reveal">
+            <li lang="en">
+              Primary source of truth for as-built behaviour: the code, not the
+              document.
+            </li>
+            <li lang="it">
+              Fonte primaria dell'as-built: il codice, non il documento.
+            </li>
+            <li lang="en">
+              Gaps are flagged on both pages with evidence; nothing is silently
+              rewritten.
+            </li>
+            <li lang="it">
+              Le differenze sono segnalate su entrambe le pagine con evidenza;
+              nulla viene riscritto in silenzio.
+            </li>
+            <li lang="en">
+              Untraced components and requirements without implementation are
+              listed by the lint.
+            </li>
+            <li lang="it">
+              Componenti non tracciati e requisiti senza implementazione sono
+              elencati dal lint.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- GOVERNANCE -->
+      <section class="section" id="governance">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">Governance</p>
+            <h2 lang="en">Trust you can measure.</h2>
+            <h2 lang="it">Una fiducia misurabile.</h2>
+          </header>
+          <figure class="shot reveal">
+            <img
+              src="images/lifecycle.svg"
+              width="1200"
+              height="440"
+              loading="lazy"
+              alt="Page lifecycle: draft written by the agent, reviewed by a named reviewer, certified by the customer"
+              data-alt-it="Ciclo di vita: bozza scritta dall'agente, revisione da parte di una persona, certificazione da parte del cliente"
+            />
+          </figure>
+          <div class="grid g3">
+            <article class="card reveal">
+              <div class="ico i-amber">🧾</div>
+              <h3 lang="en">Provenance</h3>
+              <h3 lang="it">Provenienza</h3>
+              <p lang="en">
+                Every page lists its sources: raw files, work items, commits.
+              </p>
+              <p lang="it">
+                Ogni pagina elenca le sue fonti: file, work item, commit.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-sky">🔒</div>
+              <h3 lang="en">Safe by default</h3>
+              <h3 lang="it">Sicura per default</h3>
+              <p lang="en">
+                No secrets in pages, personal data kept to names and roles,
+                Microsoft Entra ID sign-in instead of PATs.
+              </p>
+              <p lang="it">
+                Nessun segreto nelle pagine, dati personali limitati a nomi e
+                ruoli, accesso con Microsoft Entra ID al posto dei PAT.
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-green">📊</div>
+              <h3 lang="en">Measurable</h3>
+              <h3 lang="it">Misurabile</h3>
+              <p lang="en">
+                Pages per status, requirement coverage, open drift and tokens
+                per run, ready for the status report.
+              </p>
+              <p lang="it">
+                Pagine per stato, copertura dei requisiti, drift aperti e token
+                per esecuzione, pronti per lo stato avanzamento.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROFILES -->
+      <section class="section soft" id="profiles">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">Profiles</span><span lang="it">Profili</span>
+            </p>
+            <h2 lang="en">Three ways to read a codebase.</h2>
+            <h2 lang="it">Tre modi di leggere un codebase.</h2>
+          </header>
+          <div class="grid g3">
+            <article class="card reveal profile">
+              <div class="ico i-indigo">☁️</div>
+              <h3>power-platform</h3>
+              <p lang="en">
+                Plugins, PCF, web resources, unpacked solutions, cloud flows,
+                pipelines and live Dataverse metadata via <code>pacx</code>.
+              </p>
+              <p lang="it">
+                Plugin, PCF, web resource, soluzioni unpacked, cloud flow,
+                pipeline e metadati Dataverse via <code>pacx</code>.
+              </p>
+            </article>
+            <article class="card reveal profile">
+              <div class="ico i-sky">🏭</div>
+              <h3>dynamics-fno</h3>
+              <p lang="en">
+                Tables and extensions, classes with Chain of Command, data
+                entities, security duties and privileges, model descriptors.
+              </p>
+              <p lang="it">
+                Tabelle ed estensioni, classi con Chain of Command, data entity,
+                duty e privilegi di sicurezza, descrittori dei modelli.
+              </p>
+            </article>
+            <article class="card reveal profile">
+              <div class="ico i-violet">🔌</div>
+              <h3>generic</h3>
+              <p lang="en">
+                Azure Functions, APIs and middleware: components, contracts,
+                integrations and release pipelines.
+              </p>
+              <p lang="it">
+                Azure Functions, API e middleware: componenti, contratti,
+                integrazioni e pipeline di rilascio.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- START -->
+      <section class="section start" id="start">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">Get started</span><span lang="it">Inizia</span>
+            </p>
+            <h2 lang="en">Up and running in a few minutes.</h2>
+            <h2 lang="it">Operativo in pochi minuti.</h2>
+          </header>
+          <div class="steps">
+            <ol class="reveal">
+              <li>
+                <b lang="en">Enable plugins in VS Code</b
+                ><b lang="it">Abilita le plugin in VS Code</b>
+                <span lang="en"
+                  >Settings → <code>Chat › Plugins: Enabled</code>.</span
+                ><span lang="it"
+                  >Impostazioni → <code>Chat › Plugins: Enabled</code>.</span
+                >
+              </li>
+              <li>
+                <b lang="en">Add the marketplace</b
+                ><b lang="it">Aggiungi il marketplace</b>
+                <span lang="en"
+                  >Add the repository slug to
+                  <code>chat.plugins.marketplaces</code>.</span
+                ><span lang="it"
+                  >Aggiungi lo slug del repository a
+                  <code>chat.plugins.marketplaces</code>.</span
+                >
+              </li>
+              <li>
+                <b lang="en">Install the plugin</b
+                ><b lang="it">Installa la plugin</b>
+                <span lang="en"
+                  >Extensions → search
+                  <code>@agentPlugins power-platform-llm-wiki</code>.</span
+                ><span lang="it"
+                  >Extensions → cerca
+                  <code>@agentPlugins power-platform-llm-wiki</code>.</span
+                >
+              </li>
+              <li>
+                <b lang="en">Pick the agent and say <code>init</code></b
+                ><b lang="it">Scegli l'agente e scrivi <code>init</code></b>
+                <span lang="en"
+                  >The wizard configures sources, profiles, publishing and
+                  governance.</span
+                ><span lang="it"
+                  >Il wizard configura fonti, profili, pubblicazione e
+                  governance.</span
+                >
+              </li>
+            </ol>
+            <div class="code reveal">
+              <div class="code-bar">
+                <span>settings.json</span
+                ><button type="button" class="copy" data-copy="#cfg">
+                  <span lang="en">Copy</span><span lang="it">Copia</span>
+                </button>
+              </div>
+              <pre id="cfg"><code>"chat.plugins.enabled": true,
+"chat.plugins.marketplaces": [
+  "{{REPO_SLUG}}"
+]</code></pre>
+            </div>
+          </div>
+          <p class="note reveal" lang="en">
+            Requirements: PowerShell 7 and git. Optional per source: Git
+            Credential Manager, <code>pacx</code>/<code>pac</code>,
+            <code>gh</code>, <code>markitdown</code>.
+          </p>
+          <p class="note reveal" lang="it">
+            Requisiti: PowerShell 7 e git. Opzionali in base alle fonti: Git
+            Credential Manager, <code>pacx</code>/<code>pac</code>,
+            <code>gh</code>, <code>markitdown</code>.
+          </p>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section class="section" id="faq">
+        <div class="wrap narrow">
+          <header class="sec-head reveal">
+            <p class="eyebrow">FAQ</p>
+            <h2 lang="en">Good questions.</h2>
+            <h2 lang="it">Domande frequenti.</h2>
+          </header>
+          <div class="faq reveal">
+            <details>
+              <summary>
+                <span lang="en">Do I need a personal access token?</span
+                ><span lang="it">Serve un personal access token?</span>
+              </summary>
+              <p lang="en">
+                No. Azure DevOps uses Microsoft Entra ID sign-in through the MCP
+                server, and publishing uses Git Credential Manager. CI runs use
+                repository secrets.
+              </p>
+              <p lang="it">
+                No. Azure DevOps usa l'accesso Microsoft Entra ID tramite il
+                server MCP e la pubblicazione usa Git Credential Manager. Le
+                esecuzioni in CI usano i secret del repository.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en">Where does the wiki live?</span
+                ><span lang="it">Dove vive la wiki?</span>
+              </summary>
+              <p lang="en">
+                In the project repository, under <code>llm-wiki/</code>, as
+                plain Markdown. The published wiki is a converted copy.
+              </p>
+              <p lang="it">
+                Nel repository del progetto, in <code>llm-wiki/</code>, come
+                Markdown semplice. La wiki pubblicata è una copia convertita.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en"
+                  >What if people only use Azure DevOps or Copilot?</span
+                ><span lang="it"
+                  >E se le persone usano solo Azure DevOps o Copilot?</span
+                >
+              </summary>
+              <p lang="en">
+                They read the published wiki, or ask it through Microsoft 365
+                Copilot / Copilot Studio connected to that wiki. VS Code is only
+                needed by the people who maintain it.
+              </p>
+              <p lang="it">
+                Leggono la wiki pubblicata, oppure la interrogano tramite
+                Microsoft 365 Copilot / Copilot Studio collegati alla wiki. VS
+                Code serve solo a chi la mantiene.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en">Can the agent change certified pages?</span
+                ><span lang="it"
+                  >L'agente può modificare le pagine certificate?</span
+                >
+              </summary>
+              <p lang="en">
+                No. New information is added as a "Pending updates" section for
+                the page owner to accept or reject.
+              </p>
+              <p lang="it">
+                No. Le nuove informazioni vengono aggiunte come sezione "Pending
+                updates" che l'owner della pagina accetta o rifiuta.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en">How do I keep costs under control?</span
+                ><span lang="it">Come tengo sotto controllo i costi?</span>
+              </summary>
+              <p lang="en">
+                Only changed sources are processed, scripts replace LLM reading
+                wherever possible, and each log entry records the volume
+                processed.
+              </p>
+              <p lang="it">
+                Si elaborano solo le fonti cambiate, gli script sostituiscono la
+                lettura dell'LLM dove possibile e ogni voce di log registra il
+                volume elaborato.
+              </p>
+            </details>
+          </div>
+
+          <div class="docs reveal">
+            <h3 lang="en">Documentation</h3>
+            <h3 lang="it">Documentazione</h3>
+            <ul>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/docs/guida-utente.md"
+                  >📖 <span lang="en">User guide (Italian)</span
+                  ><span lang="it">Guida utente</span></a
+                >
+              </li>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/docs/governance.md"
+                  >🛡️ <span lang="en">Governance (Italian)</span
+                  ><span lang="it">Governance</span></a
+                >
+              </li>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/docs/migrazione-v2-v3.md"
+                  >🔄 <span lang="en">v2 → v3 migration (Italian)</span
+                  ><span lang="it">Migrazione v2 → v3</span></a
+                >
+              </li>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/CONTRIBUTING.md"
+                  >🤝 Contributing</a
+                >
+              </li>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/CHANGELOG.md">📜 Changelog</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="final">
+        <div class="wrap">
+          <h2 lang="en">Make documentation the easy part of delivery.</h2>
+          <h2 lang="it">
+            Rendi la documentazione la parte facile della delivery.
+          </h2>
+          <div class="cta center">
+            <a class="btn btn-primary" href="#start"
+              ><span lang="en">Get started</span
+              ><span lang="it">Inizia subito</span></a
+            >
+            <a class="btn btn-ghost" href="{{REPO_URL}}"
+              ><span lang="en">Star on GitHub</span
+              ><span lang="it">Metti una stella su GitHub</span></a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="wrap foot-in">
+        <span>LLM Wiki v{{VERSION}} · MIT</span>
+        <span lang="en"
+          >Code-first knowledge base for Dynamics 365 delivery.</span
+        >
+        <span lang="it"
+          >Knowledge base code-first per la delivery Dynamics 365.</span
+        >
+        <a href="{{REPO_URL}}">GitHub</a>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+  </body>
+</html>

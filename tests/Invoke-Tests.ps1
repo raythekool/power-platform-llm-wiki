@@ -136,6 +136,17 @@ try {
     }
     $out = & pwsh -NoProfile -File (Join-Path $hostWiki '.engine/scripts/Test-WikiLint.ps1') -WikiPath $wiki -Today '2026-10-01'
     Assert ($LASTEXITCODE -eq 0 -and (($out -join "`n") | ConvertFrom-Json).pages -eq 8) 'vendored lint runs standalone'
+
+    Write-Host 'Build-Site'
+    $siteOut = Join-Path $work '_site'
+    $out = & pwsh -NoProfile -File (Join-Path $repoRoot 'scripts/Build-Site.ps1') -OutPath $siteOut -BaseUrl 'https://example.github.io/demo' -RepoUrl 'https://github.com/example/demo'
+    Assert ($LASTEXITCODE -eq 0) 'site builds'
+    $index = Get-Content -LiteralPath (Join-Path $siteOut 'index.html') -Raw
+    Assert ($index -notmatch '\{\{[A-Z_]+\}\}') 'no unresolved placeholders'
+    Assert ($index -match 'https://example\.github\.io/demo/assets/og\.png') 'BASE_URL applied to og:image'
+    Assert ($index -match [regex]::Escape($version)) 'plugin version rendered'
+    Assert ((Test-Path (Join-Path $siteOut '.nojekyll')) -and (Test-Path (Join-Path $siteOut 'images/architecture.svg'))) '.nojekyll and shared SVG images copied'
+    Assert ((Get-Content -LiteralPath (Join-Path $siteOut 'sitemap.xml') -Raw) -match 'https://example\.github\.io/demo/') 'sitemap uses BASE_URL'
 }
 finally {
     Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue

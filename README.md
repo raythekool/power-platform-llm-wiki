@@ -135,6 +135,7 @@ Roles, cadence and indicators: [docs/governance.md](docs/governance.md).
 ```text
 .github/plugin/marketplace.json            # marketplace manifest
 .github/workflows/validate.yml             # CI: validator + script tests
+.github/workflows/pages.yml                # deploys the website to GitHub Pages
 plugins/power-platform-llm-wiki/
 ├── plugin.json  .mcp.json
 ├── agents/llm-wiki.agent.md
@@ -145,6 +146,7 @@ plugins/power-platform-llm-wiki/
 scripts/Validate-Plugin.ps1                # release checks (structure, versions, confidentiality, doc links)
 tests/                                     # fixtures (wiki, raw, CE + F&O repo) and Invoke-Tests.ps1
 docs/                                      # user guide, governance, migration, images
+site/                                      # bilingual (EN/IT) promo website, built by scripts/Build-Site.ps1
 ```
 
 ## 🛠️ Development
@@ -152,7 +154,10 @@ docs/                                      # user guide, governance, migration, 
 ```powershell
 pwsh ./scripts/Validate-Plugin.ps1 -Human   # structure, versions, legacy references, confidentiality, doc links
 pwsh ./tests/Invoke-Tests.ps1               # regression tests for the scripts
+pwsh ./scripts/Build-Site.ps1               # builds the website into _site/ (open _site/index.html)
 ```
+
+🌍 The website in `site/` is deployed by `.github/workflows/pages.yml` on every push to `main` that touches it. One-time setup: **Settings → Pages → Source: GitHub Actions**.
 
 Before a release see [CONTRIBUTING.md](CONTRIBUTING.md#-releasing): bump the version in `plugin.json` and `marketplace.json`, update `CHANGELOG.md`, and keep customer names, repositories and data out of the plugin.
 

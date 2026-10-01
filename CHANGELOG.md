@@ -1,5 +1,9 @@
 ## Changelog
 
+## Unreleased
+
+- 🌍 Bilingual (EN/IT) promo website in `site/`, built by `scripts/Build-Site.ps1` and deployed to GitHub Pages by `.github/workflows/pages.yml`.
+
 ## 3.0.0 - 2026-10-01
 
 This repository is now the primary source of the plugin (no longer an export of another repository).

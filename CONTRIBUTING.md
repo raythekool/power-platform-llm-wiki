@@ -22,6 +22,7 @@ Thanks for improving LLM Wiki. This repository is the source of the `power-platf
 | `scripts/Validate-Plugin.ps1`                            | Release checks                                                               |
 | `tests/`                                                 | Fixtures and `Invoke-Tests.ps1`                                              |
 | `docs/`                                                  | User documentation (Italian) and images                                      |
+| `site/`, `scripts/Build-Site.ps1`                        | Bilingual website (EN/IT); deployed to GitHub Pages by `pages.yml`           |
 
 ### 🧭 Conventions
 
