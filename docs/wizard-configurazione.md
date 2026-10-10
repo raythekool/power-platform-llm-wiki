@@ -4,6 +4,8 @@ Percorso guidato, un passo alla volta, per configurare la wiki di un progetto. P
 
 > [!TIP]
 > Non devi conoscere i file di configurazione: scrivi `init` all'agente **LLM Wiki** e rispondi alle domande. Questa pagina spiega cosa rispondere e perché.
+>
+> Preferisci seguirlo un passo alla volta, spuntando le verifiche? Usa la [versione web interattiva](https://raythekool.github.io/power-platform-llm-wiki/wizard.html).
 
 ```mermaid
 flowchart LR

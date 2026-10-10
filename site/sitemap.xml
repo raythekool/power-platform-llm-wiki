@@ -3,4 +3,7 @@
     <url>
         <loc>{{BASE_URL}}/</loc>
     </url>
+    <url>
+        <loc>{{BASE_URL}}/wizard.html</loc>
+    </url>
 </urlset>

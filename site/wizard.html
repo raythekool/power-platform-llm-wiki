@@ -1,0 +1,1765 @@
+<!doctype html>
+<html
+  lang="en"
+  data-lang="en"
+  data-title-en="LLM Wiki - Setup wizard, step by step"
+  data-title-it="LLM Wiki - Wizard di configurazione passo passo"
+>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LLM Wiki - Setup wizard, step by step</title>
+    <meta
+      name="description"
+      content="Step-by-step guide to the LLM Wiki init wizard: what it asks, how to choose and how to verify each step, from prerequisites to the first published wiki."
+    />
+    <meta name="theme-color" content="#0b1220" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="LLM Wiki - Setup wizard, step by step" />
+    <meta
+      property="og:description"
+      content="What to answer to init and how to verify it: prerequisites, profiles, sources, publishing, governance and automation."
+    />
+    <meta property="og:url" content="{{BASE_URL}}/wizard.html" />
+    <meta property="og:image" content="{{BASE_URL}}/assets/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="{{BASE_URL}}/wizard.html" />
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem("llmwiki-lang");
+          var lang =
+            saved ||
+            ((navigator.language || "en").toLowerCase().indexOf("it") === 0
+              ? "it"
+              : "en");
+          document.documentElement.dataset.lang = lang;
+          document.documentElement.lang = lang;
+          document.documentElement.classList.add("js");
+        } catch (e) {
+          document.documentElement.classList.add("js");
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main"
+      ><span lang="en">Skip to content</span
+      ><span lang="it">Vai al contenuto</span></a
+    >
+
+    <header class="nav">
+      <div class="wrap nav-in">
+        <a class="brand" href="index.html" aria-label="LLM Wiki - Home">
+          <img src="favicon.svg" alt="" width="28" height="28" />
+          <span>LLM Wiki</span>
+        </a>
+        <nav class="links" aria-label="Main">
+          <a href="index.html"
+            ><span lang="en">Home</span><span lang="it">Home</span></a
+          >
+          <a href="#before"
+            ><span lang="en">Before you start</span
+            ><span lang="it">Prima di iniziare</span></a
+          >
+          <a href="#wizard"
+            ><span lang="en">Steps</span><span lang="it">Passi</span></a
+          >
+          <a href="#later"
+            ><span lang="en">Troubleshooting</span
+            ><span lang="it">Problemi</span></a
+          >
+        </nav>
+        <div class="nav-right">
+          <div class="lang" role="group" aria-label="Language">
+            <button type="button" data-set-lang="en" aria-pressed="true">
+              EN
+            </button>
+            <button type="button" data-set-lang="it" aria-pressed="false">
+              IT
+            </button>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="{{REPO_URL}}">GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section class="hero hero-sub" id="top">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="wrap hero-in">
+          <div class="hero-copy">
+            <p class="badge">
+              <span>v{{VERSION}}</span>
+              <span lang="en">Setup wizard</span>
+              <span lang="it">Wizard di configurazione</span>
+            </p>
+            <h1>
+              <span lang="en"
+                >Set up your wiki, <em>one step at a time.</em></span
+              >
+              <span lang="it"
+                >Configura la wiki, <em>un passo alla volta.</em></span
+              >
+            </h1>
+            <p class="lead" lang="en">
+              You do not need to know the configuration files: say
+              <code>init</code> to the <b>LLM Wiki</b> agent and answer the
+              questions. For each step you find what the wizard asks, how to
+              choose and how to verify you got it right.
+            </p>
+            <p class="lead" lang="it">
+              Non devi conoscere i file di configurazione: scrivi
+              <code>init</code> all'agente <b>LLM Wiki</b> e rispondi alle
+              domande. Per ogni passo trovi cosa ti chiede il wizard, come
+              scegliere e come verificare di aver fatto bene.
+            </p>
+            <div class="cta">
+              <a class="btn btn-primary" href="#wizard"
+                ><span lang="en">Start the wizard</span
+                ><span lang="it">Inizia il wizard</span></a
+              >
+              <a
+                class="btn btn-ghost"
+                href="{{REPO_URL}}/blob/main/docs/wizard-configurazione.md"
+                ><span lang="en">Markdown version (Italian)</span
+                ><span lang="it">Versione Markdown</span></a
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BEFORE YOU START -->
+      <section class="section soft" id="before">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">Before you start</span
+              ><span lang="it">Prima di iniziare</span>
+            </p>
+            <h2 lang="en">The three answers you need.</h2>
+            <h2 lang="it">Le tre risposte che ti servono.</h2>
+            <p lang="en">
+              Collect them before opening the wizard: it will be quick.
+            </p>
+            <p lang="it">
+              Raccoglile prima di aprire il wizard: lo renderanno veloce.
+            </p>
+          </header>
+          <div class="grid g3">
+            <article class="card reveal">
+              <div class="ico i-indigo">🏷️</div>
+              <h3 lang="en">
+                What is the project called and which technology does it use?
+              </h3>
+              <h3 lang="it">
+                Come si chiama il progetto e che tecnologia usa?
+              </h3>
+              <p lang="en">
+                e.g. "Sales", Dynamics 365 CE + Finance &amp; Operations
+              </p>
+              <p lang="it">
+                es. "Vendite", Dynamics 365 CE + Finance &amp; Operations
+              </p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-sky">🧬</div>
+              <h3 lang="en">
+                Where is the code, and where do you want to publish the wiki?
+              </h3>
+              <h3 lang="it">
+                Dove si trova il codice, e dove vuoi pubblicare la wiki?
+              </h3>
+              <p lang="en">e.g. Azure Repos, GitHub or a folder on your PC</p>
+              <p lang="it">es. Azure Repos, GitHub o una cartella sul PC</p>
+            </article>
+            <article class="card reveal">
+              <div class="ico i-green">🛡️</div>
+              <h3 lang="en">Who certifies the content on the customer side?</h3>
+              <h3 lang="it">Chi certifica i contenuti lato cliente?</h3>
+              <p lang="en">e.g. a key user, with first and last name</p>
+              <p lang="it">es. un key user, con nome e cognome</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- WIZARD -->
+      <section class="section" id="wizard">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">The wizard</span><span lang="it">Il wizard</span>
+            </p>
+            <h2 lang="en">Ten steps, from prerequisites to the first wiki.</h2>
+            <h2 lang="it">Dieci passi, dai prerequisiti alla prima wiki.</h2>
+            <p lang="en">
+              Tick each step once verified: your progress is saved in this
+              browser.
+            </p>
+            <p lang="it">
+              Spunta ogni passo dopo averlo verificato: l'avanzamento resta
+              salvato in questo browser.
+            </p>
+          </header>
+
+          <div class="wz">
+            <aside class="wz-side">
+              <div class="wz-progress" aria-live="polite">
+                <div class="wz-bar"><i></i></div>
+                <span lang="en"><b data-wz-count>0</b>/10 steps verified</span>
+                <span lang="it"
+                  ><b data-wz-count>0</b>/10 passi verificati</span
+                >
+              </div>
+              <nav class="wz-nav" aria-label="Wizard steps">
+                <ol>
+                  <li>
+                    <a href="#step-0"
+                      ><span lang="en">Prerequisites</span
+                      ><span lang="it">Prerequisiti</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-1"
+                      ><span lang="en">Install the plugin</span
+                      ><span lang="it">Installa la plugin</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-2"
+                      ><span lang="en">Start init</span
+                      ><span lang="it">Avvia init</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-3"
+                      ><span lang="en">Project and profiles</span
+                      ><span lang="it">Progetto e profili</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-4"
+                      ><span lang="en">Sources</span
+                      ><span lang="it">Fonti</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-5"
+                      ><span lang="en">Publishing</span
+                      ><span lang="it">Pubblicazione</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-6"
+                      ><span lang="en">Governance</span
+                      ><span lang="it">Governance</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-7"
+                      ><span lang="en">Automation</span
+                      ><span lang="it">Automazione</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-8"
+                      ><span lang="en">Confirm and verify</span
+                      ><span lang="it">Conferma e verifica</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="#step-9"
+                      ><span lang="en">First wiki</span
+                      ><span lang="it">Prima wiki</span></a
+                    >
+                  </li>
+                </ol>
+              </nav>
+              <button type="button" class="wz-reset" hidden>
+                <span lang="en">Reset progress</span
+                ><span lang="it">Azzera l'avanzamento</span>
+              </button>
+            </aside>
+
+            <div class="wz-main">
+              <!-- STEP 0 -->
+              <article class="wz-panel" id="step-0" aria-labelledby="step-0-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">0</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 0</span
+                      ><span lang="it">Passo 0</span>
+                    </p>
+                    <h2 id="step-0-t" tabindex="-1">
+                      🧰 <span lang="en">Prerequisites</span
+                      ><span lang="it">Prerequisiti</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p>
+                    You always need <b>VS Code with GitHub Copilot</b>,
+                    <b>PowerShell 7</b> and <b>git</b>. Everything else depends
+                    on the sources you will use.
+                  </p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>If you will use…</th>
+                          <th>You need</th>
+                          <th>How to check</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Any source</td>
+                          <td>PowerShell 7</td>
+                          <td><code>pwsh --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Code or publishing</td>
+                          <td>git</td>
+                          <td><code>git --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Azure Repos or Azure DevOps Wiki</td>
+                          <td>Git Credential Manager</td>
+                          <td><code>git credential-manager --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Dataverse</td>
+                          <td><code>pacx</code> (or <code>pac</code>)</td>
+                          <td><code>pacx --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>GitHub (activity or GitHub Wiki)</td>
+                          <td>GitHub CLI</td>
+                          <td><code>gh auth status</code></td>
+                        </tr>
+                        <tr>
+                          <td>Word, PowerPoint, Excel, PDF documents</td>
+                          <td><code>markitdown</code></td>
+                          <td><code>markitdown --version</code></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="callout info">
+                    <b>Note:</b> the agent installs nothing on its own: it tells
+                    you what is missing and lets you decide.
+                  </p>
+                  <p class="verify">
+                    <b>✅ Verify:</b> the commands you need reply with a version
+                    number. If <code>pwsh</code> is missing, <b>stop</b>: the
+                    wiki does not work without PowerShell 7.
+                  </p>
+                </div>
+                <div lang="it">
+                  <p>
+                    Servono sempre <b>VS Code con GitHub Copilot</b>,
+                    <b>PowerShell 7</b> e <b>git</b>. Il resto dipende dalle
+                    fonti che userai.
+                  </p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Se userai…</th>
+                          <th>Ti serve</th>
+                          <th>Come controllare</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Qualsiasi fonte</td>
+                          <td>PowerShell 7</td>
+                          <td><code>pwsh --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Codice o pubblicazione</td>
+                          <td>git</td>
+                          <td><code>git --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Azure Repos o Azure DevOps Wiki</td>
+                          <td>Git Credential Manager</td>
+                          <td><code>git credential-manager --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Dataverse</td>
+                          <td><code>pacx</code> (o <code>pac</code>)</td>
+                          <td><code>pacx --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>GitHub (attività o GitHub Wiki)</td>
+                          <td>GitHub CLI</td>
+                          <td><code>gh auth status</code></td>
+                        </tr>
+                        <tr>
+                          <td>Documenti Word, PowerPoint, Excel, PDF</td>
+                          <td><code>markitdown</code></td>
+                          <td><code>markitdown --version</code></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="callout info">
+                    <b>Nota:</b> l'agente non installa nulla da solo: ti segnala
+                    cosa manca e ti lascia decidere.
+                  </p>
+                  <p class="verify">
+                    <b>✅ Verifica:</b> i comandi che ti servono rispondono con
+                    un numero di versione. Se <code>pwsh</code> manca,
+                    <b>fermati</b>: senza PowerShell 7 la wiki non funziona.
+                  </p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 1 -->
+              <article class="wz-panel" id="step-1" aria-labelledby="step-1-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">1</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 1</span
+                      ><span lang="it">Passo 1</span>
+                    </p>
+                    <h2 id="step-1-t" tabindex="-1">
+                      📦 <span lang="en">Install the plugin</span
+                      ><span lang="it">Installa la plugin</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <ol>
+                    <li>
+                      In VS Code open <b>Settings</b> and enable
+                      <b>Chat › Plugins: Enabled</b>.
+                    </li>
+                    <li>
+                      In <b>Chat › Plugins: Marketplaces</b> add
+                      <code>{{REPO_SLUG}}</code>.
+                    </li>
+                    <li>
+                      In the <b>Extensions</b> view search
+                      <code>@agentPlugins power-platform-llm-wiki</code> and
+                      install.
+                    </li>
+                  </ol>
+                  <p>
+                    Steps 1 and 2 are equivalent to this snippet in
+                    <code>settings.json</code>:
+                  </p>
+                </div>
+                <div lang="it">
+                  <ol>
+                    <li>
+                      In VS Code apri <b>Impostazioni</b> e attiva
+                      <b>Chat › Plugins: Enabled</b>.
+                    </li>
+                    <li>
+                      In <b>Chat › Plugins: Marketplaces</b> aggiungi
+                      <code>{{REPO_SLUG}}</code>.
+                    </li>
+                    <li>
+                      Nella vista <b>Extensions</b> cerca
+                      <code>@agentPlugins power-platform-llm-wiki</code> e
+                      installa.
+                    </li>
+                  </ol>
+                  <p>
+                    I punti 1 e 2 equivalgono a questo frammento in
+                    <code>settings.json</code>:
+                  </p>
+                </div>
+                <div class="code">
+                  <div class="code-bar">
+                    <span>settings.json</span
+                    ><button type="button" class="copy" data-copy="#wz-cfg">
+                      <span lang="en">Copy</span><span lang="it">Copia</span>
+                    </button>
+                  </div>
+                  <pre id="wz-cfg"><code>"chat.plugins.enabled": true,
+"chat.plugins.marketplaces": [
+  "{{REPO_SLUG}}"
+]</code></pre>
+                </div>
+                <p class="verify" lang="en">
+                  <b>✅ Verify:</b> in the chat, the agent list shows
+                  <b>LLM Wiki</b>.
+                </p>
+                <p class="verify" lang="it">
+                  <b>✅ Verifica:</b> nella chat, nell'elenco degli agenti
+                  compare <b>LLM Wiki</b>.
+                </p>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 2 -->
+              <article class="wz-panel" id="step-2" aria-labelledby="step-2-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">2</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 2</span
+                      ><span lang="it">Passo 2</span>
+                    </p>
+                    <h2 id="step-2-t" tabindex="-1">
+                      🚪 <span lang="en">Start <code>init</code></span
+                      ><span lang="it">Avvia <code>init</code></span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <ol>
+                    <li>
+                      Open in VS Code the folder of the
+                      <b>project repository</b>, the one that will host the
+                      <code>llm-wiki/</code> folder.
+                    </li>
+                    <li>In the chat pick the <b>LLM Wiki</b> agent.</li>
+                    <li>Type <code>init</code>.</li>
+                  </ol>
+                  <p>The wizard first asks for the mode:</p>
+                  <div class="opts">
+                    <div class="opt rec">
+                      <em class="tag">Recommended</em><b>🧭 Guided</b
+                      ><span
+                        >First time, or you do not know the configuration
+                        files.</span
+                      >
+                    </div>
+                    <div class="opt">
+                      <b>📝 Self-service</b
+                      ><span
+                        >You already know what you want: it creates a commented
+                        <code>wiki.config.yml</code>, you fill it in and then
+                        run <code>config</code>.</span
+                      >
+                    </div>
+                  </div>
+                  <p>The rest of this page follows the guided mode.</p>
+                </div>
+                <div lang="it">
+                  <ol>
+                    <li>
+                      Apri in VS Code la cartella del
+                      <b>repository del progetto</b>, quello che ospiterà la
+                      cartella <code>llm-wiki/</code>.
+                    </li>
+                    <li>Nella chat scegli l'agente <b>LLM Wiki</b>.</li>
+                    <li>Scrivi <code>init</code>.</li>
+                  </ol>
+                  <p>Il wizard ti chiede subito la modalità:</p>
+                  <div class="opts">
+                    <div class="opt rec">
+                      <em class="tag">Consigliato</em><b>🧭 Guidato</b
+                      ><span
+                        >Prima volta, o non conosci i file di
+                        configurazione.</span
+                      >
+                    </div>
+                    <div class="opt">
+                      <b>📝 Self-service</b
+                      ><span
+                        >Sai già cosa vuoi: crea un file
+                        <code>wiki.config.yml</code> commentato, lo compili tu e
+                        poi lanci <code>config</code>.</span
+                      >
+                    </div>
+                  </div>
+                  <p>Il resto di questa pagina segue la modalità guidata.</p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 3 -->
+              <article class="wz-panel" id="step-3" aria-labelledby="step-3-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">3</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 3</span
+                      ><span lang="it">Passo 3</span>
+                    </p>
+                    <h2 id="step-3-t" tabindex="-1">
+                      🏷️ <span lang="en">Project and profiles</span
+                      ><span lang="it">Progetto e profili</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p>
+                    <b>The wizard asks:</b> project name, content language,
+                    profiles.
+                  </p>
+                  <ul>
+                    <li>
+                      <b>Name</b>: shown in the header of the published wiki.
+                      Example: <code>Sales</code>.
+                    </li>
+                    <li>
+                      <b>Language</b>: <code>it</code> for Italian content
+                      (default), <code>en</code> for English.
+                    </li>
+                    <li><b>Profiles</b>: you can pick more than one.</li>
+                  </ul>
+                  <div class="opts">
+                    <div class="opt">
+                      <b><code>power-platform</code></b
+                      ><span
+                        >Dynamics 365 CE / Dataverse: plugins, PCF, web
+                        resources, flows, solutions.</span
+                      >
+                    </div>
+                    <div class="opt">
+                      <b><code>dynamics-fno</code></b
+                      ><span
+                        >Finance &amp; Operations: tables, extensions, classes,
+                        data entities, security.</span
+                      >
+                    </div>
+                    <div class="opt">
+                      <b><code>generic</code></b
+                      ><span>Integrations, Azure Functions, APIs, .NET.</span>
+                    </div>
+                  </div>
+                  <p class="verify">
+                    <b>✅ Verify:</b> the chosen profiles match what is really
+                    in the code. When in doubt pick the ones you need now: you
+                    can change them later with <code>config</code>.
+                  </p>
+                </div>
+                <div lang="it">
+                  <p>
+                    <b>Il wizard chiede:</b> nome del progetto, lingua dei
+                    contenuti, profili.
+                  </p>
+                  <ul>
+                    <li>
+                      <b>Nome</b>: compare nell'intestazione della wiki
+                      pubblicata. Esempio: <code>Vendite</code>.
+                    </li>
+                    <li>
+                      <b>Lingua</b>: <code>it</code> per contenuti in italiano
+                      (predefinito), <code>en</code> per inglese.
+                    </li>
+                    <li><b>Profili</b>: puoi sceglierne più di uno.</li>
+                  </ul>
+                  <div class="opts">
+                    <div class="opt">
+                      <b><code>power-platform</code></b
+                      ><span
+                        >Dynamics 365 CE / Dataverse: plugin, PCF, web resource,
+                        flow, soluzioni.</span
+                      >
+                    </div>
+                    <div class="opt">
+                      <b><code>dynamics-fno</code></b
+                      ><span
+                        >Finance &amp; Operations: tabelle, estensioni, classi,
+                        data entity, sicurezza.</span
+                      >
+                    </div>
+                    <div class="opt">
+                      <b><code>generic</code></b
+                      ><span>Integrazioni, Azure Functions, API, .NET.</span>
+                    </div>
+                  </div>
+                  <p class="verify">
+                    <b>✅ Verifica:</b> i profili scelti corrispondono a ciò che
+                    c'è davvero nel codice. In caso di dubbio scegli quelli che
+                    ti servono ora: li cambi più avanti con <code>config</code>.
+                  </p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 4 -->
+              <article class="wz-panel" id="step-4" aria-labelledby="step-4-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">4</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 4</span
+                      ><span lang="it">Passo 4</span>
+                    </p>
+                    <h2 id="step-4-t" tabindex="-1">
+                      🔌 <span lang="en">Sources</span
+                      ><span lang="it">Fonti</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p>
+                    All sources are <b>optional</b>. The wizard proposes them
+                    one at a time: answer <b>Yes</b> only for those you have.
+                  </p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Source</th>
+                          <th>What it asks</th>
+                          <th>Notes</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>🧬 <b>Code repository</b></td>
+                          <td>
+                            name, provider (<code>azure-devops</code>,
+                            <code>github</code>, <code>local</code>), URL, local
+                            folder, branch
+                          </td>
+                          <td>
+                            <b>Recommended</b>: the code is the primary source
+                            of the as-built documentation
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>📋 <b>Azure DevOps Boards</b></td>
+                          <td>
+                            organization, project, areas and iterations
+                            (optional)
+                          </td>
+                          <td>
+                            Sign-in with your Microsoft account:
+                            <b>no PAT needed</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>🗄️ <b>Dataverse</b></td>
+                          <td>solution unique names, publisher prefixes</td>
+                          <td>
+                            Uses the active <code>pacx auth</code> profile:
+                            check with <code>pacx auth ping</code>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>🏭 <b>F&amp;O metadata</b></td>
+                          <td>
+                            folders of the <b>custom</b> packages (e.g.
+                            <code>&lt;repo&gt;/Metadata/&lt;Package&gt;</code>)
+                          </td>
+                          <td>Do not list Microsoft standard packages</td>
+                        </tr>
+                        <tr>
+                          <td>🐙 <b>GitHub activity</b></td>
+                          <td>list of <code>owner/repo</code></td>
+                          <td>Pull requests, issues, branches</td>
+                        </tr>
+                        <tr>
+                          <td>📂 <b>SharePoint</b></td>
+                          <td>site URL and libraries</td>
+                          <td>
+                            Documents must be downloaded into
+                            <code>raw/</code> by hand
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p><b>Example for a CE project on Azure DevOps</b></p>
+                  <ul>
+                    <li>
+                      Code repository: name <code>crm-solution</code>, provider
+                      <code>azure-devops</code>, branch <code>develop</code>,
+                      local folder <code>../crm-solution</code>.
+                    </li>
+                    <li>
+                      Boards: organization <code>contoso</code>, project
+                      <code>Sales</code>.
+                    </li>
+                    <li>
+                      Dataverse: solution <code>SalesCore</code>, prefix
+                      <code>cts_</code>.
+                    </li>
+                  </ul>
+                  <p class="callout important">
+                    <b>Important:</b> never write passwords, tokens or keys in
+                    the answers or in the configuration file. Access uses your
+                    account (Microsoft Entra ID, <code>az login</code>,
+                    <code>pacx auth</code>).
+                  </p>
+                  <p class="verify">
+                    <b>✅ Verify:</b> for every repository the local folder
+                    exists (or will be cloned). For Dataverse,
+                    <code>pacx auth ping</code> replies.
+                  </p>
+                </div>
+                <div lang="it">
+                  <p>
+                    Tutte le fonti sono <b>facoltative</b>. Il wizard le propone
+                    una per volta: rispondi <b>Sì</b> solo a quelle che hai.
+                  </p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Fonte</th>
+                          <th>Cosa ti chiede</th>
+                          <th>Note</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>🧬 <b>Repository di codice</b></td>
+                          <td>
+                            nome, provider (<code>azure-devops</code>,
+                            <code>github</code>, <code>local</code>), URL,
+                            cartella locale, branch
+                          </td>
+                          <td>
+                            <b>Consigliata</b>: il codice è la fonte primaria
+                            della documentazione as-built
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>📋 <b>Azure DevOps Boards</b></td>
+                          <td>
+                            organizzazione, progetto, aree e iterazioni
+                            (facoltative)
+                          </td>
+                          <td>
+                            Accesso con il tuo account Microsoft:
+                            <b>non serve nessun PAT</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>🗄️ <b>Dataverse</b></td>
+                          <td>
+                            nomi univoci delle soluzioni, prefissi del publisher
+                          </td>
+                          <td>
+                            Usa il profilo <code>pacx auth</code> attivo:
+                            controlla con <code>pacx auth ping</code>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>🏭 <b>Metadati F&amp;O</b></td>
+                          <td>
+                            cartelle dei package <b>personalizzati</b> (es.
+                            <code>&lt;repo&gt;/Metadata/&lt;Package&gt;</code>)
+                          </td>
+                          <td>Non indicare i package standard Microsoft</td>
+                        </tr>
+                        <tr>
+                          <td>🐙 <b>Attività GitHub</b></td>
+                          <td>elenco <code>owner/repo</code></td>
+                          <td>Pull request, issue, branch</td>
+                        </tr>
+                        <tr>
+                          <td>📂 <b>SharePoint</b></td>
+                          <td>URL del sito e librerie</td>
+                          <td>
+                            I documenti vanno scaricati in <code>raw/</code> a
+                            mano
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p><b>Esempio per un progetto CE su Azure DevOps</b></p>
+                  <ul>
+                    <li>
+                      Repository di codice: nome <code>crm-solution</code>,
+                      provider <code>azure-devops</code>, branch
+                      <code>develop</code>, cartella locale
+                      <code>../crm-solution</code>.
+                    </li>
+                    <li>
+                      Boards: organizzazione <code>contoso</code>, progetto
+                      <code>Vendite</code>.
+                    </li>
+                    <li>
+                      Dataverse: soluzione <code>VenditeCore</code>, prefisso
+                      <code>cts_</code>.
+                    </li>
+                  </ul>
+                  <p class="callout important">
+                    <b>Importante:</b> non scrivere mai password, token o chiavi
+                    nelle risposte o nel file di configurazione. L'accesso
+                    avviene con il tuo account (Microsoft Entra ID,
+                    <code>az login</code>, <code>pacx auth</code>).
+                  </p>
+                  <p class="verify">
+                    <b>✅ Verifica:</b> per ogni repository la cartella locale
+                    esiste (o verrà clonata). Per Dataverse,
+                    <code>pacx auth ping</code> risponde.
+                  </p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 5 -->
+              <article class="wz-panel" id="step-5" aria-labelledby="step-5-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">5</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 5</span
+                      ><span lang="it">Passo 5</span>
+                    </p>
+                    <h2 id="step-5-t" tabindex="-1">
+                      🌐 <span lang="en">Publishing</span
+                      ><span lang="it">Pubblicazione</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p><b>The wizard asks:</b> where to publish the wiki.</p>
+                  <div class="opts">
+                    <div class="opt rec">
+                      <em class="tag">Most common</em
+                      ><b>🔷 Azure DevOps - project wiki</b
+                      ><span>The wiki of the Azure DevOps project.</span
+                      ><small>Asks: organization, project, wiki name</small>
+                    </div>
+                    <div class="opt">
+                      <b>🔷 Azure DevOps - code wiki</b
+                      ><span>The wiki is a folder of a repository.</span
+                      ><small>Asks: repository, branch, folder</small>
+                    </div>
+                    <div class="opt">
+                      <b>🐙 GitHub Wiki</b
+                      ><span>The project lives on GitHub.</span
+                      ><small>Asks: <code>owner/repo</code></small>
+                    </div>
+                    <div class="opt">
+                      <b>⏭️ None</b
+                      ><span>For now you read the wiki only in VS Code.</span>
+                    </div>
+                  </div>
+                  <p>
+                    Optional: a <b>parent page</b> (for example
+                    <code>Knowledge Base</code>) under which the whole wiki is
+                    mounted.
+                  </p>
+                  <p class="callout info">
+                    <b>Note:</b> automatic publishing without confirmation is
+                    <b>off</b> by default: before every push you see the changes
+                    and must confirm.
+                  </p>
+                  <p class="verify">
+                    <b>✅ Verify:</b> you have the details to access the target
+                    wiki at hand (write permission included). You can also
+                    choose "None" and configure it later.
+                  </p>
+                </div>
+                <div lang="it">
+                  <p><b>Il wizard chiede:</b> dove pubblicare la wiki.</p>
+                  <div class="opts">
+                    <div class="opt rec">
+                      <em class="tag">Caso più comune</em
+                      ><b>🔷 Azure DevOps - project wiki</b
+                      ><span>La wiki del progetto Azure DevOps.</span
+                      ><small
+                        >Chiede: organizzazione, progetto, nome wiki</small
+                      >
+                    </div>
+                    <div class="opt">
+                      <b>🔷 Azure DevOps - code wiki</b
+                      ><span>La wiki è una cartella di un repository.</span
+                      ><small>Chiede: repository, branch, cartella</small>
+                    </div>
+                    <div class="opt">
+                      <b>🐙 GitHub Wiki</b
+                      ><span>Il progetto vive su GitHub.</span
+                      ><small>Chiede: <code>owner/repo</code></small>
+                    </div>
+                    <div class="opt">
+                      <b>⏭️ Nessuna</b
+                      ><span>Per ora consulti la wiki solo in VS Code.</span>
+                    </div>
+                  </div>
+                  <p>
+                    Facoltativo: una <b>pagina madre</b> (esempio
+                    <code>Knowledge Base</code>) sotto cui montare tutta la
+                    wiki.
+                  </p>
+                  <p class="callout info">
+                    <b>Nota:</b> la pubblicazione automatica senza conferma è
+                    <b>disattivata</b> per impostazione predefinita: prima di
+                    ogni push vedrai le modifiche e dovrai confermare.
+                  </p>
+                  <p class="verify">
+                    <b>✅ Verifica:</b> hai a portata di mano i dati per
+                    accedere alla wiki di destinazione (permessi di scrittura
+                    inclusi). Puoi anche scegliere "Nessuna" e configurarla più
+                    tardi.
+                  </p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 6 -->
+              <article class="wz-panel" id="step-6" aria-labelledby="step-6-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">6</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 6</span
+                      ><span lang="it">Passo 6</span>
+                    </p>
+                    <h2 id="step-6-t" tabindex="-1">
+                      🛡️ <span lang="en">Governance</span
+                      ><span lang="it">Governance</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p><b>The wizard asks:</b></p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Question</th>
+                          <th>Recommended</th>
+                          <th>Meaning</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Redact personal data?</td>
+                          <td><b>Yes</b></td>
+                          <td>Only names and roles of participants are kept</td>
+                        </tr>
+                        <tr>
+                          <td>After how many days is a page "stale"?</td>
+                          <td><code>30</code></td>
+                          <td>
+                            The lint flags pages not updated beyond this
+                            threshold
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Who certifies the pages?</td>
+                          <td>first and last names</td>
+                          <td>
+                            Optional; tells who can declare a page "certified"
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="verify">
+                    <b>✅ Verify:</b> you have at least one name for
+                    certification, typically a key user or a customer contact.
+                    The full process is in
+                    <a href="{{REPO_URL}}/blob/main/docs/governance.md"
+                      >governance.md</a
+                    >.
+                  </p>
+                </div>
+                <div lang="it">
+                  <p><b>Il wizard chiede:</b></p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Domanda</th>
+                          <th>Valore consigliato</th>
+                          <th>Significato</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Redigere i dati personali?</td>
+                          <td><b>Sì</b></td>
+                          <td>Dei partecipanti restano solo nomi e ruoli</td>
+                        </tr>
+                        <tr>
+                          <td>Dopo quanti giorni una pagina è "vecchia"?</td>
+                          <td><code>30</code></td>
+                          <td>
+                            Il lint segnala le pagine non aggiornate oltre
+                            questa soglia
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Chi certifica le pagine?</td>
+                          <td>nomi e cognomi</td>
+                          <td>
+                            Facoltativo; serve a sapere chi può dichiarare una
+                            pagina "certificata"
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="verify">
+                    <b>✅ Verifica:</b> hai almeno un nome per la
+                    certificazione, tipicamente un key user o un referente del
+                    cliente. Il processo completo è in
+                    <a href="{{REPO_URL}}/blob/main/docs/governance.md"
+                      >governance.md</a
+                    >.
+                  </p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 7 -->
+              <article class="wz-panel" id="step-7" aria-labelledby="step-7-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">7</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 7 · GitHub repositories only</span
+                      ><span lang="it"
+                        >Passo 7 · solo repository su GitHub</span
+                      >
+                    </p>
+                    <h2 id="step-7-t" tabindex="-1">
+                      🤖 <span lang="en">Automation</span
+                      ><span lang="it">Automazione</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p>
+                    The wizard asks this <b>only</b> if the host repository is
+                    on GitHub.
+                  </p>
+                  <div class="opts">
+                    <div class="opt rec">
+                      <em class="tag">To start</em><b><code>weekly</code></b
+                      ><span>Automatic weekly update.</span>
+                    </div>
+                    <div class="opt">
+                      <b><code>daily</code></b
+                      ><span>Update every day.</span>
+                    </div>
+                    <div class="opt">
+                      <b><code>manual</code></b
+                      ><span
+                        >No automation: you update with
+                        <code>update --full</code>.</span
+                      >
+                    </div>
+                  </div>
+                  <p>
+                    If you choose a schedule, the agent gives you the text to
+                    paste in
+                    <b
+                      >Repository → Agents → Automations → Create new → On a
+                      schedule</b
+                    >. If the repository is on Azure DevOps, skip this step and
+                    run <code>update --full</code> from VS Code when needed.
+                  </p>
+                  <p>
+                    <b>Sprint</b> (Azure DevOps Boards only): length (default 2
+                    weeks) and name format (<code>YYYY-SNN</code>).
+                  </p>
+                </div>
+                <div lang="it">
+                  <p>
+                    Il wizard te lo chiede <b>solo</b> se il repository ospite è
+                    su GitHub.
+                  </p>
+                  <div class="opts">
+                    <div class="opt rec">
+                      <em class="tag">Per iniziare</em><b><code>weekly</code></b
+                      ><span>Aggiornamento settimanale automatico.</span>
+                    </div>
+                    <div class="opt">
+                      <b><code>daily</code></b
+                      ><span>Aggiornamento ogni giorno.</span>
+                    </div>
+                    <div class="opt">
+                      <b><code>manual</code></b
+                      ><span
+                        >Nessuna automazione: aggiorni tu con
+                        <code>update --full</code>.</span
+                      >
+                    </div>
+                  </div>
+                  <p>
+                    Se scegli una pianificazione, l'agente ti dà il testo da
+                    incollare in
+                    <b
+                      >Repository → Agents → Automations → Create new → On a
+                      schedule</b
+                    >. Se il repository è su Azure DevOps, salta questo passo e
+                    lancia <code>update --full</code> da VS Code quando serve.
+                  </p>
+                  <p>
+                    <b>Sprint</b> (solo con Azure DevOps Boards): durata
+                    (predefinita 2 settimane) e formato del nome
+                    (<code>YYYY-SNN</code>).
+                  </p>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 8 -->
+              <article class="wz-panel" id="step-8" aria-labelledby="step-8-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">8</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 8</span
+                      ><span lang="it">Passo 8</span>
+                    </p>
+                    <h2 id="step-8-t" tabindex="-1">
+                      ✅ <span lang="en">Confirm and verify</span
+                      ><span lang="it">Conferma e verifica</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <ol>
+                    <li>
+                      The wizard shows a <b>summary</b> of the configuration and
+                      the list of files it creates or changes. Review it calmly.
+                    </li>
+                    <li>
+                      Answer <b>Yes</b> to proceed, <b>No</b> to cancel without
+                      writing anything.
+                    </li>
+                  </ol>
+                  <p>At the end the project contains:</p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>What</th>
+                          <th>What it is for</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>llm-wiki/wiki.config.yml</code></td>
+                          <td>
+                            Your choices (edit by hand or with
+                            <code>config</code>)
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>llm-wiki/raw/</code></td>
+                          <td>
+                            Where you put FDD, TDD, minutes and other documents
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>llm-wiki/wiki/</code></td>
+                          <td>The wiki itself (Markdown pages)</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>llm-wiki/.engine/</code> and
+                            <code>AGENTS.md</code>
+                          </td>
+                          <td>
+                            The engine managed by the plugin: <b>do not edit</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>.vscode/mcp.json</code></td>
+                          <td>
+                            The Azure DevOps connection, if you use Boards
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>.github/copilot-instructions.md</code></td>
+                          <td>
+                            The instructions that make Copilot use the wiki
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>
+                    <b>Final check</b> (the agent runs it, but you can repeat
+                    it):
+                  </p>
+                </div>
+                <div lang="it">
+                  <ol>
+                    <li>
+                      Il wizard mostra un <b>riepilogo</b> della configurazione
+                      e l'elenco dei file che crea o modifica. Controllalo con
+                      calma.
+                    </li>
+                    <li>
+                      Rispondi <b>Sì</b> per procedere, <b>No</b> per annullare
+                      senza scrivere nulla.
+                    </li>
+                  </ol>
+                  <p>Al termine il progetto contiene:</p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Cosa</th>
+                          <th>A cosa serve</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><code>llm-wiki/wiki.config.yml</code></td>
+                          <td>
+                            Le tue scelte (puoi modificarlo a mano o con
+                            <code>config</code>)
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>llm-wiki/raw/</code></td>
+                          <td>
+                            Dove metti FDD, TDD, verbali e altri documenti
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>llm-wiki/wiki/</code></td>
+                          <td>La wiki vera e propria (pagine Markdown)</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <code>llm-wiki/.engine/</code> e
+                            <code>AGENTS.md</code>
+                          </td>
+                          <td>
+                            Il motore gestito dalla plugin:
+                            <b>non modificarli</b>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>.vscode/mcp.json</code></td>
+                          <td>
+                            Il collegamento ad Azure DevOps, se usi le Boards
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><code>.github/copilot-instructions.md</code></td>
+                          <td>
+                            Le istruzioni che fanno usare la wiki a Copilot
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>
+                    <b>Verifica finale</b> (la fa l'agente, ma puoi ripeterla):
+                  </p>
+                </div>
+                <div class="code">
+                  <div class="code-bar">
+                    <span>PowerShell</span
+                    ><button type="button" class="copy" data-copy="#wz-lint">
+                      <span lang="en">Copy</span><span lang="it">Copia</span>
+                    </button>
+                  </div>
+                  <pre
+                    id="wz-lint"
+                  ><code>pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki</code></pre>
+                </div>
+                <p class="verify" lang="en">
+                  <b>✅ Verify:</b> the result shows <b>0 errors</b>. Then
+                  commit the created files.
+                </p>
+                <p class="verify" lang="it">
+                  <b>✅ Verifica:</b> il risultato deve indicare
+                  <b>0 errori</b>. Poi fai commit dei file creati.
+                </p>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: I verified this step</span
+                  ><span lang="it"
+                    >Fatto: ho verificato questo passo</span
+                  ></label
+                >
+              </article>
+
+              <!-- STEP 9 -->
+              <article class="wz-panel" id="step-9" aria-labelledby="step-9-t">
+                <header class="wz-head">
+                  <span class="wz-num" aria-hidden="true">9</span>
+                  <div>
+                    <p class="wz-kicker">
+                      <span lang="en">Step 9</span
+                      ><span lang="it">Passo 9</span>
+                    </p>
+                    <h2 id="step-9-t" tabindex="-1">
+                      🚀 <span lang="en">Build the first wiki</span
+                      ><span lang="it">Costruisci la prima wiki</span>
+                    </h2>
+                  </div>
+                </header>
+                <div lang="en">
+                  <p>Choose based on the sources you enabled:</p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>If you enabled…</th>
+                          <th>Tell the agent</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>🧬 Code</td>
+                          <td><code>update --source code</code></td>
+                        </tr>
+                        <tr>
+                          <td>🗄️ Dataverse</td>
+                          <td><code>update --source dataverse</code></td>
+                        </tr>
+                        <tr>
+                          <td>🏭 F&amp;O</td>
+                          <td><code>update --source fno</code></td>
+                        </tr>
+                        <tr>
+                          <td>📋 Boards</td>
+                          <td><code>update --source devops</code></td>
+                        </tr>
+                        <tr>
+                          <td>📄 Existing documents</td>
+                          <td>
+                            copy the files into
+                            <code>llm-wiki/raw/analysis/</code>,
+                            <code>specs/</code> or <code>meetings/</code>, then
+                            <code>ingest raw/&lt;folder&gt;/&lt;file&gt;</code>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>When you are done:</p>
+                  <ol>
+                    <li>
+                      <code>update --lint</code> checks the quality (it must
+                      stay at 0 errors).
+                    </li>
+                    <li>
+                      <code>query "how is the sales module built?"</code> tries
+                      a question on the wiki.
+                    </li>
+                    <li>
+                      <code>update --publish</code> publishes, if you configured
+                      publishing.
+                    </li>
+                  </ol>
+                </div>
+                <div lang="it">
+                  <p>Scegli in base alle fonti che hai attivato:</p>
+                  <div class="tbl">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Se hai attivato…</th>
+                          <th>Scrivi all'agente</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>🧬 Codice</td>
+                          <td><code>update --source code</code></td>
+                        </tr>
+                        <tr>
+                          <td>🗄️ Dataverse</td>
+                          <td><code>update --source dataverse</code></td>
+                        </tr>
+                        <tr>
+                          <td>🏭 F&amp;O</td>
+                          <td><code>update --source fno</code></td>
+                        </tr>
+                        <tr>
+                          <td>📋 Boards</td>
+                          <td><code>update --source devops</code></td>
+                        </tr>
+                        <tr>
+                          <td>📄 Documenti già pronti</td>
+                          <td>
+                            copia i file in <code>llm-wiki/raw/analysis/</code>,
+                            <code>specs/</code> o <code>meetings/</code>, poi
+                            <code
+                              >ingest raw/&lt;cartella&gt;/&lt;file&gt;</code
+                            >
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p>Quando hai finito:</p>
+                  <ol>
+                    <li>
+                      <code>update --lint</code> controlla la qualità (deve
+                      restare a 0 errori).
+                    </li>
+                    <li>
+                      <code>query "come è fatto il modulo vendite?"</code> prova
+                      una domanda sulla wiki.
+                    </li>
+                    <li>
+                      <code>update --publish</code> pubblica, se hai configurato
+                      la pubblicazione.
+                    </li>
+                  </ol>
+                </div>
+                <label class="wz-done"
+                  ><input type="checkbox" data-wz-done />
+                  <span lang="en">Done: my first wiki is ready</span
+                  ><span lang="it"
+                    >Fatto: la mia prima wiki è pronta</span
+                  ></label
+                >
+              </article>
+
+              <div class="wz-pager" hidden>
+                <button type="button" class="btn btn-soft" data-wz-go="-1">
+                  ← <span lang="en">Previous</span
+                  ><span lang="it">Indietro</span>
+                </button>
+                <button type="button" class="btn btn-primary" data-wz-go="1">
+                  <span lang="en">Next</span><span lang="it">Avanti</span> →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LATER -->
+      <section class="section soft" id="later">
+        <div class="wrap narrow">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">After the wizard</span
+              ><span lang="it">Dopo il wizard</span>
+            </p>
+            <h2 lang="en">Change your mind later.</h2>
+            <h2 lang="it">Cambiare idea più tardi.</h2>
+            <p lang="en">
+              No need to run <code>init</code> again. Type <code>config</code>
+              and choose what to change: sources, profiles, language,
+              publishing, governance, automation. After a plugin update run
+              <code>config --refresh-engine</code>, then
+              <code>update --lint</code>.
+            </p>
+            <p lang="it">
+              Non devi rifare <code>init</code>. Scrivi <code>config</code> e
+              scegli cosa cambiare: fonti, profili, lingua, pubblicazione,
+              governance, automazione. Dopo un aggiornamento della plugin lancia
+              <code>config --refresh-engine</code>, poi
+              <code>update --lint</code>.
+            </p>
+          </header>
+
+          <h3 class="sub-title reveal">
+            🩺 <span lang="en">If something does not work</span
+            ><span lang="it">Se qualcosa non funziona</span>
+          </h3>
+          <div class="faq reveal">
+            <details>
+              <summary>
+                <span lang="en">The <b>LLM Wiki</b> agent does not appear</span
+                ><span lang="it">L'agente <b>LLM Wiki</b> non compare</span>
+              </summary>
+              <p lang="en">
+                Check <b>Chat › Plugins: Enabled</b> and that the plugin is
+                installed; restart VS Code.
+              </p>
+              <p lang="it">
+                Controlla <b>Chat › Plugins: Enabled</b> e che la plugin sia
+                installata; riavvia VS Code.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en"><code>pwsh</code> not found</span
+                ><span lang="it"><code>pwsh</code> non trovato</span>
+              </summary>
+              <p lang="en">Install PowerShell 7 and reopen VS Code.</p>
+              <p lang="it">Installa PowerShell 7 e riapri VS Code.</p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en"
+                  >Cloning from Azure Repos keeps asking for credentials</span
+                ><span lang="it"
+                  >Il clone di Azure Repos chiede le credenziali di
+                  continuo</span
+                >
+              </summary>
+              <p lang="en">
+                Install Git Credential Manager and sign in with your account.
+              </p>
+              <p lang="it">
+                Installa Git Credential Manager e accedi con il tuo account.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en">Dataverse does not respond</span
+                ><span lang="it">Dataverse non risponde</span>
+              </summary>
+              <p lang="en">
+                Run <code>pacx auth list</code> and <code>pacx auth ping</code>;
+                select the right profile with <code>pacx auth select</code>.
+              </p>
+              <p lang="it">
+                Esegui <code>pacx auth list</code> e
+                <code>pacx auth ping</code>; seleziona il profilo giusto con
+                <code>pacx auth select</code>.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en">Boards return no data</span
+                ><span lang="it">Le Boards non restituiscono dati</span>
+              </summary>
+              <p lang="en">
+                Check organization and project with <code>config</code> and make
+                sure you have access to the project.
+              </p>
+              <p lang="it">
+                Controlla organizzazione e progetto con <code>config</code> e
+                verifica di avere accesso al progetto.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en"
+                  >The lint reports errors after <code>init</code></span
+                ><span lang="it"
+                  >Il lint segnala errori dopo <code>init</code></span
+                >
+              </summary>
+              <p lang="en">
+                Read the error list (or the
+                <code>llm-wiki/wiki/lint-*.md</code> report generated by
+                <code>update --lint</code>), fix and run
+                <code>update --lint</code> again.
+              </p>
+              <p lang="it">
+                Leggi l'elenco degli errori (o il report
+                <code>llm-wiki/wiki/lint-*.md</code> generato da
+                <code>update --lint</code>), correggi e rilancia
+                <code>update --lint</code>.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en">You want to start over</span
+                ><span lang="it">Vuoi ripartire da zero</span>
+              </summary>
+              <p lang="en">
+                Run <code>init</code> again: it does not overwrite pages or
+                documents already in <code>raw/</code>.
+              </p>
+              <p lang="it">
+                Rilancia <code>init</code>: non sovrascrive le pagine né i
+                documenti già presenti in <code>raw/</code>.
+              </p>
+            </details>
+          </div>
+
+          <div class="docs reveal">
+            <h3 lang="en">Keep going</h3>
+            <h3 lang="it">Continua</h3>
+            <ul>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/docs/guida-utente.md"
+                  >📖 <span lang="en">User guide (Italian)</span
+                  ><span lang="it">Guida utente</span></a
+                >
+              </li>
+              <li>
+                <a
+                  href="{{REPO_URL}}/blob/main/docs/guida-utente.md#-domande-frequenti"
+                  >❓ <span lang="en">FAQ (Italian)</span
+                  ><span lang="it">Domande frequenti</span></a
+                >
+              </li>
+              <li>
+                <a href="{{REPO_URL}}/blob/main/docs/governance.md"
+                  >🛡️ <span lang="en">Governance (Italian)</span
+                  ><span lang="it">Governance</span></a
+                >
+              </li>
+              <li>
+                <a href="index.html"
+                  >🏠 <span lang="en">Back to home</span
+                  ><span lang="it">Torna alla home</span></a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="wrap foot-in">
+        <span>LLM Wiki v{{VERSION}} · MIT</span>
+        <span lang="en"
+          >Code-first knowledge base for Dynamics 365 delivery.</span
+        >
+        <span lang="it"
+          >Knowledge base code-first per la delivery Dynamics 365.</span
+        >
+        <a href="{{REPO_URL}}">GitHub</a>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script src="wizard.js"></script>
+  </body>
+</html>

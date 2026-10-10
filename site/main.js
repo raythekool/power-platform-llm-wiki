@@ -2,8 +2,8 @@
     'use strict';
     var root = document.documentElement;
     var titles = {
-        en: 'LLM Wiki - Documentation that stays aligned with the code',
-        it: 'LLM Wiki - Documentazione sempre allineata al codice'
+        en: root.dataset.titleEn || 'LLM Wiki - Documentation that stays aligned with the code',
+        it: root.dataset.titleIt || 'LLM Wiki - Documentazione sempre allineata al codice'
     };
 
     function setLang(lang) {

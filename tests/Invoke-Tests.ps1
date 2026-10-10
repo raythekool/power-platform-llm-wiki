@@ -146,7 +146,10 @@ try {
     Assert ($index -match 'https://example\.github\.io/demo/assets/og\.png') 'BASE_URL applied to og:image'
     Assert ($index -match [regex]::Escape($version)) 'plugin version rendered'
     Assert ((Test-Path (Join-Path $siteOut '.nojekyll')) -and (Test-Path (Join-Path $siteOut 'images/architecture.svg'))) '.nojekyll and shared SVG images copied'
-    Assert ((Get-Content -LiteralPath (Join-Path $siteOut 'sitemap.xml') -Raw) -match 'https://example\.github\.io/demo/') 'sitemap uses BASE_URL'
+    Assert ((Get-Content -LiteralPath (Join-Path $siteOut 'sitemap.xml') -Raw) -match 'https://example\.github\.io/demo/wizard\.html') 'sitemap uses BASE_URL and lists the wizard'
+    $wizard = Get-Content -LiteralPath (Join-Path $siteOut 'wizard.html') -Raw
+    Assert ($wizard -notmatch '\{\{[A-Z_]+\}\}' -and $wizard -match 'chat\.plugins\.marketplaces[\s\S]*example/demo') 'wizard page built with REPO_SLUG'
+    Assert ($index -match 'href="wizard\.html"') 'home links the wizard page'
 }
 finally {
     Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue

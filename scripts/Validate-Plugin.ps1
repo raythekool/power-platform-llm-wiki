@@ -135,7 +135,7 @@ if (Test-Path -LiteralPath (Join-Path $docsDir 'images')) {
 # 8. Website (site/): required files, local references resolve, placeholders known, confidentiality
 $siteDir = Join-Path $RepoRoot 'site'
 if (Test-Path -LiteralPath $siteDir) {
-    foreach ($r in @('index.html', 'styles.css', 'main.js', 'favicon.svg', 'sitemap.xml', 'robots.txt', 'assets/og.png')) {
+    foreach ($r in @('index.html', 'wizard.html', 'styles.css', 'main.js', 'wizard.js', 'favicon.svg', 'sitemap.xml', 'robots.txt', 'assets/og.png')) {
         if (-not (Test-Path -LiteralPath (Join-Path $siteDir $r))) { $errors.Add("Missing site file: site/$r") }
     }
     if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot 'scripts/Build-Site.ps1'))) { $errors.Add('Missing scripts/Build-Site.ps1') }
@@ -146,16 +146,15 @@ if (Test-Path -LiteralPath $siteDir) {
         foreach ($m in [regex]::Matches($text, '\{\{[A-Z_]+\}\}')) { if ($m.Value -notin $known) { $errors.Add("Unknown placeholder '$($m.Value)' in $rel") } }
         foreach ($p in $deny) { foreach ($m in [regex]::Matches($text, $p, 'IgnoreCase')) { $errors.Add("Confidential identifier '$($m.Value)' in $rel") } }
     }
-    $indexPath = Join-Path $siteDir 'index.html'
-    if (Test-Path -LiteralPath $indexPath) {
-        $html = Get-Content -LiteralPath $indexPath -Raw
+    foreach ($page in (Get-ChildItem -LiteralPath $siteDir -Filter '*.html' -File)) {
+        $html = Get-Content -LiteralPath $page.FullName -Raw
         $refs = [regex]::Matches($html, '(?:src|href|content)="([^"#]+)(?:#[^"]*)?"') | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique
         foreach ($t in $refs) {
             if ($t -match '^[A-Za-z][A-Za-z0-9+.\-]*:' -or $t -match '^\{\{(REPO_URL|REPO_SLUG|VERSION)\}\}' -or $t -notmatch '[/.]') { continue }
             $local = $t -replace '^\{\{BASE_URL\}\}/?', ''
             if ($local -match '[\s{}]') { continue }
             $candidate = if ($local -like 'images/*') { Join-Path $RepoRoot ('docs/' + $local) } else { Join-Path $siteDir $local }
-            if ($local -and -not (Test-Path -LiteralPath $candidate)) { $errors.Add("Broken reference '$t' in site/index.html") }
+            if ($local -and -not (Test-Path -LiteralPath $candidate)) { $errors.Add("Broken reference '$t' in site/$($page.Name)") }
         }
     }
 }

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - 🌍 Bilingual (EN/IT) promo website in `site/`, built by `scripts/Build-Site.ps1` and deployed to GitHub Pages by `.github/workflows/pages.yml`.
+- 🧙 Interactive setup wizard page (`site/wizard.html`), the web version of `docs/wizard-configurazione.md`, with per-step navigation and progress saved in the browser.
 
 ## 3.0.0 - 2026-10-01
 

@@ -1,0 +1,234 @@
+- generic [active] [ref=f1e1]:
+  - link "Skip to content" [ref=f1e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f1e3]:
+    - generic [ref=f1e4]:
+      - link "LLM Wiki - Home" [ref=f1e5] [cursor=pointer]:
+        - /url: index.html
+        - generic [ref=f1e6]: LLM Wiki
+      - navigation "Main" [ref=f1e7]:
+        - link "Home" [ref=f1e8] [cursor=pointer]:
+          - /url: index.html
+        - link "Before you start" [ref=f1e9] [cursor=pointer]:
+          - /url: "#before"
+        - link "Steps" [ref=f1e10] [cursor=pointer]:
+          - /url: "#wizard"
+        - link "Troubleshooting" [ref=f1e11] [cursor=pointer]:
+          - /url: "#later"
+      - generic [ref=f1e12]:
+        - group "Language" [ref=f1e13]:
+          - button "EN" [pressed] [ref=f1e14] [cursor=pointer]
+          - button "IT" [ref=f1e15] [cursor=pointer]
+        - link "GitHub" [ref=f1e16] [cursor=pointer]:
+          - /url: https://github.com/raythekool/power-platform-llm-wiki
+  - main [ref=f1e17]:
+    - generic [ref=f1e21]:
+      - paragraph [ref=f1e22]:
+        - generic [ref=f1e23]: v3.0.0
+        - generic [ref=f1e24]: Setup wizard
+      - heading [level=1] [ref=f1e25]:
+        - generic [ref=f1e26]:
+          - text: Set up your wiki,
+          - emphasis [ref=f1e27]: one step at a time.
+      - paragraph [ref=f1e28]:
+        - text: "You do not need to know the configuration files: say"
+        - code [ref=f1e29]: init
+        - text: to the LLM Wiki agent and answer the questions. For each step you find what the wizard asks, how to choose and how to verify you got it right.
+      - generic [ref=f1e30]:
+        - link "Start the wizard" [ref=f1e31] [cursor=pointer]:
+          - /url: "#wizard"
+        - link "Markdown version (Italian)" [ref=f1e33] [cursor=pointer]:
+          - /url: https://github.com/raythekool/power-platform-llm-wiki/blob/main/docs/wizard-configurazione.md
+    - generic [ref=f1e36]:
+      - generic [ref=f1e37]:
+        - paragraph [ref=f1e38]: Before you start
+        - heading "The three answers you need." [level=2] [ref=f1e39]
+        - paragraph [ref=f1e40]: "Collect them before opening the wizard: it will be quick."
+      - generic [ref=f1e41]:
+        - article [ref=f1e42]:
+          - generic [ref=f1e43]: 🏷️
+          - heading "What is the project called and which technology does it use?" [level=3] [ref=f1e44]
+          - paragraph [ref=f1e45]: e.g. "Sales", Dynamics 365 CE + Finance & Operations
+        - article [ref=f1e46]:
+          - generic [ref=f1e47]: 🧬
+          - heading "Where is the code, and where do you want to publish the wiki?" [level=3] [ref=f1e48]
+          - paragraph [ref=f1e49]: e.g. Azure Repos, GitHub or a folder on your PC
+        - article [ref=f1e50]:
+          - generic [ref=f1e51]: 🛡️
+          - heading "Who certifies the content on the customer side?" [level=3] [ref=f1e52]
+          - paragraph [ref=f1e53]: e.g. a key user, with first and last name
+    - generic [ref=f1e55]:
+      - generic [ref=f1e56]:
+        - paragraph [ref=f1e57]: The wizard
+        - heading "Ten steps, from prerequisites to the first wiki." [level=2] [ref=f1e58]
+        - paragraph [ref=f1e59]: "Tick each step once verified: your progress is saved in this browser."
+      - generic [ref=f1e60]:
+        - complementary [ref=f1e61]:
+          - generic [ref=f1e62]: 0/10 steps verified
+          - navigation "Wizard steps" [ref=f1e65]:
+            - list [ref=f1e66]:
+              - listitem [ref=f1e67]:
+                - link "Prerequisites" [ref=f1e68] [cursor=pointer]:
+                  - /url: "#step-0"
+              - listitem [ref=f1e70]:
+                - link "Install the plugin" [ref=f1e71] [cursor=pointer]:
+                  - /url: "#step-1"
+              - listitem [ref=f1e73]:
+                - link "Start init" [ref=f1e74] [cursor=pointer]:
+                  - /url: "#step-2"
+              - listitem [ref=f1e76]:
+                - link "Project and profiles" [ref=f1e77] [cursor=pointer]:
+                  - /url: "#step-3"
+              - listitem [ref=f1e79]:
+                - link "Sources" [ref=f1e80] [cursor=pointer]:
+                  - /url: "#step-4"
+              - listitem [ref=f1e82]:
+                - link "Publishing" [ref=f1e83] [cursor=pointer]:
+                  - /url: "#step-5"
+              - listitem [ref=f1e85]:
+                - link "Governance" [ref=f1e86] [cursor=pointer]:
+                  - /url: "#step-6"
+              - listitem [ref=f1e88]:
+                - link "Automation" [ref=f1e89] [cursor=pointer]:
+                  - /url: "#step-7"
+              - listitem [ref=f1e91]:
+                - link "Confirm and verify" [ref=f1e92] [cursor=pointer]:
+                  - /url: "#step-8"
+              - listitem [ref=f1e94]:
+                - link "First wiki" [ref=f1e95] [cursor=pointer]:
+                  - /url: "#step-9"
+        - generic [ref=f1e97]:
+          - article [ref=f1e98]:
+            - generic [ref=f1e99]:
+              - generic [aria-hidden] [ref=f1e100]: "0"
+              - generic [ref=f1e101]:
+                - paragraph [ref=f1e102]: Step 0
+                - heading "🧰 Prerequisites" [level=2] [ref=f1e103]
+            - generic [ref=f1e104]:
+              - paragraph [ref=f1e105]: You always need VS Code with GitHub Copilot, PowerShell 7 and git. Everything else depends on the sources you will use.
+              - table [ref=f1e107]:
+                - rowgroup [ref=f1e108]:
+                  - row [ref=f1e109]:
+                    - columnheader "If you will use…" [ref=f1e110]
+                    - columnheader "You need" [ref=f1e111]
+                    - columnheader "How to check" [ref=f1e112]
+                - rowgroup [ref=f1e113]:
+                  - row [ref=f1e114]:
+                    - cell "Any source" [ref=f1e115]
+                    - cell "PowerShell 7" [ref=f1e116]
+                    - cell [ref=f1e117]:
+                      - code [ref=f1e118]: pwsh --version
+                  - row [ref=f1e119]:
+                    - cell "Code or publishing" [ref=f1e120]
+                    - cell "git" [ref=f1e121]
+                    - cell [ref=f1e122]:
+                      - code [ref=f1e123]: git --version
+                  - row [ref=f1e124]:
+                    - cell "Azure Repos or Azure DevOps Wiki" [ref=f1e125]
+                    - cell "Git Credential Manager" [ref=f1e126]
+                    - cell [ref=f1e127]:
+                      - code [ref=f1e128]: git credential-manager --version
+                  - row [ref=f1e129]:
+                    - cell "Dataverse" [ref=f1e130]
+                    - cell [ref=f1e131]:
+                      - code [ref=f1e132]: pacx
+                      - text: (or
+                      - code [ref=f1e133]: pac
+                      - text: )
+                    - cell [ref=f1e134]:
+                      - code [ref=f1e135]: pacx --version
+                  - row [ref=f1e136]:
+                    - cell "GitHub (activity or GitHub Wiki)" [ref=f1e137]
+                    - cell "GitHub CLI" [ref=f1e138]
+                    - cell [ref=f1e139]:
+                      - code [ref=f1e140]: gh auth status
+                  - row [ref=f1e141]:
+                    - cell "Word, PowerPoint, Excel, PDF documents" [ref=f1e142]
+                    - cell [ref=f1e143]:
+                      - code [ref=f1e144]: markitdown
+                    - cell [ref=f1e145]:
+                      - code [ref=f1e146]: markitdown --version
+              - paragraph [ref=f1e147]: "Note: the agent installs nothing on its own: it tells you what is missing and lets you decide."
+              - paragraph [ref=f1e148]:
+                - text: "✅ Verify: the commands you need reply with a version number. If"
+                - code [ref=f1e149]: pwsh
+                - text: "is missing, stop: the wiki does not work without PowerShell 7."
+            - generic [ref=f1e150] [cursor=pointer]:
+              - 'checkbox "Done: I verified this step" [ref=f1e151]'
+              - generic [ref=f1e152]: "Done: I verified this step"
+          - generic [ref=f1e153]:
+            - button "← Previous" [disabled] [ref=f1e154]:
+              - text: ←
+              - generic [ref=f1e155]: Previous
+            - button "Next →" [ref=f1e156] [cursor=pointer]:
+              - generic [ref=f1e157]: Next
+              - text: →
+    - generic [ref=f1e159]:
+      - generic [ref=f1e160]:
+        - paragraph [ref=f1e161]: After the wizard
+        - heading "Change your mind later." [level=2] [ref=f1e162]
+        - paragraph [ref=f1e163]:
+          - text: No need to run
+          - code [ref=f1e164]: init
+          - text: again. Type
+          - code [ref=f1e165]: config
+          - text: "and choose what to change: sources, profiles, language, publishing, governance, automation. After a plugin update run"
+          - code [ref=f1e166]: config --refresh-engine
+          - text: ", then"
+          - code [ref=f1e167]: update --lint
+          - text: .
+      - heading "🩺 If something does not work" [level=3] [ref=f1e168]
+      - generic [ref=f1e169]:
+        - group [ref=f1e170]:
+          - generic "The LLM Wiki agent does not appear +" [ref=f1e171] [cursor=pointer]:
+            - generic [ref=f1e172]: The LLM Wiki agent does not appear
+            - text: +
+        - group [ref=f1e173]:
+          - generic [ref=f1e174] [cursor=pointer]:
+            - generic [ref=f1e175]:
+              - code [ref=f1e176]: pwsh
+              - text: not found
+            - text: +
+        - group [ref=f1e177]:
+          - generic "Cloning from Azure Repos keeps asking for credentials +" [ref=f1e178] [cursor=pointer]:
+            - generic [ref=f1e179]: Cloning from Azure Repos keeps asking for credentials
+            - text: +
+        - group [ref=f1e180]:
+          - generic "Dataverse does not respond +" [ref=f1e181] [cursor=pointer]:
+            - generic [ref=f1e182]: Dataverse does not respond
+            - text: +
+        - group [ref=f1e183]:
+          - generic "Boards return no data +" [ref=f1e184] [cursor=pointer]:
+            - generic [ref=f1e185]: Boards return no data
+            - text: +
+        - group [ref=f1e186]:
+          - generic [ref=f1e187] [cursor=pointer]:
+            - generic [ref=f1e188]:
+              - text: The lint reports errors after
+              - code [ref=f1e189]: init
+            - text: +
+        - group [ref=f1e190]:
+          - generic "You want to start over +" [ref=f1e191] [cursor=pointer]:
+            - generic [ref=f1e192]: You want to start over
+            - text: +
+      - generic [ref=f1e193]:
+        - heading "Keep going" [level=3] [ref=f1e194]
+        - list [ref=f1e195]:
+          - listitem [ref=f1e196]:
+            - link "📖 User guide (Italian)" [ref=f1e197] [cursor=pointer]:
+              - /url: https://github.com/raythekool/power-platform-llm-wiki/blob/main/docs/guida-utente.md
+          - listitem [ref=f1e198]:
+            - link "❓ FAQ (Italian)" [ref=f1e199] [cursor=pointer]:
+              - /url: https://github.com/raythekool/power-platform-llm-wiki/blob/main/docs/guida-utente.md#-domande-frequenti
+          - listitem [ref=f1e200]:
+            - link "🛡️ Governance (Italian)" [ref=f1e201] [cursor=pointer]:
+              - /url: https://github.com/raythekool/power-platform-llm-wiki/blob/main/docs/governance.md
+          - listitem [ref=f1e202]:
+            - link "🏠 Back to home" [ref=f1e203] [cursor=pointer]:
+              - /url: index.html
+  - contentinfo [ref=f1e204]:
+    - generic [ref=f1e205]:
+      - generic [ref=f1e206]: LLM Wiki v3.0.0 · MIT
+      - generic [ref=f1e207]: Code-first knowledge base for Dynamics 365 delivery.
+      - link "GitHub" [ref=f1e208] [cursor=pointer]:
+        - /url: https://github.com/raythekool/power-platform-llm-wiki
