@@ -124,6 +124,7 @@ Roles, cadence and indicators: [docs/governance.md](docs/governance.md).
 | Document                                                                               | Audience                                                                              |
 | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | 🇮🇹 [docs/guida-utente.md](docs/guida-utente.md)                                         | Project teams: installation, setup, daily use, publishing, questions, FAQ             |
+| 🧙 [docs/wizard-configurazione.md](docs/wizard-configurazione.md)                       | Step-by-step setup wizard (Italian): what to answer to `init` and how to verify it    |
 | 🛡️ [docs/governance.md](docs/governance.md)                                             | Leads, reviewers, certifiers: roles, page lifecycle, certification, cadence, security |
 | 🔄 [docs/migrazione-v2-v3.md](docs/migrazione-v2-v3.md)                                 | Projects with a v2 wiki: what changes and how to migrate                              |
 | 🤝 [CONTRIBUTING.md](CONTRIBUTING.md)                                                   | Plugin maintainers: conventions, tests, release                                       |

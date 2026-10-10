@@ -32,6 +32,9 @@ Come usare **LLM Wiki** su un progetto Dynamics 365 (CE / Power Platform o Finan
 
 ### 🧙 2. Primo setup (`init`)
 
+> [!TIP]
+> Vuoi un percorso passo passo con esempi e verifiche? Segui il [wizard di configurazione](wizard-configurazione.md).
+
 Apri la cartella del repository di progetto (quello che ospiterà la wiki) e scrivi `init` all'agente. Il wizard chiede:
 
 1. **Progetto**: nome, lingua dei contenuti (default italiano), profili (`power-platform`, `dynamics-fno`, `generic`).
