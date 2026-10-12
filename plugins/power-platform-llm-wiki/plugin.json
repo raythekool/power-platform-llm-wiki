@@ -1,6 +1,6 @@
 {
   "name": "power-platform-llm-wiki",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "LLM Wiki — code-first project knowledge base for Dynamics 365 (CE / Power Platform and Finance & Operations) delivery. Skills: init, config, update (code, work items, Dataverse, F&O metadata, lint, publish to Azure DevOps Wiki / GitHub Wiki), ingest (meetings, FDD, TDD, ADR), query.",
   "license": "MIT",
   "keywords": [

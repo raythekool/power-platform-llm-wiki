@@ -11,26 +11,59 @@
         security privileges / duties / roles, menu items)
       - CI/CD pipelines (Azure Pipelines, GitHub Actions)
     The agent then reads only the files that matter for each wiki page.
+    Works on git clones, TFVC workspaces and plain folders. Without git there is no `git diff`: pass -StatePath to get
+    the files added / modified / deleted since the last accepted run (SHA-256 snapshot), then promote the snapshot with
+    -AcceptState once the wiki pages are updated.
 .PARAMETER Path
-    Root of the local clone (or any folder, e.g. PackagesLocalDirectory/<Package>).
+    Root of the local clone, TFVC workspace folder, or any folder (e.g. PackagesLocalDirectory/<Package>).
 .PARAMETER OutFile
     Optional JSON output path (recommended: llm-wiki/raw/code/<repo>-<yyyy-MM-dd>.json). Stdout otherwise.
 .PARAMETER MaxFileKB
     Text files larger than this are not parsed.
+.PARAMETER Revision
+    Revision label to record when it is not a git commit, e.g. the TFVC changeset `C12345`. Default: git HEAD, if any.
+.PARAMETER StatePath
+    Hash snapshot used for change detection (recommended: llm-wiki/.state/code-<repo>.json). The scan compares with it
+    and writes `<StatePath>.pending`; it never overwrites the accepted snapshot.
+.PARAMETER AcceptState
+    Promote `<StatePath>.pending` to `<StatePath>` (run after the pages for the changes are written).
 #>
-[CmdletBinding()]
+[CmdletBinding(DefaultParameterSetName = 'Scan')]
 param(
-    [Parameter(Mandatory)][string]$Path,
-    [string]$OutFile,
-    [int]$MaxFileKB = 1024
+    [Parameter(Mandatory, ParameterSetName = 'Scan')][string]$Path,
+    [Parameter(ParameterSetName = 'Scan')][string]$OutFile,
+    [Parameter(ParameterSetName = 'Scan')][int]$MaxFileKB = 1024,
+    [Parameter(ParameterSetName = 'Scan')][string]$Revision,
+    [Parameter(ParameterSetName = 'Scan')][Parameter(Mandatory, ParameterSetName = 'Accept')][string]$StatePath,
+    [Parameter(Mandatory, ParameterSetName = 'Accept')][switch]$AcceptState
 )
 
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/LlmWiki.Common.ps1"
 
+if ($AcceptState) {
+    $pending = "$StatePath.pending"
+    if (-not (Test-Path -LiteralPath $pending)) {
+        [ordered]@{ accepted = $false; error = "No pending snapshot: $pending" } | ConvertTo-Json
+        exit 1
+    }
+    Move-Item -LiteralPath $pending -Destination $StatePath -Force
+    [ordered]@{ accepted = $true; statePath = $StatePath } | ConvertTo-Json
+    return
+}
+
 $Path = (Resolve-Path -LiteralPath $Path).Path
-$skipDirs = @('.git', 'bin', 'obj', 'node_modules', 'packages', '.vs', 'TestResults', 'dist', 'out', 'generated', '.idea', 'XppMetadata')
+$skipDirs = @('.git', '$tf', '.tf', 'bin', 'obj', 'node_modules', 'packages', '.vs', 'TestResults', 'dist', 'out', 'generated', '.idea', 'XppMetadata')
 $xsi = 'http://www.w3.org/2001/XMLSchema-instance'
+
+function Get-Vcs([string]$Dir) {
+    for ($d = $Dir; $d; $d = Split-Path -Parent $d) {
+        if (Test-Path -LiteralPath (Join-Path $d '.git')) { return 'git' }
+        # TFVC local workspaces keep their metadata in a hidden $tf (or .tf) folder at the mapping root
+        if ((Test-Path -LiteralPath (Join-Path $d '$tf')) -or (Test-Path -LiteralPath (Join-Path $d '.tf'))) { return 'tfvc' }
+    }
+    return 'none'
+}
 
 function Get-Files([string]$Root) {
     $stack = [System.Collections.Generic.Stack[string]]::new()
@@ -133,8 +166,11 @@ function Get-AxDetail([string]$Type, $Root) {
 $inventory = [ordered]@{
     root        = $Path
     generatedAt = (Get-Date).ToUniversalTime().ToString('o')
+    vcs         = Get-Vcs $Path
+    revision    = $null
     gitHead     = $null
     gitBranch   = $null
+    changes     = $null
     fileCount   = 0
     extensions  = [ordered]@{}
     components  = [ordered]@{
@@ -151,16 +187,23 @@ $inventory = [ordered]@{
     warnings    = @()
 }
 
-if (Test-Path -LiteralPath (Join-Path $Path '.git')) {
+if ($inventory.vcs -eq 'git') {
     $inventory.gitHead = (& git -C $Path rev-parse HEAD 2>$null)
     $inventory.gitBranch = (& git -C $Path rev-parse --abbrev-ref HEAD 2>$null)
 }
+$inventory.revision = if ($Revision) { $Revision } else { $inventory.gitHead }
 
+$hashes = [ordered]@{}
+$sha = if ($StatePath) { [System.Security.Cryptography.SHA256]::Create() }
 $extCounts = @{}
 $axObjects = @{}
 foreach ($f in (Get-Files $Path)) {
     $inventory.fileCount++
     $rel = Get-RelativePath $Path $f.FullName
+    if ($sha) {
+        $stream = [System.IO.File]::OpenRead($f.FullName)
+        try { $hashes[$rel] = [Convert]::ToHexString($sha.ComputeHash($stream)) } finally { $stream.Dispose() }
+    }
     $ext = $f.Extension.ToLowerInvariant()
     $extCounts[$ext] = 1 + ($extCounts[$ext] ?? 0)
     $tooBig = $f.Length -gt ($MaxFileKB * 1KB)
@@ -253,11 +296,42 @@ foreach ($t in ($axObjects.Keys | Sort-Object)) {
     $inventory.fno.objects[$t] = @($axObjects[$t] | Sort-Object { $_.name })
 }
 
+if ($StatePath) {
+    $previous = $null
+    if (Test-Path -LiteralPath $StatePath) { $previous = (Read-Utf8Text $StatePath | ConvertFrom-Json -AsHashtable).files }
+    $added = @(); $modified = @(); $deleted = @()
+    if ($null -ne $previous) {
+        foreach ($k in $hashes.Keys) {
+            if (-not $previous.ContainsKey($k)) { $added += $k }
+            elseif ($previous[$k] -ne $hashes[$k]) { $modified += $k }
+        }
+        foreach ($k in $previous.Keys) { if (-not $hashes.Contains($k)) { $deleted += $k } }
+    }
+    $inventory.changes = [ordered]@{
+        baseline = $null -eq $previous
+        added    = @($added | Sort-Object)
+        modified = @($modified | Sort-Object)
+        deleted  = @($deleted | Sort-Object)
+    }
+    $snapshot = [ordered]@{ version = 1; root = $Path; revision = $inventory.revision; generatedAt = $inventory.generatedAt; files = $hashes }
+    Write-Utf8Text "$StatePath.pending" ($snapshot | ConvertTo-Json -Depth 3)
+}
+
 $json = $inventory | ConvertTo-Json -Depth 8
 if ($OutFile) {
     Write-Utf8Text $OutFile $json
     [ordered]@{
         outFile    = $OutFile
+        vcs        = $inventory.vcs
+        revision   = $inventory.revision
+        changes    = if ($inventory.changes) {
+            [ordered]@{
+                baseline = $inventory.changes.baseline
+                added    = $inventory.changes.added.Count
+                modified = $inventory.changes.modified.Count
+                deleted  = $inventory.changes.deleted.Count
+            }
+        }
         fileCount  = $inventory.fileCount
         components = [ordered]@{
             dataversePlugins = $inventory.components.dataversePlugins.Count

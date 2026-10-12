@@ -78,7 +78,7 @@ Body: one `#` title, a `>` TL;DR paragraph, then sections. Use the templates in 
 
 ```text
 > ⚠️ **Contradiction:** <page A> says X, <page B> says Y. Unresolved.
-> ⚠️ **Drift:** the FDD says X, the code does Y (<repo>@<sha>:<path>).
+> ⚠️ **Drift:** the FDD says X, the code does Y (<repo>@<rev>:<path>).
 > 🕐 **Stale:** last verified YYYY-MM-DD.
 - 🎯 **Action:** @Owner - what by YYYY-MM-DD.        (mark done with ✅)
 > 🚫 **Blocked:** waiting for <page>.
@@ -109,30 +109,30 @@ Answer project questions only from wiki pages, citing them with relative links. 
 
 ## Cross-reference conventions
 
-| What            | Pattern                     | Example                                             |
-| --------------- | --------------------------- | --------------------------------------------------- |
-| Wiki page       | relative Markdown link      | `[ADR-001](../reference/decisions/ADR-001-wiki.md)` |
-| Requirement     | `REQ-<AREA>-<NNN>`          | `REQ-SAL-001`                                       |
-| Work item       | `` `<Type>-<ID>` ``         | `US-128`, `Bug-77`                                  |
-| Commit / file   | `` `<repo>@<sha>:<path>` `` | `crm@a1b2c3d:src/Plugins/Credit.cs`                 |
-| F&O object      | `` `<AxType>:<Name>` ``     | `AxClass:SalesFormLetter_Contoso_Extension`         |
-| Dataverse table | `` `dv:<logicalname>` ``    | `dv:salesorder`                                     |
-| Sprint          | `` `YYYY-SNN` ``            | `2026-S08`                                          |
+| What            | Pattern                     | Example                                                                                                              |
+| --------------- | --------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Wiki page       | relative Markdown link      | `[ADR-001](../reference/decisions/ADR-001-wiki.md)`                                                                  |
+| Requirement     | `REQ-<AREA>-<NNN>`          | `REQ-SAL-001`                                                                                                        |
+| Work item       | `` `<Type>-<ID>` ``         | `US-128`, `Bug-77`                                                                                                   |
+| Commit / file   | `` `<repo>@<rev>:<path>` `` | `crm@a1b2c3d:src/Plugins/Credit.cs`, `fno@C1234:Metadata/...` (TFVC changeset), `copy@2026-10-01:...` (plain folder) |
+| F&O object      | `` `<AxType>:<Name>` ``     | `AxClass:SalesFormLetter_Contoso_Extension`                                                                          |
+| Dataverse table | `` `dv:<logicalname>` ``    | `dv:salesorder`                                                                                                      |
+| Sprint          | `` `YYYY-SNN` ``            | `2026-S08`                                                                                                           |
 
 ## Deterministic scripts (prefer them to reading files by hand)
 
 All scripts are in `llm-wiki/.engine/scripts/` (PowerShell 7, `pwsh`), emit JSON, and cost no tokens to run.
 
-| Script                                                                                | Use                                                                                                                           |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `Get-RawDelta.ps1 -RawPath llm-wiki/raw`                                              | New / changed / to-convert sources. After a successful ingest: `-MarkProcessed <paths>`. Adopt an existing wiki: `-Baseline`. |
-| `Get-CodeInventory.ps1 -Path <clone> -OutFile llm-wiki/raw/code/<repo>-<date>.json`   | Inventory of plugins, PCF, web resources, solutions, flows, pipelines, F&O models and Ax objects.                             |
-| `Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`                                           | Front matter, lifecycle, links, orphans, index coverage, overdue actions, stale pages, Mermaid, traceability, secrets.        |
-| `Export-Wiki.ps1 -WikiPath llm-wiki/wiki -OutPath <dir> -Target azure-devops\|github` | Converts the wiki for publishing.                                                                                             |
+| Script                                                                                | Use                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Get-RawDelta.ps1 -RawPath llm-wiki/raw`                                              | New / changed / to-convert sources. After a successful ingest: `-MarkProcessed <paths>`. Adopt an existing wiki: `-Baseline`.                                                                                                                          |
+| `Get-CodeInventory.ps1 -Path <clone> -OutFile llm-wiki/raw/code/<repo>-<date>.json`   | Inventory of plugins, PCF, web resources, solutions, flows, pipelines, F&O models and Ax objects. Git, TFVC or plain folder; without git add `-Revision` and `-StatePath llm-wiki/.state/code-<repo>.json` for the changed files, then `-AcceptState`. |
+| `Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`                                           | Front matter, lifecycle, links, orphans, index coverage, overdue actions, stale pages, Mermaid, traceability, secrets.                                                                                                                                 |
+| `Export-Wiki.ps1 -WikiPath llm-wiki/wiki -OutPath <dir> -Target azure-devops\|github` | Converts the wiki for publishing.                                                                                                                                                                                                                      |
 
 ## Cost control
 
-- Process only what changed (`Get-RawDelta.ps1`, code inventory diff by commit); never re-read unchanged sources.
+- Process only what changed (`Get-RawDelta.ps1`, code inventory diff by commit, TFVC changeset or file-hash snapshot); never re-read unchanged sources.
 - Read inventories and summaries before opening source files; open only the files a page needs.
 - Let scripts do mechanical work (lint, link checks, publish conversion).
 - Record `pendingKB` (from `Get-RawDelta.ps1`) and the number of files read in each `log.md` entry so consumption can be tracked over time.

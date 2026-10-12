@@ -95,6 +95,31 @@ try {
     $ent = $inv.fno.objects.AxDataEntityView[0]
     Assert ($ent.publicEntityName -eq 'ContosoCreditLimit' -and @($ent.tables) -contains 'ContosoCreditLimit') 'data entity parsed'
 
+    Write-Host 'Get-CodeInventory (TFVC workspace, hash state)'
+    $ws = Join-Path $work 'tfvc-ws'
+    Copy-Item -Path (Join-Path $fixtures 'repo') -Destination $ws -Recurse
+    New-Item -ItemType Directory -Path (Join-Path $ws '$tf') | Out-Null
+    Set-Content -LiteralPath (Join-Path $ws '$tf/properties.tf1') -Value 'workspace metadata'
+    $state = Join-Path $work 'llm-wiki/.state/code-legacy.json'
+    $r = Invoke-Json 'Get-CodeInventory.ps1' @{ Path = $ws; OutFile = (Join-Path $work 'inv-tfvc.json'); Revision = 'C1234'; StatePath = $state }
+    Assert ($r.Json.vcs -eq 'tfvc' -and $r.Json.revision -eq 'C1234') 'TFVC workspace detected, changeset recorded'
+    Assert ($r.Json.changes.baseline -and (Test-Path "$state.pending") -and -not (Test-Path $state)) 'first run is a baseline; snapshot pending, not accepted'
+    $inv = Get-Content -LiteralPath (Join-Path $work 'inv-tfvc.json') -Raw | ConvertFrom-Json -Depth 20
+    Assert (-not ($inv.PSObject.Properties.Name -contains 'files') -and $inv.fileCount -eq (Get-ChildItem -LiteralPath $ws -Recurse -File | Where-Object FullName -notmatch '\$tf').Count) '$tf folder skipped and hashes kept out of the inventory'
+    $r = Invoke-Json 'Get-CodeInventory.ps1' @{ StatePath = $state; AcceptState = $true }
+    Assert ($r.Json.accepted -and (Test-Path $state) -and -not (Test-Path "$state.pending")) 'snapshot accepted'
+    Add-Content -LiteralPath (Join-Path $ws 'src/Plugins/CreditCheckPlugin.cs') -Value '// changed'
+    Set-Content -LiteralPath (Join-Path $ws 'src/Plugins/NewPlugin.cs') -Value 'class NewPlugin : IPlugin { }'
+    Remove-Item -LiteralPath (Join-Path $ws 'azure-pipelines.yml')
+    $r = Invoke-Json 'Get-CodeInventory.ps1' @{ Path = $ws; OutFile = (Join-Path $work 'inv-tfvc.json'); Revision = 'C1240'; StatePath = $state }
+    $inv = Get-Content -LiteralPath (Join-Path $work 'inv-tfvc.json') -Raw | ConvertFrom-Json -Depth 20
+    Assert (-not $inv.changes.baseline -and @($inv.changes.modified) -contains 'src/Plugins/CreditCheckPlugin.cs' -and @($inv.changes.added) -contains 'src/Plugins/NewPlugin.cs' -and @($inv.changes.deleted) -contains 'azure-pipelines.yml') 'added / modified / deleted files since the accepted snapshot'
+    Assert ($r.Json.changes.added -eq 1 -and $r.Json.changes.modified -eq 1 -and $r.Json.changes.deleted -eq 1) 'change counts in the summary'
+    $plain = Join-Path $work 'plain-copy'
+    Copy-Item -Path (Join-Path $fixtures 'repo') -Destination $plain -Recurse
+    $r = Invoke-Json 'Get-CodeInventory.ps1' @{ Path = $plain; OutFile = (Join-Path $work 'inv-plain.json') }
+    Assert ($r.Json.vcs -eq 'none' -and $null -eq $r.Json.revision -and $null -eq $r.Json.changes) 'plain folder: no VCS, no revision, no change state unless requested'
+
     Write-Host 'Export-Wiki azure-devops'
     $ado = Join-Path $work 'ado'
     $r = Invoke-Json 'Export-Wiki.ps1' @{ WikiPath = $wiki; OutPath = $ado; Target = 'azure-devops'; ProjectName = 'Contoso' }
@@ -131,7 +156,7 @@ try {
     $r = Invoke-Json 'Install-Engine.ps1' @{ LlmWikiPath = $hostWiki }
     $version = (Get-Content -LiteralPath (Join-Path $repoRoot 'plugins/power-platform-llm-wiki/plugin.json') -Raw | ConvertFrom-Json).version
     Assert ($r.Json.version -eq $version) 'engine version matches plugin.json'
-    foreach ($f in @('AGENTS.md', '.engine/VERSION', '.engine/publishing.md', '.engine/skills/update/SKILL.md', '.engine/skills/ingest/SKILL.md', '.engine/skills/query/SKILL.md', '.engine/scripts/Test-WikiLint.ps1', '.engine/templates/requirement.md', '.engine/profiles/dynamics-fno.md')) {
+    foreach ($f in @('AGENTS.md', '.engine/VERSION', '.engine/publishing.md', '.engine/tfvc.md', '.engine/skills/update/SKILL.md', '.engine/skills/ingest/SKILL.md', '.engine/skills/query/SKILL.md', '.engine/scripts/Test-WikiLint.ps1', '.engine/templates/requirement.md', '.engine/profiles/dynamics-fno.md')) {
         Assert (Test-Path -LiteralPath (Join-Path $hostWiki $f)) "installed $f"
     }
     $out = & pwsh -NoProfile -File (Join-Path $hostWiki '.engine/scripts/Test-WikiLint.ps1') -WikiPath $wiki -Today '2026-10-01'

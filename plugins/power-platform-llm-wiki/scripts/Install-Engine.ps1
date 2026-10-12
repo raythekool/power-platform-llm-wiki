@@ -10,6 +10,7 @@
       .engine/templates/                <- templates/*.md
       .engine/profiles/                 <- references/profiles/*.md
       .engine/publishing.md             <- references/publishing.md
+      .engine/tfvc.md                   <- references/tfvc.md
       .engine/VERSION                   <- plugin.json version
     Never touches wiki/, raw/, templates/ (project overrides), .state/ or wiki.config.yml.
 .PARAMETER LlmWikiPath
@@ -36,6 +37,7 @@ function Copy-Into([string]$Source, [string]$Destination) {
 
 Copy-Into (Join-Path $pluginRoot 'references/AGENTS.md') (Join-Path $LlmWikiPath 'AGENTS.md')
 Copy-Into (Join-Path $pluginRoot 'references/publishing.md') (Join-Path $engine 'publishing.md')
+Copy-Into (Join-Path $pluginRoot 'references/tfvc.md') (Join-Path $engine 'tfvc.md')
 foreach ($s in @('update', 'ingest', 'query')) {
     Copy-Into (Join-Path $pluginRoot "skills/$s/SKILL.md") (Join-Path $engine "skills/$s/SKILL.md")
 }

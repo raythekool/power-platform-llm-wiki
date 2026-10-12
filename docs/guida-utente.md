@@ -22,7 +22,7 @@ Come usare **LLM Wiki** su un progetto Dynamics 365 (CE / Power Platform o Finan
 
 - 🟦 VS Code con GitHub Copilot e l'impostazione **Chat > Plugins: Enabled** attiva.
 - 🐚 PowerShell 7 (`pwsh`) e 🌿 git.
-- In base alle fonti del progetto: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (documenti Word, PowerPoint, Excel, PDF).
+- In base alle fonti del progetto: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `tf.exe` di Visual Studio (codice in TFS / TFVC), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (documenti Word, PowerPoint, Excel, PDF).
 
 ### 📦 1. Installare il plugin
 
@@ -53,7 +53,7 @@ Apri la cartella del repository di progetto (quello che ospiterà la wiki) e scr
 
 1. **Progetto**: nome, lingua dei contenuti (default italiano), profili (`power-platform`, `dynamics-fno`, `generic`).
 2. **Fonti** (tutte opzionali):
-    - 🧬 repository di codice (Azure Repos, GitHub o cartella locale) - consigliato, il codice è la fonte primaria;
+    - 🧬 repository di codice (Azure Repos, GitHub, TFS / TFVC o cartella locale senza git) - consigliato, il codice è la fonte primaria. Per TFVC servono `tf.exe` e il percorso `$/...`; i dettagli sono nel [wizard di configurazione](wizard-configurazione.md#-passo-4---fonti);
     - 📋 Azure DevOps Boards (organizzazione e progetto; accesso con il proprio account, nessun PAT);
     - 🗄️ soluzioni Dataverse;
     - 🏭 cartelle dei package F&O personalizzati;

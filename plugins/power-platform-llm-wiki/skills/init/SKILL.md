@@ -27,6 +27,7 @@ Detect and report (never install silently):
 | PowerShell 7 | all deterministic scripts | `pwsh --version` |
 | git | code analysis, publishing | `git --version` |
 | Git Credential Manager | Azure Repos clone, Azure DevOps Wiki push | `git credential-manager --version` |
+| tf.exe (Visual Studio / Team Explorer) | code in TFVC (TFS, Azure DevOps Server) | `tf help` in a Developer PowerShell for VS |
 | pacx / pac | Dataverse source | `pacx --version`, `pac help` |
 | gh | GitHub source / GitHub Wiki | `gh auth status` |
 | markitdown | Office / PDF sources | `markitdown --version` |
@@ -40,7 +41,11 @@ Ask one step at a time, offering **Yes** before **No**. Pre-fill answers from an
 1. **Mode** - guided, or self-service (write the commented `wiki.config.yml` from `assets/wiki.config.yml`, install the engine, stop and ask the user to fill the file and run `config`).
 2. **Project** - name; content language (default `it`); profiles (multi-select): `power-platform` (Dynamics 365 CE / Dataverse), `dynamics-fno` (Finance & Operations), `generic` (integrations, Azure, .NET).
 3. **Sources** (multi-select, all optional):
-    - Code repositories (recommended: code is the primary source) - for each: name, provider (`azure-devops` / `github` / `local`), clone URL, local path, branch, optional include/exclude globs.
+    - Code repositories (recommended: code is the primary source) - for each: name and provider, then:
+        - `azure-devops` / `github` (git): clone URL, local path, branch;
+        - `tfvc` (TFS, Azure DevOps Server, or a TFVC project in Azure DevOps Services - common in older F&O projects): collection URL, server path (`$/Project/Trunk/Main`), local workspace folder (if a workspace already maps it, e.g. on an F&O developer VM, use that folder). If `tf.exe` is missing, offer `local` with a downloaded copy instead (see `.engine/tfvc.md`);
+        - `local` (any folder without version control, e.g. a copy exported from TFS): local path;
+        - optional include/exclude globs for all.
     - Azure DevOps Boards - organization, project, optional area paths and iteration prefix. Authentication is Microsoft Entra ID through the MCP server: **do not ask for a PAT**.
     - Dataverse - solution unique names, publisher prefixes (connection: the active `pacx auth` profile).
     - F&O metadata - folders of the **custom** packages (e.g. `<repo>/Metadata/<Package>`), optional model filter.

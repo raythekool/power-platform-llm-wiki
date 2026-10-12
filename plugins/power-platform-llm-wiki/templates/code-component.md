@@ -3,7 +3,7 @@ type: code
 status: draft
 updated: {{YYYY-MM-DD}}
 project: {{repo name}}
-commit: "{{repo@sha}}"
+commit: "{{repo@rev}}"
 implements: [{{REQ-AREA-NNN}}]
 sources: [{{raw/code/repo-YYYY-MM-DD.json}}, {{path/in/repo}}]
 tags: [{{plugin|pcf|xpp|flow|integration}}]

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 3.1.0 - 2026-10-12
+
+- 🗃️ Code in **TFVC** (TFS, Azure DevOps Server, Azure DevOps Services TFVC projects), typical of older F&O projects: new `provider: tfvc` for `code.repos` with a read-only procedure (`references/tfvc.md`, installed as `.engine/tfvc.md`: reuse or create a workspace, `tf get`, latest changeset as revision, never check in). Without `tf.exe`, or for any folder without version control, `provider: local` with a downloaded copy.
+- 🔍 `Get-CodeInventory.ps1`: reports `vcs` (`git`, `tfvc`, `none`) and `revision` (`-Revision`, e.g. `C1234`), skips `$tf` folders, and with `-StatePath` lists files added / modified / deleted since the last accepted SHA-256 snapshot (`-AcceptState` promotes it after the pages are written), so non-git sources stay incremental.
+- 📝 Citations and logs use a generic revision `<repo>@<rev>:<path>` (git SHA, TFVC changeset `C<n>`, or copy date).
+
 ## 3.0.1 - 2026-10-12
 
 - 🌍 Bilingual (EN/IT) promo website in `site/`, built by `scripts/Build-Site.ps1` and deployed to GitHub Pages by `.github/workflows/pages.yml`.

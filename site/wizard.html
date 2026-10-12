@@ -174,8 +174,12 @@
               <h3 lang="it">
                 Dove si trova il codice, e dove vuoi pubblicare la wiki?
               </h3>
-              <p lang="en">e.g. Azure Repos, GitHub or a folder on your PC</p>
-              <p lang="it">es. Azure Repos, GitHub o una cartella sul PC</p>
+              <p lang="en">
+                e.g. Azure Repos, GitHub, TFS (TFVC) or a folder on your PC
+              </p>
+              <p lang="it">
+                es. Azure Repos, GitHub, TFS (TFVC) o una cartella sul PC
+              </p>
             </article>
             <article class="card reveal">
               <div class="ico i-green">🛡️</div>
@@ -334,6 +338,14 @@
                           <td><code>git credential-manager --version</code></td>
                         </tr>
                         <tr>
+                          <td>Code in TFS / TFVC</td>
+                          <td><code>tf.exe</code> (Visual Studio)</td>
+                          <td>
+                            <code>tf help</code> in a Developer PowerShell for
+                            VS
+                          </td>
+                        </tr>
+                        <tr>
                           <td>Dataverse</td>
                           <td><code>pacx</code> (or <code>pac</code>)</td>
                           <td><code>pacx --version</code></td>
@@ -391,6 +403,14 @@
                           <td>Azure Repos o Azure DevOps Wiki</td>
                           <td>Git Credential Manager</td>
                           <td><code>git credential-manager --version</code></td>
+                        </tr>
+                        <tr>
+                          <td>Codice in TFS / TFVC</td>
+                          <td><code>tf.exe</code> (Visual Studio)</td>
+                          <td>
+                            <code>tf help</code> in una Developer PowerShell for
+                            VS
+                          </td>
                         </tr>
                         <tr>
                           <td>Dataverse</td>
@@ -786,8 +806,10 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                           <td>🧬 <b>Code repository</b></td>
                           <td>
                             name, provider (<code>azure-devops</code>,
-                            <code>github</code>, <code>local</code>), URL, local
-                            folder, branch
+                            <code>github</code>, <code>tfvc</code>,
+                            <code>local</code>), then URL, local folder and
+                            branch (git) or collection URL and
+                            <code>$/...</code> path (TFVC)
                           </td>
                           <td>
                             <b>Recommended</b>: the code is the primary source
@@ -853,6 +875,23 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       <code>cts_</code>.
                     </li>
                   </ul>
+                  <p class="callout info">
+                    <b>Code not in git?</b> Common in older F&amp;O projects
+                    with the code in TFS. Use <code>provider: tfvc</code> with
+                    <code>tf.exe</code> (Visual Studio), the collection URL
+                    (e.g.
+                    <code>https://tfs.contoso.local/tfs/DefaultCollection</code
+                    >), the <code>$/Project/Trunk/Main</code> path and a local
+                    folder; on an F&amp;O developer VM use the folder the
+                    workspace already maps. No <code>tf.exe</code>? Download the
+                    folder from the web portal (<b
+                      >Repos → Files → Download as Zip</b
+                    >) and use <code>provider: local</code>. The agent only
+                    reads TFVC (<code>get</code>, <code>history</code>), never
+                    checks in or out; without git, changes are found by file
+                    hashes and pages cite the changeset
+                    (<code>fno@C1234:...</code>).
+                  </p>
                   <p class="callout important">
                     <b>Important:</b> never write passwords, tokens or keys in
                     the answers or in the configuration file. Access uses your
@@ -884,8 +923,10 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                           <td>🧬 <b>Repository di codice</b></td>
                           <td>
                             nome, provider (<code>azure-devops</code>,
-                            <code>github</code>, <code>local</code>), URL,
-                            cartella locale, branch
+                            <code>github</code>, <code>tfvc</code>,
+                            <code>local</code>), poi URL, cartella locale e
+                            branch (git) oppure URL della collection e percorso
+                            <code>$/...</code> (TFVC)
                           </td>
                           <td>
                             <b>Consigliata</b>: il codice è la fonte primaria
@@ -954,6 +995,23 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       <code>cts_</code>.
                     </li>
                   </ul>
+                  <p class="callout info">
+                    <b>Il codice non è in git?</b> Capita spesso nei progetti
+                    F&amp;O più vecchi, con il codice in TFS. Usa
+                    <code>provider: tfvc</code> con <code>tf.exe</code> (Visual
+                    Studio), l'URL della collection (es.
+                    <code>https://tfs.contoso.local/tfs/DefaultCollection</code
+                    >), il percorso <code>$/Progetto/Trunk/Main</code> e una
+                    cartella locale; su una VM di sviluppo F&amp;O usa la
+                    cartella già mappata dal workspace. Niente
+                    <code>tf.exe</code>? Scarica la cartella dal portale web (<b
+                      >Repos → Files → Download as Zip</b
+                    >) e usa <code>provider: local</code>. L'agente legge TFVC
+                    soltanto (<code>get</code>, <code>history</code>), non fa
+                    mai check-in né check-out; senza git le modifiche si
+                    riconoscono dagli hash dei file e le pagine citano il
+                    changeset (<code>fno@C1234:...</code>).
+                  </p>
                   <p class="callout important">
                     <b>Importante:</b> non scrivere mai password, token o chiavi
                     nelle risposte o nel file di configurazione. L'accesso
@@ -1688,6 +1746,41 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
               </p>
               <p lang="it">
                 Installa Git Credential Manager e accedi con il tuo account.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en"><code>tf</code> not found (code in TFVC)</span
+                ><span lang="it"
+                  ><code>tf</code> non trovato (codice in TFVC)</span
+                >
+              </summary>
+              <p lang="en">
+                Open a <b>Developer PowerShell for VS</b>, or switch to
+                <code>provider: local</code> with a copy downloaded from the web
+                portal.
+              </p>
+              <p lang="it">
+                Apri una <b>Developer PowerShell for VS</b>, oppure passa a
+                <code>provider: local</code> con una copia scaricata dal portale
+                web.
+              </p>
+            </details>
+            <details>
+              <summary>
+                <span lang="en"
+                  >TFVC reports pending changes in the workspace</span
+                ><span lang="it"
+                  >TFVC segnala modifiche in sospeso nel workspace</span
+                >
+              </summary>
+              <p lang="en">
+                The agent stops so it never touches your work: check in or undo
+                your changes yourself, or use a dedicated workspace.
+              </p>
+              <p lang="it">
+                L'agente si ferma per non toccare il tuo lavoro: fai check-in o
+                annulla le modifiche tu, oppure usa un workspace dedicato.
               </p>
             </details>
             <details>

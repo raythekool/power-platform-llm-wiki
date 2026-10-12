@@ -24,11 +24,11 @@ flowchart LR
 
 Raccogli queste informazioni prima di aprire il wizard: lo renderanno veloce.
 
-| Domanda                                                   | Esempio                                           |
-| --------------------------------------------------------- | ------------------------------------------------- |
-| Come si chiama il progetto e che tecnologia usa?          | "Vendite", Dynamics 365 CE + Finance & Operations |
-| Dove si trova il codice (e dove vuoi pubblicare la wiki)? | Azure Repos, GitHub o una cartella sul PC         |
-| Chi certifica i contenuti lato cliente?                   | Un key user con nome e cognome                    |
+| Domanda                                                   | Esempio                                               |
+| --------------------------------------------------------- | ----------------------------------------------------- |
+| Come si chiama il progetto e che tecnologia usa?          | "Vendite", Dynamics 365 CE + Finance & Operations     |
+| Dove si trova il codice (e dove vuoi pubblicare la wiki)? | Azure Repos, GitHub, TFS (TFVC) o una cartella sul PC |
+| Chi certifica i contenuti lato cliente?                   | Un key user con nome e cognome                        |
 
 ---
 
@@ -36,14 +36,15 @@ Raccogli queste informazioni prima di aprire il wizard: lo renderanno veloce.
 
 Servono sempre **VS Code con GitHub Copilot**, **PowerShell 7** e **git**. Il resto dipende dalle fonti che userai.
 
-| Se userai…                             | Ti serve               | Come controllare                   |
-| -------------------------------------- | ---------------------- | ---------------------------------- |
-| Qualsiasi fonte                        | PowerShell 7           | `pwsh --version`                   |
-| Codice o pubblicazione                 | git                    | `git --version`                    |
-| Azure Repos o Azure DevOps Wiki        | Git Credential Manager | `git credential-manager --version` |
-| Dataverse                              | `pacx` (o `pac`)       | `pacx --version`                   |
-| GitHub (attività o GitHub Wiki)        | GitHub CLI             | `gh auth status`                   |
-| Documenti Word, PowerPoint, Excel, PDF | `markitdown`           | `markitdown --version`             |
+| Se userai…                             | Ti serve                 | Come controllare                         |
+| -------------------------------------- | ------------------------ | ---------------------------------------- |
+| Qualsiasi fonte                        | PowerShell 7             | `pwsh --version`                         |
+| Codice o pubblicazione                 | git                      | `git --version`                          |
+| Azure Repos o Azure DevOps Wiki        | Git Credential Manager   | `git credential-manager --version`       |
+| Codice in TFS / TFVC                   | `tf.exe` (Visual Studio) | `tf help` in Developer PowerShell for VS |
+| Dataverse                              | `pacx` (o `pac`)         | `pacx --version`                         |
+| GitHub (attività o GitHub Wiki)        | GitHub CLI               | `gh auth status`                         |
+| Documenti Word, PowerPoint, Excel, PDF | `markitdown`             | `markitdown --version`                   |
 
 ✅ **Verifica:** i comandi che ti servono rispondono con un numero di versione. Se `pwsh` manca, **fermati**: senza PowerShell 7 la wiki non funziona.
 
@@ -115,20 +116,29 @@ Il resto di questa pagina segue la modalità guidata.
 
 Tutte le fonti sono **facoltative**. Il wizard le propone una per volta: rispondi **Sì** solo a quelle che hai.
 
-| Fonte                      | Cosa ti chiede                                                                   | Note                                                                         |
-| -------------------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 🧬 **Repository di codice** | nome, provider (`azure-devops`, `github`, `local`), URL, cartella locale, branch | **Consigliata**: il codice è la fonte primaria della documentazione as-built |
-| 📋 **Azure DevOps Boards**  | organizzazione, progetto, aree e iterazioni (facoltative)                        | Accesso con il tuo account Microsoft: **non serve nessun PAT**               |
-| 🗄️ **Dataverse**            | nomi univoci delle soluzioni, prefissi del publisher                             | Usa il profilo `pacx auth` attivo: controlla con `pacx auth ping`            |
-| 🏭 **Metadati F&O**         | cartelle dei package **personalizzati** (es. `<repo>/Metadata/<Package>`)        | Non indicare i package standard Microsoft                                    |
-| 🐙 **Attività GitHub**      | elenco `owner/repo`                                                              | Pull request, issue, branch                                                  |
-| 📂 **SharePoint**           | URL del sito e librerie                                                          | I documenti vanno scaricati in `raw/` a mano                                 |
+| Fonte                      | Cosa ti chiede                                                                                                                                            | Note                                                                         |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| 🧬 **Repository di codice** | nome, provider (`azure-devops`, `github`, `tfvc`, `local`), poi URL, cartella locale e branch (git) oppure URL della collection e percorso `$/...` (TFVC) | **Consigliata**: il codice è la fonte primaria della documentazione as-built |
+| 📋 **Azure DevOps Boards**  | organizzazione, progetto, aree e iterazioni (facoltative)                                                                                                 | Accesso con il tuo account Microsoft: **non serve nessun PAT**               |
+| 🗄️ **Dataverse**            | nomi univoci delle soluzioni, prefissi del publisher                                                                                                      | Usa il profilo `pacx auth` attivo: controlla con `pacx auth ping`            |
+| 🏭 **Metadati F&O**         | cartelle dei package **personalizzati** (es. `<repo>/Metadata/<Package>`)                                                                                 | Non indicare i package standard Microsoft                                    |
+| 🐙 **Attività GitHub**      | elenco `owner/repo`                                                                                                                                       | Pull request, issue, branch                                                  |
+| 📂 **SharePoint**           | URL del sito e librerie                                                                                                                                   | I documenti vanno scaricati in `raw/` a mano                                 |
 
 **Esempio per un progetto CE su Azure DevOps**
 
 - Repository di codice: nome `crm-solution`, provider `azure-devops`, branch `develop`, cartella locale `../crm-solution`.
 - Boards: organizzazione `contoso`, progetto `Vendite`.
 - Dataverse: soluzione `VenditeCore`, prefisso `cts_`.
+
+**E se il codice non è in git?** Capita spesso nei progetti F&O più vecchi, con il codice in TFS (TFVC).
+
+| Situazione                                          | Provider | Cosa serve                                                                                                                                                                                                                     |
+| --------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Codice in TFS / Azure DevOps Server / progetto TFVC | `tfvc`   | `tf.exe` (Visual Studio), URL della collection (es. `https://tfs.contoso.local/tfs/DefaultCollection`), percorso `$/Progetto/Trunk/Main`, cartella locale. Su una VM di sviluppo F&O usa la cartella già mappata dal workspace |
+| Niente `tf.exe`, oppure solo una copia del codice   | `local`  | Scarica la cartella dal portale web (**Repos → Files → Download as Zip**) e indica dove l'hai estratta                                                                                                                         |
+
+L'agente usa TFVC **solo in lettura** (`get`, `history`): non fa mai check-in né check-out. Senza git, le modifiche tra un aggiornamento e l'altro si riconoscono dagli hash dei file; nelle pagine le citazioni usano il changeset (`fno@C1234:...`) o la data della copia.
 
 > [!IMPORTANT]
 > Non scrivere mai password, token o chiavi nelle risposte o nel file di configurazione. L'accesso avviene con il tuo account (Microsoft Entra ID, `az login`, `pacx auth`).
@@ -244,6 +254,8 @@ Non devi rifare `init`. Scrivi `config` e scegli cosa cambiare: aggiungere o tog
 | L'agente **LLM Wiki** non compare                         | Controlla **Chat > Plugins: Enabled** e che il plugin sia installato; riavvia VS Code                                                |
 | `pwsh` non trovato                                        | Installa PowerShell 7 e riapri VS Code                                                                                               |
 | Il clone di Azure Repos chiede le credenziali di continuo | Installa Git Credential Manager e accedi con il tuo account                                                                          |
+| `tf` non trovato (codice in TFVC)                         | Apri una **Developer PowerShell for VS**, oppure usa `provider: local` con una copia scaricata dal portale web                       |
+| `tf` segnala modifiche in sospeso nel workspace           | L'agente si ferma per non toccare il tuo lavoro: fai check-in o annulla le modifiche tu, oppure usa un workspace dedicato            |
 | Dataverse non risponde                                    | Esegui `pacx auth list` e `pacx auth ping`; seleziona il profilo giusto con `pacx auth select`                                       |
 | Le Boards non restituiscono dati                          | Controlla organizzazione e progetto con `config` e verifica di avere accesso al progetto                                             |
 | Il lint segnala errori dopo `init`                        | Leggi l'elenco degli errori (o il report `llm-wiki/wiki/lint-*.md` generato da `update --lint`), correggi e rilancia `update --lint` |

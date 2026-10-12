@@ -19,14 +19,14 @@
 
 ## ✨ What you get
 
-|                                  |                                                                                                                                                                                                       |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 🧬 **Code is the primary source** | As-built pages are generated from repositories (Azure Repos, GitHub, local clones) and platform metadata. FDD and TDD describe the intent; when they disagree with the code the wiki flags `⚠️ Drift`. |
-| 📐 **Standard formats**           | Templates for requirements (FDD), technical design (TDD), ADR, meeting minutes and code components give every project the same structure.                                                             |
-| 🛡️ **Governed content**           | Every page has an owner, sources and a lifecycle: `draft` -> `reviewed` -> `certified`. The agent writes drafts; people review and certify.                                                           |
-| 💸 **Low token cost**             | Deterministic PowerShell scripts do inventory, change detection, lint and publishing. The LLM reads their JSON and only the files that changed.                                                       |
-| 🌐 **Publish anywhere**           | Azure DevOps Wiki (project or code wiki) and GitHub Wiki, generated from the same Markdown.                                                                                                           |
-| 💬 **Ask the wiki**               | `query` answers only from the wiki, with citations and the certification status of each source.                                                                                                       |
+|                                  |                                                                                                                                                                                                                    |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 🧬 **Code is the primary source** | As-built pages are generated from repositories (Azure Repos, GitHub, TFS / TFVC, local folders) and platform metadata. FDD and TDD describe the intent; when they disagree with the code the wiki flags `⚠️ Drift`. |
+| 📐 **Standard formats**           | Templates for requirements (FDD), technical design (TDD), ADR, meeting minutes and code components give every project the same structure.                                                                          |
+| 🛡️ **Governed content**           | Every page has an owner, sources and a lifecycle: `draft` -> `reviewed` -> `certified`. The agent writes drafts; people review and certify.                                                                        |
+| 💸 **Low token cost**             | Deterministic PowerShell scripts do inventory, change detection, lint and publishing. The LLM reads their JSON and only the files that changed.                                                                    |
+| 🌐 **Publish anywhere**           | Azure DevOps Wiki (project or code wiki) and GitHub Wiki, generated from the same Markdown.                                                                                                                        |
+| 💬 **Ask the wiki**               | `query` answers only from the wiki, with citations and the certification status of each source.                                                                                                                    |
 
 ## 🧭 How it works
 
@@ -72,7 +72,7 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki
 The skills appear as `/power-platform-llm-wiki:init`, `:config`, `:update`, `:ingest` and `:query`. Check with `claude plugin list`; to update, run `claude plugin update power-platform-llm-wiki@power-platform-llm-wiki`.
 
 > [!NOTE]
-> Requirements: 🐚 PowerShell 7 (`pwsh`) and 🌿 git. Optional, per source: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (Word, PowerPoint, Excel, PDF).
+> Requirements: 🐚 PowerShell 7 (`pwsh`) and 🌿 git. Optional, per source: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `tf.exe` from Visual Studio (code in TFVC), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (Word, PowerPoint, Excel, PDF).
 
 ## ⚡ Quick start
 
@@ -174,7 +174,7 @@ plugins/power-platform-llm-wiki/
 ├── skills/{init,config,update,ingest,query}/SKILL.md
 ├── scripts/                               # Install-Engine, Get-RawDelta, Get-CodeInventory, Test-WikiLint, Export-Wiki
 ├── templates/                             # meeting, requirement, design, adr, code-component, source
-└── references/                            # AGENTS.md, publishing.md, profiles/
+└── references/                            # AGENTS.md, publishing.md, tfvc.md, profiles/
 scripts/Validate-Plugin.ps1                # release checks (structure, versions, confidentiality, doc links)
 tests/                                     # fixtures (wiki, raw, CE + F&O repo) and Invoke-Tests.ps1
 docs/                                      # user guide, governance, migration, images

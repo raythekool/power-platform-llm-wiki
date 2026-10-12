@@ -13,12 +13,20 @@ project:
 code:
   repos: []
   # - name: crm-solution
-  #   provider: azure-devops        # azure-devops | github | local
+  #   provider: azure-devops        # azure-devops | github | tfvc | local
   #   url: https://dev.azure.com/contoso/Sales/_git/crm-solution
   #   path: ../crm-solution          # local clone used for analysis (cloned/pulled by `update --source code`)
   #   branch: develop
   #   include: ["src/**", "solution/**"]
   #   exclude: ["**/tests/**"]
+  # - name: fno-main                # code in TFVC (TFS / Azure DevOps Server): needs tf.exe, see .engine/tfvc.md
+  #   provider: tfvc
+  #   url: https://tfs.contoso.local/tfs/DefaultCollection   # collection URL
+  #   server_path: $/Contoso/Trunk/Main
+  #   path: ../fno-main              # local workspace folder (read-only use: get, never check in)
+  # - name: legacy-copy             # no version control: a folder read as is (changes found by file hashes)
+  #   provider: local
+  #   path: ../legacy-copy
 
 # Azure DevOps work items (Boards). Authentication: Microsoft Entra ID via the MCP server - no PAT.
 devops:

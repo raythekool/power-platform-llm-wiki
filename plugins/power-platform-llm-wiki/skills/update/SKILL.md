@@ -1,6 +1,6 @@
 ---
 name: update
-description: "Maintain the LLM Wiki. Sync sources into raw/ and wiki/: code repositories (Azure Repos, GitHub, local clones; code-first as-built docs with requirement traceability and FDD-vs-code drift), Azure DevOps work items, Dataverse metadata, Dynamics 365 F&O metadata, GitHub activity. Also: full incremental run (--full), deterministic lint (--lint), publish to Azure DevOps Wiki or GitHub Wiki (--publish), sprint snapshot (--sprint), review/certify pages on human request (--review / --certify). Headless-safe."
+description: "Maintain the LLM Wiki. Sync sources into raw/ and wiki/: code repositories (Azure Repos, GitHub, TFVC / TFS, local folders; code-first as-built docs with requirement traceability and FDD-vs-code drift), Azure DevOps work items, Dataverse metadata, Dynamics 365 F&O metadata, GitHub activity. Also: full incremental run (--full), deterministic lint (--lint), publish to Azure DevOps Wiki or GitHub Wiki (--publish), sprint snapshot (--sprint), review/certify pages on human request (--review / --certify). Headless-safe."
 argument-hint: "[--source code|devops|dataverse|fno|github|all] [--full] [--lint] [--publish] [--sprint [<id>]] [--review|--certify <page> --by <name>]"
 user-invocable: true
 ---
@@ -13,7 +13,7 @@ Read `llm-wiki/AGENTS.md` first. All scripts live in `llm-wiki/.engine/scripts/`
 
 | Flag | Action |
 | --- | --- |
-| `--source code` | Clone/pull configured repositories, run the code inventory, update `wiki/projects/` and `wiki/code/`, traceability and drift |
+| `--source code` | Get the latest code (git pull, TFVC get, or read a local folder), run the code inventory, update `wiki/projects/` and `wiki/code/`, traceability and drift |
 | `--source devops` | Azure DevOps work items -> `wiki/features/`, `wiki/delivery/` |
 | `--source dataverse` | Dataverse solution metadata (pacx/pac) -> `wiki/code/` |
 | `--source fno` | F&O metadata folders -> `wiki/code/` |
@@ -36,7 +36,8 @@ Without flags: ask which mode (interactive) or run `--full` (headless).
 | other `llm-wiki/raw/` folders | WRITE only `.md` conversions next to originals (`--full`) |
 | `llm-wiki/.state/` | WRITE through `Get-RawDelta.ps1` |
 | `llm-wiki/wiki/` | WRITE (respecting the content governance rules in `AGENTS.md`) |
-| Clones of code repositories | READ (pull only; never commit or push to them) |
+| Clones and workspaces of code repositories | READ (git pull / TFVC get only; never commit, check in, check out, shelve or push) |
+| `llm-wiki/.state/code-*.json` | WRITE through `Get-CodeInventory.ps1 -StatePath` / `-AcceptState` |
 | Target wiki repository | WRITE only in `--publish` |
 
 ## Phase 0 - Bootstrap
@@ -51,20 +52,24 @@ Each source follows the same pattern: **collect deterministically -> dump into `
 
 ### A) Code (`--source code`) - primary source of as-built knowledge
 
-For each entry in `code.repos`:
+For each entry in `code.repos` (the revision label `<rev>` is the git short SHA, the TFVC changeset `C<n>`, or the date `YYYY-MM-DD` for a plain folder):
 
-1. **Get the code.** If `path` exists: `git -C <path> fetch` and `git -C <path> checkout <branch>` + `git -C <path> pull --ff-only` (never discard local changes: if the working tree is dirty, stop and ask). Otherwise `git clone --branch <branch> <url> <path>` (Azure Repos and GitHub both work with Git Credential Manager; never put tokens in URLs). Record `HEAD`.
-2. **Skip unchanged repositories**: if the last `code` entry for the repo in `wiki/log.md` has the same commit, go to the next repo.
-3. **Inventory:**
+1. **Get the code**, by `provider`:
+    - `azure-devops`, `github` (git): if `path` exists, `git -C <path> fetch`, `git -C <path> checkout <branch>`, `git -C <path> pull --ff-only` (if the working tree is dirty, stop and ask: never discard local changes). Otherwise `git clone --branch <branch> <url> <path>` (Git Credential Manager; never put tokens in URLs). `<rev>` = `HEAD`.
+    - `tfvc` (Team Foundation Version Control: TFS, Azure DevOps Server or Services): needs `tf.exe` (Visual Studio / Team Explorer; run from a Developer PowerShell or by full path). Read `.engine/tfvc.md` and follow it: reuse an existing workspace that maps `server_path` to `path`, or create a dedicated one; stop and ask if `tf status` shows pending changes; `tf get` the latest version; `<rev>` = latest changeset of `server_path`. If `tf.exe` is not available, ask the user to download the folder (web portal: Repos -> Files -> Download as Zip) into `path` and continue as `local`.
+    - `local` (no version control, e.g. a copy exported from TFS or a dev VM folder): read `path` as is; never modify it.
+2. **Skip unchanged repositories**: git and TFVC - the last `code` entry for the repo in `wiki/log.md` has the same `<rev>`; plain folders - the inventory reports no added, modified or deleted files.
+3. **Inventory** (for `tfvc` and `local` add `-Revision <rev>` and the change state):
 
     ```powershell
     pwsh llm-wiki/.engine/scripts/Get-CodeInventory.ps1 -Path <path> -OutFile llm-wiki/raw/code/<repo>-<YYYY-MM-DD>.json
+    pwsh llm-wiki/.engine/scripts/Get-CodeInventory.ps1 -Path <path> -OutFile llm-wiki/raw/code/<repo>-<YYYY-MM-DD>.json -Revision <rev> -StatePath llm-wiki/.state/code-<repo>.json
     ```
 
-4. **Changed files since the last documented commit**: `git -C <path> diff --name-only <lastSha> HEAD`. On the first run, document everything; afterwards update only the pages whose components changed.
+4. **Changed files since the last documented revision**: git - `git -C <path> diff --name-only <lastSha> HEAD`; TFVC and plain folders - `changes.added / modified / deleted` in the inventory (`changes.baseline: true` on the first run). On the first run, document everything; afterwards update only the pages whose components changed. When the pages are written, accept the snapshot so the next run compares with it: `Get-CodeInventory.ps1 -StatePath llm-wiki/.state/code-<repo>.json -AcceptState`. If the run fails, do not accept: the same changes are reported again next time.
 5. **Pages** (follow the active profiles for the `wiki/code/` page set and use `code-component.md` for component pages):
-    - `wiki/projects/<repo>.md` (`type: project`): purpose, branch strategy, structure, components with links to `code/` pages, last documented commit.
-    - `wiki/code/*`: describe behaviour in business terms first, then technical detail, citing `<repo>@<sha>:<path>`; at least one Mermaid diagram per page. Open only the source files each page needs (inventory first).
+    - `wiki/projects/<repo>.md` (`type: project`): purpose, version control (git or TFVC, branch / server path), structure, components with links to `code/` pages, last documented revision.
+    - `wiki/code/*`: describe behaviour in business terms first, then technical detail, citing `<repo>@<rev>:<path>`; at least one Mermaid diagram per page. Open only the source files each page needs (inventory first).
 6. **Traceability and drift** (the main value of code-first documentation):
     - For each `wiki/requirements/*.md`, look for implementing components (names, tables, messages, CoC targets, entities mentioned in the requirement). Add the requirement ID to the code page `implements:` and a row to its `Traceability` table; add the links in the requirement `## Implementation` section.
     - When the code contradicts a requirement or a design page, add `> ⚠️ **Drift:** ...` to both pages with evidence (`file:line` or method). Never "fix" the requirement text.
@@ -72,7 +77,7 @@ For each entry in `code.repos`:
 
 ### B) F&O metadata (`--source fno`)
 
-Read `.engine/profiles/dynamics-fno.md`. For each path in `fno.metadata_paths` (custom packages only), run `Get-CodeInventory.ps1 -Path <path> -OutFile llm-wiki/raw/fno/<name>-<YYYY-MM-DD>.json`, then update the F&O `wiki/code/` pages (data model, extensions with CoC and `next`, classes, data entities, security, integrations) and the traceability as in A.6. When the metadata lives in a code repository already listed in `code.repos`, the code phase already produced the inventory: reuse it.
+Read `.engine/profiles/dynamics-fno.md`. For each path in `fno.metadata_paths` (custom packages only), run `Get-CodeInventory.ps1 -Path <path> -OutFile llm-wiki/raw/fno/<name>-<YYYY-MM-DD>.json` (add `-StatePath llm-wiki/.state/fno-<name>.json` when the folder is not a git clone, and accept it after the pages are written, as in A.4), then update the F&O `wiki/code/` pages (data model, extensions with CoC and `next`, classes, data entities, security, integrations) and the traceability as in A.6. When the metadata lives in a code repository already listed in `code.repos`, the code phase already produced the inventory: reuse it.
 
 ### C) Dataverse (`--source dataverse`)
 
@@ -127,7 +132,7 @@ Append one entry per phase to `wiki/log.md`:
 ```markdown
 ## [YYYY-MM-DD] update --source code | <repo>
 
-- Commit: <repo>@<sha> (previous <sha>)
+- Revision: <repo>@<rev> (previous <rev>)
 - Inventory: `raw/code/<repo>-<date>.json` (plugins N, PCF N, Ax objects N)
 - Pages created: <links>  Pages updated: <links>
 - Traceability: requirements linked N; drift flagged N

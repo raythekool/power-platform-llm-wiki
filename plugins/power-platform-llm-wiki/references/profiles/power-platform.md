@@ -46,5 +46,5 @@ Split a page per component (e.g. `code/plugins/credit-check.md`) when it exceeds
 
 - Reference tables as `dv:<logicalname>`; show display name and logical name the first time.
 - Plugin rows: `Class | Table | Message | Stage (PreValidation/PreOperation/PostOperation) | Mode (Sync/Async) | Order | Filtering attributes | Images`.
-- Describe behaviour in business terms first, then technical detail; cite `<repo>@<sha>:<path>`.
+- Describe behaviour in business terms first, then technical detail; cite `<repo>@<rev>:<path>`.
 - Fill `implements:` with the requirement IDs a component realises; add a `Traceability` table.
