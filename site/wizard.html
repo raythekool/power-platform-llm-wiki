@@ -498,6 +498,51 @@
   "{{REPO_SLUG}}"
 ]</code></pre>
                 </div>
+                <p lang="en">
+                  <b>Using the terminal instead of VS Code?</b> Install from the
+                  shell with GitHub Copilot CLI or Claude Code. In Claude Code
+                  the skills are called
+                  <code>/power-platform-llm-wiki:init</code>,
+                  <code>:update</code> and so on.
+                </p>
+                <p lang="it">
+                  <b>Usi il terminale invece di VS Code?</b> Installa da shell
+                  con GitHub Copilot CLI o Claude Code. In Claude Code le skill
+                  si chiamano <code>/power-platform-llm-wiki:init</code>,
+                  <code>:update</code> e così via.
+                </p>
+                <div class="code">
+                  <div class="code-bar">
+                    <span>GitHub Copilot CLI</span
+                    ><button
+                      type="button"
+                      class="copy"
+                      data-copy="#wz-cli-copilot"
+                    >
+                      <span lang="en">Copy</span><span lang="it">Copia</span>
+                    </button>
+                  </div>
+                  <pre
+                    id="wz-cli-copilot"
+                  ><code>copilot plugin marketplace add {{REPO_SLUG}}
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre>
+                </div>
+                <div class="code">
+                  <div class="code-bar">
+                    <span>Claude Code</span
+                    ><button
+                      type="button"
+                      class="copy"
+                      data-copy="#wz-cli-claude"
+                    >
+                      <span lang="en">Copy</span><span lang="it">Copia</span>
+                    </button>
+                  </div>
+                  <pre
+                    id="wz-cli-claude"
+                  ><code>claude plugin marketplace add {{REPO_SLUG}}
+claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre>
+                </div>
                 <p class="verify" lang="en">
                   <b>✅ Verify:</b> in the chat, the agent list shows
                   <b>LLM Wiki</b>.

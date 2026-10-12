@@ -4,7 +4,7 @@
     Validates the LLM Wiki plugin before release (structure, manifests, skills, confidentiality).
 .DESCRIPTION
     Checks:
-      1. plugin.json, .mcp.json and marketplace.json are valid; versions match; marketplace entry points to the plugin.
+      1. plugin.json, .mcp.json and both marketplace.json files (.github/plugin and .claude-plugin) are valid; versions match; marketplace entry points to the plugin.
       2. The five skills exist with front matter (name = folder, description) and no unsupported keys.
       3. The agent references only existing skills.
       4. Every file installed by Install-Engine.ps1 exists (scripts, templates, profiles, publishing.md, AGENTS.md).
@@ -34,16 +34,20 @@ function Read-Json([string]$Path) {
 # 1. Manifests
 $plugin = Read-Json (Join-Path $pluginRoot 'plugin.json')
 $null = Read-Json (Join-Path $pluginRoot '.mcp.json')
-$market = Read-Json (Join-Path $RepoRoot '.github/plugin/marketplace.json')
+$marketFiles = '.github/plugin/marketplace.json', '.claude-plugin/marketplace.json'
+$markets = @{}
+foreach ($mf in $marketFiles) { $markets[$mf] = Read-Json (Join-Path $RepoRoot $mf) }
 if ($plugin) {
     if (-not $plugin.version) { $errors.Add('plugin.json has no version') }
     if ($plugin.PSObject.Properties['hooks'] -and -not (Test-Path (Join-Path $pluginRoot $plugin.hooks))) { $errors.Add("plugin.json hooks file not found: $($plugin.hooks)") }
 }
-if ($plugin -and $market) {
+foreach ($mf in $marketFiles) {
+    $market = $markets[$mf]
+    if (-not ($plugin -and $market)) { continue }
     $entry = @($market.plugins)[0]
-    if ($entry.name -ne $plugin.name) { $errors.Add("marketplace plugins[0].name '$($entry.name)' != plugin.json name '$($plugin.name)'") }
-    if (($entry.source -replace '^\./', '' -replace '/$', '') -ne 'plugins/power-platform-llm-wiki') { $errors.Add("marketplace source '$($entry.source)' does not point to plugins/power-platform-llm-wiki") }
-    if ($entry.version -ne $plugin.version -or $market.metadata.version -ne $plugin.version) { $errors.Add("Version mismatch: plugin.json $($plugin.version), marketplace entry $($entry.version), marketplace metadata $($market.metadata.version)") }
+    if ($entry.name -ne $plugin.name) { $errors.Add("$mf plugins[0].name '$($entry.name)' != plugin.json name '$($plugin.name)'") }
+    if (($entry.source -replace '^\./', '' -replace '/$', '') -ne 'plugins/power-platform-llm-wiki') { $errors.Add("$mf source '$($entry.source)' does not point to plugins/power-platform-llm-wiki") }
+    if ($entry.version -ne $plugin.version -or $market.metadata.version -ne $plugin.version) { $errors.Add("Version mismatch in ${mf}: plugin.json $($plugin.version), marketplace entry $($entry.version), marketplace metadata $($market.metadata.version)") }
 }
 
 # 2. Skills

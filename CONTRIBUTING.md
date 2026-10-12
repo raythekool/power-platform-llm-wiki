@@ -48,6 +48,6 @@ Thanks for improving LLM Wiki. This repository is the source of the `power-platf
 
 ### 🏷️ Releasing
 
-1. Bump the version (SemVer) in `plugins/power-platform-llm-wiki/plugin.json` and in `.github/plugin/marketplace.json` (`metadata.version` and `plugins[0].version`). The validator fails on mismatches.
+1. Bump the version (SemVer) in `plugins/power-platform-llm-wiki/plugin.json` and in both marketplace manifests, `.github/plugin/marketplace.json` (VS Code, Copilot CLI) and `.claude-plugin/marketplace.json` (Claude Code): `metadata.version` and `plugins[0].version` in each. The validator fails on mismatches.
 2. Breaking changes to links, front matter, configuration or host layout require a major version, a CHANGELOG "Breaking" section and migration steps (`config --migrate` and `docs/`).
 3. Tag the release (`vX.Y.Z`). Projects update the plugin, then run `config --refresh-engine`.

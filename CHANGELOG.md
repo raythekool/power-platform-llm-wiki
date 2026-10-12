@@ -2,8 +2,11 @@
 
 ## Unreleased
 
+## 3.0.1 - 2026-10-12
+
 - 🌍 Bilingual (EN/IT) promo website in `site/`, built by `scripts/Build-Site.ps1` and deployed to GitHub Pages by `.github/workflows/pages.yml`.
 - 🧙 Interactive setup wizard page (`site/wizard.html`), the web version of `docs/wizard-configurazione.md`, with per-step navigation and progress saved in the browser.
+- 📦 Install instructions for GitHub Copilot CLI and Claude Code (README, website, user guide). New `.claude-plugin/marketplace.json` (checked by the validator together with `.github/plugin/marketplace.json`); `plugin.json` now declares `mcpServers` as `./.mcp.json`, as Claude Code requires.
 
 ## 3.0.0 - 2026-10-01
 

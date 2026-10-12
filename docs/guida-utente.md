@@ -30,6 +30,20 @@ Come usare **LLM Wiki** su un progetto Dynamics 365 (CE / Power Platform o Finan
 2. Nella vista Extensions cerca `@agentPlugins power-platform-llm-wiki` e installa.
 3. Nella chat seleziona l'agente **LLM Wiki**.
 
+Dal terminale, in alternativa a VS Code:
+
+```shell
+# GitHub Copilot CLI
+copilot plugin marketplace add raythekool/power-platform-llm-wiki
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki
+
+# Claude Code
+claude plugin marketplace add raythekool/power-platform-llm-wiki
+claude plugin install power-platform-llm-wiki@power-platform-llm-wiki
+```
+
+In Claude Code le skill si chiamano `/power-platform-llm-wiki:init`, `:config`, `:update`, `:ingest` e `:query`.
+
 ### 🧙 2. Primo setup (`init`)
 
 > [!TIP]

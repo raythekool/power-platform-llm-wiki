@@ -36,10 +36,40 @@
 
 ## 🚀 Install
 
+The same repository is a plugin marketplace for **VS Code**, **GitHub Copilot CLI** and **Claude Code**. Pick the tool you use.
+
+### 🟦 VS Code (GitHub Copilot)
+
 1. In VS Code settings enable **Chat > Plugins: Enabled**.
 2. Add this repository to **Chat > Plugins: Marketplaces** (`chat.plugins.marketplaces`), using the `owner/repo` slug of this repository.
 3. In the Extensions view search `@agentPlugins power-platform-llm-wiki` and install.
 4. Select the **LLM Wiki** agent in the chat agent picker.
+
+### ⌨️ GitHub Copilot CLI
+
+```shell
+copilot plugin marketplace add raythekool/power-platform-llm-wiki
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki
+```
+
+The same commands work in an interactive session as `/plugin marketplace add ...` and `/plugin install ...`. Check with `copilot plugin list`; to update, run `copilot plugin update power-platform-llm-wiki`.
+
+### 🟠 Claude Code
+
+One step (Claude Code 2.1.275 or later):
+
+```shell
+claude plugin install power-platform-llm-wiki --marketplace raythekool/power-platform-llm-wiki
+```
+
+Or in two steps, from your shell or inside a session as `/plugin ...`:
+
+```shell
+claude plugin marketplace add raythekool/power-platform-llm-wiki
+claude plugin install power-platform-llm-wiki@power-platform-llm-wiki
+```
+
+The skills appear as `/power-platform-llm-wiki:init`, `:config`, `:update`, `:ingest` and `:query`. Check with `claude plugin list`; to update, run `claude plugin update power-platform-llm-wiki@power-platform-llm-wiki`.
 
 > [!NOTE]
 > Requirements: 🐚 PowerShell 7 (`pwsh`) and 🌿 git. Optional, per source: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (Word, PowerPoint, Excel, PDF).
@@ -134,7 +164,8 @@ Roles, cadence and indicators: [docs/governance.md](docs/governance.md).
 ## 🗂️ Repository layout
 
 ```text
-.github/plugin/marketplace.json            # marketplace manifest
+.github/plugin/marketplace.json            # marketplace manifest (VS Code, Copilot CLI)
+.claude-plugin/marketplace.json            # same manifest for Claude Code (keep versions in sync)
 .github/workflows/validate.yml             # CI: validator + script tests
 .github/workflows/pages.yml                # deploys the website to GitHub Pages
 plugins/power-platform-llm-wiki/

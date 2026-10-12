@@ -718,6 +718,60 @@
 ]</code></pre>
             </div>
           </div>
+          <div class="install-alt">
+            <div class="reveal">
+              <h3 lang="en">Prefer the terminal? GitHub Copilot CLI</h3>
+              <h3 lang="it">Preferisci il terminale? GitHub Copilot CLI</h3>
+              <div class="code">
+                <div class="code-bar">
+                  <span>shell</span
+                  ><button type="button" class="copy" data-copy="#cli-copilot">
+                    <span lang="en">Copy</span><span lang="it">Copia</span>
+                  </button>
+                </div>
+                <pre
+                  id="cli-copilot"
+                ><code>copilot plugin marketplace add {{REPO_SLUG}}
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre>
+              </div>
+            </div>
+            <div class="reveal">
+              <h3>Claude Code</h3>
+              <div class="code">
+                <div class="code-bar">
+                  <span>shell</span
+                  ><button type="button" class="copy" data-copy="#cli-claude">
+                    <span lang="en">Copy</span><span lang="it">Copia</span>
+                  </button>
+                </div>
+                <pre
+                  id="cli-claude"
+                ><code>claude plugin marketplace add {{REPO_SLUG}}
+claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre>
+              </div>
+            </div>
+          </div>
+          <p class="note reveal" lang="en">
+            In a Copilot CLI or Claude Code session the same commands work as
+            <code>/plugin marketplace add</code> and
+            <code>/plugin install</code>. Updates:
+            <code>copilot plugin update power-platform-llm-wiki</code>
+            or
+            <code
+              >claude plugin update
+              power-platform-llm-wiki@power-platform-llm-wiki</code
+            >.
+          </p>
+          <p class="note reveal" lang="it">
+            In una sessione di Copilot CLI o Claude Code gli stessi comandi
+            funzionano come <code>/plugin marketplace add</code> e
+            <code>/plugin install</code>. Aggiornamenti:
+            <code>copilot plugin update power-platform-llm-wiki</code> oppure
+            <code
+              >claude plugin update
+              power-platform-llm-wiki@power-platform-llm-wiki</code
+            >.
+          </p>
           <a class="wizard-cta reveal" href="wizard.html">
             <span class="ico i-violet" aria-hidden="true">🧙</span>
             <span>

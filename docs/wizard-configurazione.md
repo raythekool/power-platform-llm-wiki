@@ -58,6 +58,20 @@ Servono sempre **VS Code con GitHub Copilot**, **PowerShell 7** e **git**. Il re
 2. In **Chat > Plugins: Marketplaces** aggiungi `raythekool/power-platform-llm-wiki`.
 3. Nella vista **Extensions** cerca `@agentPlugins power-platform-llm-wiki` e installa.
 
+Se lavori dal terminale invece che da VS Code:
+
+```shell
+# GitHub Copilot CLI
+copilot plugin marketplace add raythekool/power-platform-llm-wiki
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki
+
+# Claude Code
+claude plugin marketplace add raythekool/power-platform-llm-wiki
+claude plugin install power-platform-llm-wiki@power-platform-llm-wiki
+```
+
+In Claude Code le skill si chiamano `/power-platform-llm-wiki:init`, `:update` e così via.
+
 ✅ **Verifica:** nella chat, nell'elenco degli agenti compare **LLM Wiki**.
 
 ---

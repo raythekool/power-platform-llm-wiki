@@ -150,6 +150,7 @@ try {
     $wizard = Get-Content -LiteralPath (Join-Path $siteOut 'wizard.html') -Raw
     Assert ($wizard -notmatch '\{\{[A-Z_]+\}\}' -and $wizard -match 'chat\.plugins\.marketplaces[\s\S]*example/demo') 'wizard page built with REPO_SLUG'
     Assert ($index -match 'href="wizard\.html"') 'home links the wizard page'
+    Assert ($index -match 'copilot plugin marketplace add example/demo' -and $index -match 'claude plugin marketplace add example/demo') 'home shows Copilot CLI and Claude Code install commands'
 }
 finally {
     Remove-Item -Recurse -Force $work -ErrorAction SilentlyContinue

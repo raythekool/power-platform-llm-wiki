@@ -2,7 +2,13 @@
   <img src="../../docs/images/banner.svg" alt="LLM Wiki - code-first knowledge base for Dynamics 365 delivery" width="100%">
 </p>
 
-📦 The **LLM Wiki** plugin for GitHub Copilot in VS Code. Full description, install steps and screenshots: see the [repository README](../../README.md).
+📦 The **LLM Wiki** plugin for GitHub Copilot (VS Code, Copilot CLI) and Claude Code. Full description, install steps and screenshots: see the [repository README](../../README.md).
+
+Quick install in Claude Code:
+
+```shell
+/plugin install power-platform-llm-wiki --marketplace raythekool/power-platform-llm-wiki
+```
 
 ## 🧱 Components
 
