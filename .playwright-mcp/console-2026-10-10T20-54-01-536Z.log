@@ -1,3 +1,0 @@
-[  167327ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8765/images/lifecycle.svg:0
-[  167870ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8765/images/traceability.svg:0
-[  168879ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:8765/images/workflow.svg:0

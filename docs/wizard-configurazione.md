@@ -9,7 +9,7 @@ Percorso guidato, un passo alla volta, per configurare la wiki di un progetto. P
 
 ```mermaid
 flowchart LR
-    A[0. Prerequisiti] --> B[1. Installa la plugin]
+    A[0. Prerequisiti] --> B[1. Installa il plugin]
     B --> C[2. Avvia init]
     C --> D[3. Progetto e profili]
     D --> E[4. Fonti]
@@ -52,7 +52,7 @@ Servono sempre **VS Code con GitHub Copilot**, **PowerShell 7** e **git**. Il re
 
 ---
 
-### 📦 Passo 1 - Installa la plugin
+### 📦 Passo 1 - Installa il plugin
 
 1. In VS Code apri **Impostazioni** e attiva **Chat > Plugins: Enabled**.
 2. In **Chat > Plugins: Marketplaces** aggiungi `raythekool/power-platform-llm-wiki`.
@@ -185,7 +185,7 @@ Al termine il progetto contiene:
 | `llm-wiki/wiki.config.yml`        | Le tue scelte (puoi modificarlo a mano o con `config`) |
 | `llm-wiki/raw/`                   | Dove metti FDD, TDD, verbali e altri documenti         |
 | `llm-wiki/wiki/`                  | La wiki vera e propria (pagine Markdown)               |
-| `llm-wiki/.engine/` e `AGENTS.md` | Il motore gestito dalla plugin: **non modificarli**    |
+| `llm-wiki/.engine/` e `AGENTS.md` | Il motore gestito dal plugin: **non modificarli**      |
 | `.vscode/mcp.json`                | Il collegamento ad Azure DevOps, se usi le Boards      |
 | `.github/copilot-instructions.md` | Le istruzioni che fanno usare la wiki a Copilot        |
 
@@ -221,13 +221,13 @@ Quando hai finito:
 
 ### 🔁 Cambiare idea più tardi
 
-Non devi rifare `init`. Scrivi `config` e scegli cosa cambiare: aggiungere o togliere fonti, profili, lingua, pubblicazione, governance, automazione. Dopo un aggiornamento della plugin lancia `config --refresh-engine`, poi `update --lint`.
+Non devi rifare `init`. Scrivi `config` e scegli cosa cambiare: aggiungere o togliere fonti, profili, lingua, pubblicazione, governance, automazione. Dopo un aggiornamento del plugin lancia `config --refresh-engine`, poi `update --lint`.
 
 ### 🩺 Se qualcosa non funziona
 
 | Sintomo                                                   | Cosa fare                                                                                                                            |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| L'agente **LLM Wiki** non compare                         | Controlla **Chat > Plugins: Enabled** e che la plugin sia installata; riavvia VS Code                                                |
+| L'agente **LLM Wiki** non compare                         | Controlla **Chat > Plugins: Enabled** e che il plugin sia installato; riavvia VS Code                                                |
 | `pwsh` non trovato                                        | Installa PowerShell 7 e riapri VS Code                                                                                               |
 | Il clone di Azure Repos chiede le credenziali di continuo | Installa Git Credential Manager e accedi con il tuo account                                                                          |
 | Dataverse non risponde                                    | Esegui `pacx auth list` e `pacx auth ping`; seleziona il profilo giusto con `pacx auth select`                                       |

@@ -24,7 +24,7 @@ Come usare **LLM Wiki** su un progetto Dynamics 365 (CE / Power Platform o Finan
 - 🐚 PowerShell 7 (`pwsh`) e 🌿 git.
 - In base alle fonti del progetto: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (documenti Word, PowerPoint, Excel, PDF).
 
-### 📦 1. Installare la plugin
+### 📦 1. Installare il plugin
 
 1. Aggiungi questo repository a **Chat > Plugins: Marketplaces** (formato `owner/repo`).
 2. Nella vista Extensions cerca `@agentPlugins power-platform-llm-wiki` e installa.
@@ -119,7 +119,7 @@ Chi non usa VS Code consulta la wiki pubblicata su Azure DevOps o tramite Micros
 
 **📌 Dove metto le regole specifiche del progetto?** In `llm-wiki/wiki.config.yml`, sezione `conventions`. Non modificare `llm-wiki/AGENTS.md` né `llm-wiki/.engine/`: vengono sovrascritti dagli aggiornamenti.
 
-**🔄 Ho aggiornato la plugin, cosa faccio?** `config --refresh-engine`, poi `update --lint`.
+**🔄 Ho aggiornato il plugin, cosa faccio?** `config --refresh-engine`, poi `update --lint`.
 
 **💸 Quanto costa in token?** Gli script fanno il lavoro meccanico; l'agente legge solo inventari e file cambiati. Ogni voce di `wiki/log.md` riporta i KB elaborati per tenere traccia dei consumi.
 

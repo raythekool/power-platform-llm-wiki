@@ -20,7 +20,7 @@ La versione 3 cambia link, front matter, configurazione e integrazione nel proge
 
 ### 🪜 Procedura
 
-1. 📦 **Aggiorna la plugin** a 3.x (Extensions -> `@agentPlugins` -> Update).
+1. 📦 **Aggiorna il plugin** a 3.x (Extensions -> `@agentPlugins` -> Update).
 2. 🧰 In una branch dedicata del progetto, scrivi all'agente **LLM Wiki**: `config --refresh-engine`. Installa `llm-wiki/AGENTS.md` e `llm-wiki/.engine/`.
 3. 🚚 Esegui `config --migrate`. L'agente:
     1. mostra il risultato del lint prima della migrazione;

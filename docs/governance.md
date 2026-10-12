@@ -66,4 +66,4 @@ Il lint restituisce i numeri da riportare nello stato avanzamento:
 - 🏢 La wiki vive nel repository del progetto del cliente e ne segue i permessi; la wiki pubblicata segue i permessi del progetto Azure DevOps / GitHub.
 - 🔑 Nessuna credenziale nei file: Azure DevOps usa l'accesso Microsoft Entra ID, il push usa Git Credential Manager, l'automazione usa i secret del repository.
 - 🚨 Il lint (`SEC001`) blocca password, chiavi e token più comuni: se scatta, rimuovi il valore e valuta la rotazione della credenziale.
-- 🚫 La plugin non deve contenere nomi, repository o dati di clienti: il validatore del repository lo verifica a ogni rilascio.
+- 🚫 Il plugin non deve contenere nomi, repository o dati di clienti: il validatore del repository lo verifica a ogni rilascio.
