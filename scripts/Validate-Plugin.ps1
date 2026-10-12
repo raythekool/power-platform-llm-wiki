@@ -77,12 +77,19 @@ else {
 }
 
 # 4. Engine payload
-$required = @('references/AGENTS.md', 'references/publishing.md', 'references/tfvc.md', 'scripts/Install-Engine.ps1', 'scripts/LlmWiki.Common.ps1', 'scripts/Test-WikiLint.ps1', 'scripts/Get-RawDelta.ps1', 'scripts/Get-CodeInventory.ps1', 'scripts/Export-Wiki.ps1',
+$required = @('references/AGENTS.md', 'references/publishing.md', 'references/tfvc.md', 'scripts/Install-Engine.ps1', 'scripts/LlmWiki.Common.ps1', 'scripts/Test-WikiLint.ps1', 'scripts/Get-RawDelta.ps1', 'scripts/Get-CodeInventory.ps1', 'scripts/Get-WikiGraph.ps1', 'scripts/Export-Wiki.ps1',
     'templates/meeting.md', 'templates/requirement.md', 'templates/design.md', 'templates/adr.md', 'templates/code-component.md', 'templates/source.md',
     'references/profiles/power-platform.md', 'references/profiles/dynamics-fno.md', 'references/profiles/generic.md',
     'skills/init/assets/wiki.config.yml', 'skills/init/assets/mcp-servers.json', 'skills/init/assets/copilot-snippet.md', 'skills/init/assets/wiki-index.md', 'skills/init/assets/automation-prompt.md', 'skills/init/assets/copilot-setup-steps.yml')
 foreach ($r in $required) { if (-not (Test-Path -LiteralPath (Join-Path $pluginRoot $r))) { $errors.Add("Missing engine file: $r") } }
-$null = Read-Json (Join-Path $pluginRoot 'skills/init/assets/mcp-servers.json')
+$mcpAsset = Read-Json (Join-Path $pluginRoot 'skills/init/assets/mcp-servers.json')
+if ($mcpAsset) {
+    # Claude Code reads an entry without 'type' as stdio, so a url-only entry would fail in .mcp.json.
+    foreach ($s in $mcpAsset.servers.PSObject.Properties) {
+        if (-not $s.Value.type) { $errors.Add("mcp-servers.json: server '$($s.Name)' has no 'type'") }
+        elseif ($s.Value.url -and $s.Value.type -notin 'http', 'sse') { $errors.Add("mcp-servers.json: server '$($s.Name)' has a url but type '$($s.Value.type)'") }
+    }
+}
 
 # 5. Legacy references and link syntax
 $docs = Get-ChildItem -LiteralPath $pluginRoot -Recurse -File -Include '*.md', '*.yml', '*.json'

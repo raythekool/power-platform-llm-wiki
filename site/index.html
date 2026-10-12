@@ -23,7 +23,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href="{{BASE_URL}}/" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v={{VERSION}}" />
     <script>
       (function () {
         try {
@@ -389,13 +389,16 @@
               <h3 lang="it">Chiedi alla wiki</h3>
               <p lang="en">
                 Answers come only from the wiki, with citations and the
-                certification status of each source. Perfect for UAT and
-                training questions.
+                certification status of each source. A knowledge graph picks the
+                pages to read and answers impact questions; an AI pack
+                (graph.json, llms.txt, interactive map) serves other AI tools.
               </p>
               <p lang="it">
                 Le risposte arrivano solo dalla wiki, con citazioni e stato di
-                certificazione di ogni fonte. Ideale per le domande di UAT e
-                formazione.
+                certificazione di ogni fonte. Un grafo della conoscenza sceglie
+                le pagine da leggere e risponde alle domande di impatto; un
+                pacchetto AI (graph.json, llms.txt, mappa interattiva) serve gli
+                altri strumenti AI.
               </p>
             </article>
           </div>
@@ -476,6 +479,16 @@
                 >Vendors the engine into the project for headless runs.</span
               ><span lang="it"
                 >Copia il motore nel progetto per le esecuzioni headless.</span
+              >
+            </div>
+            <div class="mini">
+              <code>Get-WikiGraph</code
+              ><span lang="en"
+                >Knowledge graph: pages to read, impact, knowledge map, AI
+                pack.</span
+              ><span lang="it"
+                >Grafo della conoscenza: pagine da leggere, impatti, mappa,
+                pacchetto AI.</span
               >
             </div>
             <div class="mini mini-note">
@@ -971,6 +984,6 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
       </div>
     </footer>
 
-    <script src="main.js"></script>
+    <script src="main.js?v={{VERSION}}"></script>
   </body>
 </html>

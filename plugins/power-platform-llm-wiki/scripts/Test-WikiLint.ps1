@@ -5,7 +5,7 @@
 .DESCRIPTION
     Checks front matter, content lifecycle (draft/reviewed/certified), relative links, orphans,
     index coverage, overdue actions, stale pages, Mermaid on code pages, requirement <-> code
-    traceability, and likely secrets. Emits JSON on stdout; optionally writes a Markdown report.
+    traceability, likely secrets, and AI readiness (TL;DR after the title, page size). Emits JSON on stdout; optionally writes a Markdown report.
     Exit code 1 when at least one error is found.
 .PARAMETER WikiPath
     Path to llm-wiki/wiki.
@@ -15,19 +15,23 @@
     Reference date (yyyy-MM-dd). Defaults to the current date.
 .PARAMETER ReportPath
     Optional Markdown report path (e.g. llm-wiki/wiki/lint-2026-10-01.md).
+.PARAMETER MaxPageKB
+    Pages larger than this are reported (AI002): long pages are retrieved and cited less precisely by AI assistants.
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)][string]$WikiPath,
     [int]$StaleAfterDays = 30,
     [string]$Today = (Get-Date -Format 'yyyy-MM-dd'),
-    [string]$ReportPath
+    [string]$ReportPath,
+    [int]$MaxPageKB = 40
 )
 
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/LlmWiki.Common.ps1"
 
-$WikiPath = (Resolve-Path -LiteralPath $WikiPath).Path
+# long form: an 8.3 short path (e.g. %TEMP%) would not match the page paths returned by Get-ChildItem
+$WikiPath = (Get-Item -LiteralPath $WikiPath).FullName.TrimEnd('\', '/')
 $todayDate = [datetime]::ParseExact($Today, 'yyyy-MM-dd', $null)
 $validStatus = @('draft', 'reviewed', 'certified', 'superseded', 'deprecated')
 $noStatusTypes = @('index', 'overview', 'log', 'lint')
@@ -102,6 +106,11 @@ foreach ($file in $pages) {
             $codeImplements[$rel] = $impl
             if ($type -eq 'code' -and $impl.Count -eq 0) { Add-Issue 'info' 'TRC003' $rel 1 "Code page does not declare 'implements' (untraced component)." }
             if ($type -eq 'code' -and $fm.Body -notmatch '(?m)^[ \t]*```mermaid') { Add-Issue 'warning' 'COD001' $rel 1 'Code page without a Mermaid diagram.' }
+        }
+        if ($type -notin $noStatusTypes -and (Get-FmValue $data 'generated') -ne 'true') {
+            if (-not (Get-PageSummary $fm.Body)) { Add-Issue 'warning' 'AI001' $rel 1 'No TL;DR: start the page with a > summary right after the title (used by the knowledge graph, llms.txt and AI search).' }
+            $kb = [int][math]::Ceiling([System.Text.Encoding]::UTF8.GetByteCount($fm.Body) / 1KB)
+            if ($kb -gt $MaxPageKB) { Add-Issue 'info' 'AI002' $rel 1 "Long page ($kb KB > $MaxPageKB KB): consider splitting it so AI assistants retrieve and cite the right part." }
         }
     }
 

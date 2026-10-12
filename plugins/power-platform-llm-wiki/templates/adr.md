@@ -7,6 +7,7 @@ owner: {{decision owner}}
 updated: {{YYYY-MM-DD}}
 sources: [{{raw/adrs/file.md or meeting page}}]
 tags: [{{topic}}]
+related: []
 ---
 
 # {{ADR-NNN}} {{Decision title}}

@@ -1,6 +1,6 @@
 ## LLM Wiki
 
-This project has an **LLM Wiki** in `llm-wiki/`: a code-first knowledge base maintained by the **LLM Wiki** agent (VS Code plugin `power-platform-llm-wiki`).
+This project has an **LLM Wiki** in `llm-wiki/`: a code-first knowledge base maintained by the **LLM Wiki** agent (plugin `power-platform-llm-wiki` for GitHub Copilot in VS Code or Copilot CLI, and Claude Code, where the skills are `/power-platform-llm-wiki:<skill>`).
 
 - Operating manual: `llm-wiki/AGENTS.md`. Configuration: `llm-wiki/wiki.config.yml`. Catalog: `llm-wiki/wiki/index.md`.
 - Procedures (also used by headless runs): `llm-wiki/.engine/skills/<update|ingest|query>/SKILL.md`. Scripts: `llm-wiki/.engine/scripts/` (PowerShell 7).

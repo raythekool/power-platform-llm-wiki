@@ -29,8 +29,8 @@ La versione 3 cambia link, front matter, configurazione e integrazione nel proge
     4. converte `wiki.config.yml` allo schema 3, chiedendo i dati mancanti (profili, repository di codice, target di pubblicazione);
     5. registra le fonti già elaborate (`Get-RawDelta.ps1 -Baseline`);
     6. ripete il lint finché non restano errori.
-4. 🧙 Esegui `init` solo per completare le integrazioni mancanti (`.vscode/mcp.json`, istruzioni Copilot, `.gitignore`): i file esistenti vengono uniti, non sovrascritti.
-5. 🧹 Rimuovi i residui v2 non più usati, se presenti: `.github/workflows/wiki.yml`, `.github/agents/llm-wiki.agent.md`, `.github/prompts/llm-wiki*.prompt.md`, `.mcp.json` (dopo aver verificato che i server siano in `.vscode/mcp.json`), eventuali PAT in `.env`.
+4. 🧙 Esegui `init` solo per completare le integrazioni mancanti (`.vscode/mcp.json` o `.mcp.json`, istruzioni dell'agente, `.gitignore`): i file esistenti vengono uniti, non sovrascritti.
+5. 🧹 Rimuovi i residui v2 non più usati, se presenti: `.github/workflows/wiki.yml`, `.github/agents/llm-wiki.agent.md`, `.github/prompts/llm-wiki*.prompt.md`, eventuali PAT in `.env`. Tieni `.mcp.json` se il team usa Copilot CLI o Claude Code (in quel caso `init` lo aggiorna); altrimenti rimuovilo dopo aver verificato che i server siano in `.vscode/mcp.json`.
 6. 👀 Rivedi la pull request.
 7. 🌐 Ripubblica con `update --publish`. Se passi da GitHub Wiki ad Azure DevOps Wiki, configura il nuovo target con `config`.
 

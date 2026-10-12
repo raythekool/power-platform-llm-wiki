@@ -5,6 +5,7 @@ updated: {{YYYY-MM-DD}}
 source_kind: {{spec|analysis|generic}}
 sources: [{{raw/path/file.md}}]
 tags: [{{topic}}]
+related: []
 ---
 
 # {{Source title}}

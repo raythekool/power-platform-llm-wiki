@@ -9,6 +9,7 @@ devops_id: "{{US-1234}}"
 implemented_by: []
 sources: [{{raw/analysis/fdd-file.md}}]
 tags: [{{process-area}}]
+related: []
 ---
 
 # {{REQ-AREA-NNN}} {{Requirement title}}

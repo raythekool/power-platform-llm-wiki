@@ -28,11 +28,12 @@ Quick install in Claude Code:
 
 ## 🐚 Scripts (PowerShell 7, JSON output)
 
-| Script                    | Purpose                                                                                        |
-| ------------------------- | ---------------------------------------------------------------------------------------------- |
-| 📦 `Install-Engine.ps1`    | Copies AGENTS.md, scripts, templates, profiles and headless skill copies into `llm-wiki/`      |
-| 🔁 `Get-RawDelta.ps1`      | Incremental detection of new / changed / to-convert sources (SHA-256 manifest)                 |
-| 🔬 `Get-CodeInventory.ps1` | Inventory of CE / Power Platform components and F&O Ax* metadata                               |
-| ✅ `Test-WikiLint.ps1`     | Front matter, lifecycle, links, orphans, index, actions, stale, Mermaid, traceability, secrets |
-| 🚚 `Export-Wiki.ps1`       | Conversion for Azure DevOps Wiki (`.order`, `%2D`, absolute links, attachments) or GitHub Wiki |
-| 🧰 `LlmWiki.Common.ps1`    | Shared helpers (UTF-8 I/O, front matter, links)                                                |
+| Script                    | Purpose                                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| 📦 `Install-Engine.ps1`    | Copies AGENTS.md, scripts, templates, profiles and headless skill copies into `llm-wiki/`                                      |
+| 🔁 `Get-RawDelta.ps1`      | Incremental detection of new / changed / to-convert sources (SHA-256 manifest)                                                 |
+| 🔬 `Get-CodeInventory.ps1` | Inventory of CE / Power Platform components and F&O Ax* metadata                                                               |
+| 🕸️ `Get-WikiGraph.ps1`     | Knowledge graph: query / impact / path, knowledge map, AI pack (`graph.json`, `llms.txt`, `graph.html`)                        |
+| ✅ `Test-WikiLint.ps1`     | Front matter, lifecycle, links, orphans, index, actions, stale, Mermaid, traceability, secrets, TL;DR                          |
+| 🚚 `Export-Wiki.ps1`       | Conversion for Azure DevOps Wiki (`.order`, `%2D`, absolute links, attachments) or GitHub Wiki, with "Related pages" backlinks |
+| 🧰 `LlmWiki.Common.ps1`    | Shared helpers (UTF-8 I/O, front matter, links)                                                                                |

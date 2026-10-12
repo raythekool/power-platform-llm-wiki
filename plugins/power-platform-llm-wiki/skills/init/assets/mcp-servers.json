@@ -1,5 +1,5 @@
 {
-  "//": "LLM Wiki MCP servers. Merge only the entries for the selected integrations into .vscode/mcp.json ('servers' section). Replace {organization}. Use ado-local only if the remote server is not available in the tenant.",
+  "//": "LLM Wiki MCP servers. Merge only the entries for the selected integrations: into .vscode/mcp.json under 'servers' (VS Code) and/or into .mcp.json at the project root under 'mcpServers' (Copilot CLI, Claude Code). Keep 'type' on every entry. Replace {organization}. Use ado-local only if the remote server is not available in the tenant.",
   "servers": {
     "ado-remote": {
       "type": "http",

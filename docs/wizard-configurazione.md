@@ -20,6 +20,23 @@ flowchart LR
     I --> J[9. Prima wiki]
 ```
 
+### 🧭 Scegli il tuo ambiente
+
+Il wizard funziona in tre ambienti. Scegli quello che usi: i passi seguenti indicano dove cambia qualcosa. Nella [versione web](https://raythekool.github.io/power-platform-llm-wiki/wizard.html) basta cliccare la card dell'ambiente e le istruzioni si adattano da sole.
+
+| Ambiente                 | Installazione (passo 1)                              | Come avvii `init` (passo 2)                | Come scrivi i comandi                           |
+| ------------------------ | ---------------------------------------------------- | ------------------------------------------ | ----------------------------------------------- |
+| 🟦 **VS Code**            | Impostazioni e vista Extensions                      | Agente **LLM Wiki** nella chat, poi `init` | `update --source code`                          |
+| ⌨️ **GitHub Copilot CLI** | `copilot plugin marketplace add` e `plugin install`  | `/agent`, scegli **LLM Wiki**, poi `init`  | `update --source code`                          |
+| 🟠 **Claude Code**        | `claude plugin install ... --marketplace` (2.1.275+) | `/power-platform-llm-wiki:init`            | `/power-platform-llm-wiki:update --source code` |
+
+> [!NOTE]
+> Copilot CLI e Claude Code non leggono `.vscode/mcp.json`. Al [passo 3](#-passo-3---progetto-profili-e-strumenti) dici a `init` quali strumenti usa il team: scriverà anche `.mcp.json` (letto da entrambi) e, per Claude Code, `CLAUDE.md`.
+
+Nel resto della pagina i comandi sono scritti senza prefisso: in Claude Code anteponi sempre `/power-platform-llm-wiki:` (per esempio `/power-platform-llm-wiki:update --lint`).
+
+---
+
 ### ⏱️ Prima di iniziare: le tre risposte che ti servono
 
 Raccogli queste informazioni prima di aprire il wizard: lo renderanno veloce.
@@ -34,7 +51,7 @@ Raccogli queste informazioni prima di aprire il wizard: lo renderanno veloce.
 
 ### 🧰 Passo 0 - Prerequisiti
 
-Servono sempre **VS Code con GitHub Copilot**, **PowerShell 7** e **git**. Il resto dipende dalle fonti che userai.
+Servono sempre **PowerShell 7**, **git** e lo strumento che hai scelto (**VS Code con GitHub Copilot**, **GitHub Copilot CLI** oppure **Claude Code 2.1.275 o successivo**, verificabile con `copilot --version` o `claude --version`). Il resto dipende dalle fonti che userai.
 
 | Se userai…                             | Ti serve                 | Come controllare                         |
 | -------------------------------------- | ------------------------ | ---------------------------------------- |
@@ -55,33 +72,51 @@ Servono sempre **VS Code con GitHub Copilot**, **PowerShell 7** e **git**. Il re
 
 ### 📦 Passo 1 - Installa il plugin
 
+**🟦 VS Code**
+
 1. In VS Code apri **Impostazioni** e attiva **Chat > Plugins: Enabled**.
 2. In **Chat > Plugins: Marketplaces** aggiungi `raythekool/power-platform-llm-wiki`.
 3. Nella vista **Extensions** cerca `@agentPlugins power-platform-llm-wiki` e installa.
 
-Se lavori dal terminale invece che da VS Code:
+**⌨️ GitHub Copilot CLI**
 
 ```shell
-# GitHub Copilot CLI
 copilot plugin marketplace add raythekool/power-platform-llm-wiki
 copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki
+```
 
-# Claude Code
+In una sessione gli stessi comandi funzionano come `/plugin marketplace add ...` e `/plugin install ...`.
+
+**🟠 Claude Code** (2.1.275 o successivo)
+
+```shell
+claude plugin install power-platform-llm-wiki --marketplace raythekool/power-platform-llm-wiki
+```
+
+Oppure in due passi, dalla shell o in una sessione come `/plugin ...`:
+
+```shell
 claude plugin marketplace add raythekool/power-platform-llm-wiki
 claude plugin install power-platform-llm-wiki@power-platform-llm-wiki
 ```
 
-In Claude Code le skill si chiamano `/power-platform-llm-wiki:init`, `:update` e così via.
+In Claude Code le skill si chiamano `/power-platform-llm-wiki:init`, `:config`, `:update`, `:ingest` e `:query`.
 
-✅ **Verifica:** nella chat, nell'elenco degli agenti compare **LLM Wiki**.
+✅ **Verifica:**
+
+- VS Code: nella chat, nell'elenco degli agenti compare **LLM Wiki**.
+- Copilot CLI: `copilot plugin list` mostra il plugin e `/agent` elenca **LLM Wiki**.
+- Claude Code: `claude plugin list` mostra il plugin; scrivendo `/power-platform-llm-wiki:` le skill si completano da sole.
 
 ---
 
 ### 🚪 Passo 2 - Avvia `init`
 
-1. Apri in VS Code la cartella del **repository del progetto**, quello che ospiterà la cartella `llm-wiki/`.
-2. Nella chat scegli l'agente **LLM Wiki**.
-3. Scrivi `init`.
+1. Apri la cartella del **repository del progetto**, quello che ospiterà la cartella `llm-wiki/`: in VS Code dal menu File, da terminale con `cd` (poi avvia `copilot` o `claude`).
+2. Avvia l'agente:
+   - VS Code: nella chat scegli l'agente **LLM Wiki** e scrivi `init`.
+   - Copilot CLI: scrivi `/agent`, scegli **LLM Wiki**, poi scrivi `init`.
+   - Claude Code: scrivi `/power-platform-llm-wiki:init`.
 
 Il wizard ti chiede subito la modalità:
 
@@ -94,9 +129,9 @@ Il resto di questa pagina segue la modalità guidata.
 
 ---
 
-### 🏷️ Passo 3 - Progetto e profili
+### 🏷️ Passo 3 - Progetto, profili e strumenti
 
-**Il wizard chiede:** nome del progetto, lingua dei contenuti, profili.
+**Il wizard chiede:** nome del progetto, lingua dei contenuti, profili, strumenti.
 
 - **Nome**: compare nell'intestazione della wiki pubblicata. Esempio: `Vendite`.
 - **Lingua**: `it` per contenuti in italiano (predefinito), `en` per inglese.
@@ -108,7 +143,15 @@ Il resto di questa pagina segue la modalità guidata.
 | `dynamics-fno`   | usa Finance & Operations: tabelle, estensioni, classi, data entity, sicurezza |
 | `generic`        | è fatto di integrazioni, Azure Functions, API, .NET                           |
 
-✅ **Verifica:** i profili scelti corrispondono a ciò che c'è davvero nel codice. In caso di dubbio scegli quelli che ti servono ora: li cambi più avanti con `config`.
+- **Strumenti** (puoi sceglierne più di uno): quelli che il team userà con la wiki. Il wizard preseleziona quello da cui stai lanciando `init`.
+
+| Strumento     | Cosa scrive `init` in più                                                        |
+| ------------- | -------------------------------------------------------------------------------- |
+| `vscode`      | `.vscode/mcp.json`                                                               |
+| `copilot-cli` | `.mcp.json` nella radice del progetto                                            |
+| `claude-code` | `.mcp.json` e `CLAUDE.md`, che importa `.github/copilot-instructions.md` con `@` |
+
+✅ **Verifica:** i profili scelti corrispondono a ciò che c'è davvero nel codice e gli strumenti a quelli del team. In caso di dubbio scegli quelli che ti servono ora: li cambi più avanti con `config`.
 
 ---
 
@@ -156,7 +199,7 @@ L'agente usa TFVC **solo in lettura** (`get`, `history`): non fa mai check-in n�
 | 🔷 **Azure DevOps - project wiki** | La wiki del progetto Azure DevOps (caso più comune) | organizzazione, progetto, nome wiki |
 | 🔷 **Azure DevOps - code wiki**    | La wiki è una cartella di un repository             | repository, branch, cartella        |
 | 🐙 **GitHub Wiki**                 | Il progetto vive su GitHub                          | `owner/repo`                        |
-| ⏭️ **Nessuna**                     | Per ora consulti la wiki solo in VS Code            | -                                   |
+| ⏭️ **Nessuna**                     | Per ora consulti la wiki solo nel tuo strumento     | -                                   |
 
 Facoltativo: una **pagina madre** (esempio `Knowledge Base`) sotto cui montare tutta la wiki.
 
@@ -191,7 +234,7 @@ Il wizard te lo chiede **solo** se il repository ospite è su GitHub.
 | `daily`  | Aggiornamento ogni giorno                                       |
 | `manual` | Nessuna automazione: aggiorni tu con `update --full`            |
 
-Se scegli una pianificazione, l'agente ti dà il testo da incollare in **Repository → Agents → Automations → Create new → On a schedule**. Se il repository è su Azure DevOps, salta questo passo e lancia `update --full` da VS Code quando serve.
+Se scegli una pianificazione, l'agente ti dà il testo da incollare in **Repository → Agents → Automations → Create new → On a schedule**. Se il repository è su Azure DevOps, salta questo passo e lancia `update --full` dal tuo strumento quando serve.
 
 **Sprint** (solo con Azure DevOps Boards): durata (predefinita 2 settimane) e formato del nome (`YYYY-SNN`).
 
@@ -204,14 +247,18 @@ Se scegli una pianificazione, l'agente ti dà il testo da incollare in **Reposit
 
 Al termine il progetto contiene:
 
-| Cosa                              | A cosa serve                                           |
-| --------------------------------- | ------------------------------------------------------ |
-| `llm-wiki/wiki.config.yml`        | Le tue scelte (puoi modificarlo a mano o con `config`) |
-| `llm-wiki/raw/`                   | Dove metti FDD, TDD, verbali e altri documenti         |
-| `llm-wiki/wiki/`                  | La wiki vera e propria (pagine Markdown)               |
-| `llm-wiki/.engine/` e `AGENTS.md` | Il motore gestito dal plugin: **non modificarli**      |
-| `.vscode/mcp.json`                | Il collegamento ad Azure DevOps, se usi le Boards      |
-| `.github/copilot-instructions.md` | Le istruzioni che fanno usare la wiki a Copilot        |
+| Cosa                              | A cosa serve                                                                     |
+| --------------------------------- | -------------------------------------------------------------------------------- |
+| `llm-wiki/wiki.config.yml`        | Le tue scelte (puoi modificarlo a mano o con `config`)                           |
+| `llm-wiki/raw/`                   | Dove metti FDD, TDD, verbali e altri documenti                                   |
+| `llm-wiki/wiki/`                  | La wiki vera e propria (pagine Markdown)                                         |
+| `llm-wiki/.engine/` e `AGENTS.md` | Il motore gestito dal plugin: **non modificarli**                                |
+| `.vscode/mcp.json`                | VS Code: il collegamento ad Azure DevOps, se usi le Boards                       |
+| `.mcp.json`                       | Copilot CLI e Claude Code: lo stesso collegamento                                |
+| `.github/copilot-instructions.md` | Le istruzioni che fanno usare la wiki all'agente (VS Code, Copilot CLI)          |
+| `CLAUDE.md`                       | Claude Code: importa le stesse istruzioni con `@.github/copilot-instructions.md` |
+
+I file MCP compaiono solo se serve un server (Boards o MarkItDown), e solo per gli strumenti scelti.
 
 ✅ **Verifica finale** (la fa l'agente, ma puoi ripeterla):
 
@@ -220,6 +267,18 @@ pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki
 ```
 
 Il risultato deve indicare **0 errori**. Poi fai commit dei file creati.
+
+#### ⌨️ Al primo avvio di Copilot CLI
+
+Accetta la richiesta di fiducia nella cartella quando avvii `copilot`: i server di `.mcp.json` si caricano solo nelle cartelle considerate attendibili. Controlla con `/mcp` che `ado-remote` compaia.
+
+#### 🟠 Al primo avvio di Claude Code
+
+1. Approva i server di `.mcp.json` quando Claude Code lo chiede, poi accedi ad `ado-remote` con `/mcp`.
+2. Con `/context` controlla che `CLAUDE.md` compaia tra i **Memory files**.
+
+> [!TIP]
+> Wiki creata con una versione precedente del plugin? Lancia `config`, scegli **strumenti** e aggiungi `copilot-cli` o `claude-code`: crea i file mancanti senza toccare il resto.
 
 ---
 
@@ -249,17 +308,17 @@ Non devi rifare `init`. Scrivi `config` e scegli cosa cambiare: aggiungere o tog
 
 ### 🩺 Se qualcosa non funziona
 
-| Sintomo                                                   | Cosa fare                                                                                                                            |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| L'agente **LLM Wiki** non compare                         | Controlla **Chat > Plugins: Enabled** e che il plugin sia installato; riavvia VS Code                                                |
-| `pwsh` non trovato                                        | Installa PowerShell 7 e riapri VS Code                                                                                               |
-| Il clone di Azure Repos chiede le credenziali di continuo | Installa Git Credential Manager e accedi con il tuo account                                                                          |
-| `tf` non trovato (codice in TFVC)                         | Apri una **Developer PowerShell for VS**, oppure usa `provider: local` con una copia scaricata dal portale web                       |
-| `tf` segnala modifiche in sospeso nel workspace           | L'agente si ferma per non toccare il tuo lavoro: fai check-in o annulla le modifiche tu, oppure usa un workspace dedicato            |
-| Dataverse non risponde                                    | Esegui `pacx auth list` e `pacx auth ping`; seleziona il profilo giusto con `pacx auth select`                                       |
-| Le Boards non restituiscono dati                          | Controlla organizzazione e progetto con `config` e verifica di avere accesso al progetto                                             |
-| Il lint segnala errori dopo `init`                        | Leggi l'elenco degli errori (o il report `llm-wiki/wiki/lint-*.md` generato da `update --lint`), correggi e rilancia `update --lint` |
-| Vuoi ripartire da zero                                    | Rilancia `init`: non sovrascrive le pagine né i documenti già presenti in `raw/`                                                     |
+| Sintomo                                                   | Cosa fare                                                                                                                                                                                                                     |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| L'agente **LLM Wiki** non compare                         | VS Code: controlla **Chat > Plugins: Enabled** e che il plugin sia installato; riavvia. Copilot CLI / Claude Code: esegui `copilot plugin list` o `claude plugin list`, ripeti l'installazione se manca e riavvia la sessione |
+| `pwsh` non trovato                                        | Installa PowerShell 7 e riapri il tuo strumento (VS Code o il terminale)                                                                                                                                                      |
+| Il clone di Azure Repos chiede le credenziali di continuo | Installa Git Credential Manager e accedi con il tuo account                                                                                                                                                                   |
+| `tf` non trovato (codice in TFVC)                         | Apri una **Developer PowerShell for VS**, oppure usa `provider: local` con una copia scaricata dal portale web                                                                                                                |
+| `tf` segnala modifiche in sospeso nel workspace           | L'agente si ferma per non toccare il tuo lavoro: fai check-in o annulla le modifiche tu, oppure usa un workspace dedicato                                                                                                     |
+| Dataverse non risponde                                    | Esegui `pacx auth list` e `pacx auth ping`; seleziona il profilo giusto con `pacx auth select`                                                                                                                                |
+| Le Boards non restituiscono dati                          | Controlla organizzazione e progetto con `config` e verifica di avere accesso al progetto                                                                                                                                      |
+| Il lint segnala errori dopo `init`                        | Leggi l'elenco degli errori (o il report `llm-wiki/wiki/lint-*.md` generato da `update --lint`), correggi e rilancia `update --lint`                                                                                          |
+| Vuoi ripartire da zero                                    | Rilancia `init`: non sovrascrive le pagine né i documenti già presenti in `raw/`                                                                                                                                              |
 
 > [!TIP]
 > Altre risposte nelle [domande frequenti](guida-utente.md#-domande-frequenti).

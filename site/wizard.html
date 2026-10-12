@@ -2,6 +2,7 @@
 <html
   lang="en"
   data-lang="en"
+  data-env="vscode"
   data-title-en="LLM Wiki - Setup wizard, step by step"
   data-title-it="LLM Wiki - Wizard di configurazione passo passo"
 >
@@ -25,7 +26,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href="{{BASE_URL}}/wizard.html" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v={{VERSION}}" />
     <script>
       (function () {
         try {
@@ -37,6 +38,11 @@
               : "en");
           document.documentElement.dataset.lang = lang;
           document.documentElement.lang = lang;
+          var q = (location.search.match(/[?&]env=(vscode|cli|claude)\b/) || [])[1];
+          var env = q || localStorage.getItem("llmwiki-env");
+          if (env === "vscode" || env === "cli" || env === "claude") {
+            document.documentElement.dataset.env = env;
+          }
           document.documentElement.classList.add("js");
         } catch (e) {
           document.documentElement.classList.add("js");
@@ -59,6 +65,10 @@
         <nav class="links" aria-label="Main">
           <a href="index.html"
             ><span lang="en">Home</span><span lang="it">Home</span></a
+          >
+          <a href="#env"
+            ><span lang="en">Environment</span
+            ><span lang="it">Ambiente</span></a
           >
           <a href="#before"
             ><span lang="en">Before you start</span
@@ -118,7 +128,7 @@
               scegliere e come verificare di aver fatto bene.
             </p>
             <div class="cta">
-              <a class="btn btn-primary" href="#wizard"
+              <a class="btn btn-primary" href="#env"
                 ><span lang="en">Start the wizard</span
                 ><span lang="it">Inizia il wizard</span></a
               >
@@ -128,6 +138,110 @@
                 ><span lang="en">Markdown version (Italian)</span
                 ><span lang="it">Versione Markdown</span></a
               >
+            </div>
+          </div>
+        </div>
+      </section>
+
+            <!-- ENVIRONMENT -->
+      <section class="section" id="env">
+        <div class="wrap">
+          <header class="sec-head reveal">
+            <p class="eyebrow">
+              <span lang="en">Your environment</span
+              ><span lang="it">Il tuo ambiente</span>
+            </p>
+            <h2 lang="en">Where will you run the wizard?</h2>
+            <h2 lang="it">Dove eseguirai il wizard?</h2>
+            <p lang="en">
+              Pick your tool: install, launch and the commands in the steps
+              below adapt to it. Your choice is saved in this browser.
+            </p>
+            <p lang="it">
+              Scegli lo strumento: installazione, avvio e comandi dei passi qui
+              sotto si adattano. La scelta resta salvata in questo browser.
+            </p>
+          </header>
+          <div class="env-grid" role="group" aria-label="Environment">
+            <button type="button" class="env-card" data-env-set="vscode" aria-pressed="true">
+              <span class="ico i-indigo" aria-hidden="true">🟦</span>
+              <b>VS Code</b>
+              <span class="env-d" lang="en">GitHub Copilot Chat with the <i>LLM Wiki</i> agent. The easiest start.</span>
+              <span class="env-d" lang="it">GitHub Copilot Chat con l'agente <i>LLM Wiki</i>. L'avvio più semplice.</span>
+            </button>
+            <button type="button" class="env-card" data-env-set="cli" aria-pressed="false">
+              <span class="ico i-sky" aria-hidden="true">⌨️</span>
+              <b>GitHub Copilot CLI</b>
+              <span class="env-d" lang="en">In the terminal, with the same agent and plugin.</span>
+              <span class="env-d" lang="it">Da terminale, con lo stesso agente e plugin.</span>
+            </button>
+            <button type="button" class="env-card" data-env-set="claude" aria-pressed="false">
+              <span class="ico i-amber" aria-hidden="true">🟠</span>
+              <b>Claude Code</b>
+              <span class="env-d" lang="en">In the terminal, with <code>/power-platform-llm-wiki:…</code> skills.</span>
+              <span class="env-d" lang="it">Da terminale, con le skill <code>/power-platform-llm-wiki:…</code>.</span>
+            </button>
+          </div>
+          <div class="env-panel" data-env-only="vscode">
+            <div lang="en">
+              <h3>🟦 Your setup in VS Code</h3>
+              <ol class="env-steps">
+<li><b>Install</b><span>Enable <b>Chat › Plugins: Enabled</b>, add <code>{{REPO_SLUG}}</code> to <b>Chat › Plugins: Marketplaces</b> and install from the Extensions view (<a href="#step-1">details in step 1</a>).</span></li>
+<li><b>Open the project</b><span>Open the folder of the project repository: it will host <code>llm-wiki/</code>.</span></li>
+<li><b>Start</b><span>In the chat pick the <b>LLM Wiki</b> agent and type <code>init</code>.</span></li>
+<li><b>Good to know</b><span>At step 3 choose <code>vscode</code> among the tools: <code>init</code> writes <code>.vscode/mcp.json</code> and <code>.github/copilot-instructions.md</code>, which VS Code uses automatically.</span></li>
+</ol>
+            </div>
+            <div lang="it">
+              <h3>🟦 Il tuo setup in VS Code</h3>
+              <ol class="env-steps">
+<li><b>Installa</b><span>Attiva <b>Chat › Plugins: Enabled</b>, aggiungi <code>{{REPO_SLUG}}</code> a <b>Chat › Plugins: Marketplaces</b> e installa dalla vista Extensions (<a href="#step-1">dettagli al passo 1</a>).</span></li>
+<li><b>Apri il progetto</b><span>Apri la cartella del repository del progetto: ospiterà <code>llm-wiki/</code>.</span></li>
+<li><b>Avvia</b><span>Nella chat scegli l'agente <b>LLM Wiki</b> e scrivi <code>init</code>.</span></li>
+<li><b>Da sapere</b><span>Al passo 3 scegli <code>vscode</code> tra gli strumenti: <code>init</code> scrive <code>.vscode/mcp.json</code> e <code>.github/copilot-instructions.md</code>, che VS Code usa in automatico.</span></li>
+</ol>
+            </div>
+          </div>
+          <div class="env-panel" data-env-only="cli">
+            <div lang="en">
+              <h3>⌨️ Your setup in GitHub Copilot CLI</h3>
+              <ol class="env-steps">
+<li><b>Install</b><div>From a terminal: <div class="code"><div class="code-bar"><span>GitHub Copilot CLI</span><button type="button" class="copy" data-copy="#env-cli-install"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="env-cli-install"><code>copilot plugin marketplace add {{REPO_SLUG}}
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre></div></div></li>
+<li><b>Open the project</b><span>Go to the project folder (<code>cd</code>) and start <code>copilot</code>.</span></li>
+<li><b>Start</b><span>Type <code>/agent</code>, pick <b>LLM Wiki</b>, then type <code>init</code>.</span></li>
+<li><b>Good to know</b><span>At step 3 choose <code>copilot-cli</code> among the tools: <code>init</code> also writes <code>.mcp.json</code>, because Copilot CLI does not read <code>.vscode/mcp.json</code>. Accept the folder trust prompt so the servers load (<a href="#step-8">details in step 8</a>).</span></li>
+</ol>
+            </div>
+            <div lang="it">
+              <h3>⌨️ Il tuo setup in GitHub Copilot CLI</h3>
+              <ol class="env-steps">
+<li><b>Installa</b><div>Da un terminale: <div class="code"><div class="code-bar"><span>GitHub Copilot CLI</span><button type="button" class="copy" data-copy="#env-cli-install-it"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="env-cli-install-it"><code>copilot plugin marketplace add {{REPO_SLUG}}
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre></div></div></li>
+<li><b>Apri il progetto</b><span>Entra nella cartella del progetto (<code>cd</code>) e avvia <code>copilot</code>.</span></li>
+<li><b>Avvia</b><span>Scrivi <code>/agent</code>, scegli <b>LLM Wiki</b>, poi scrivi <code>init</code>.</span></li>
+<li><b>Da sapere</b><span>Al passo 3 scegli <code>copilot-cli</code> tra gli strumenti: <code>init</code> scrive anche <code>.mcp.json</code>, perché Copilot CLI non legge <code>.vscode/mcp.json</code>. Accetta la richiesta di fiducia nella cartella perché i server si carichino (<a href="#step-8">dettagli al passo 8</a>).</span></li>
+</ol>
+            </div>
+          </div>
+          <div class="env-panel" data-env-only="claude">
+            <div lang="en">
+              <h3>🟠 Your setup in Claude Code</h3>
+              <ol class="env-steps">
+<li><b>Install</b><div>Claude Code 2.1.275 or later, from a terminal: <div class="code"><div class="code-bar"><span>Claude Code</span><button type="button" class="copy" data-copy="#env-claude-install"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="env-claude-install"><code>claude plugin install power-platform-llm-wiki --marketplace {{REPO_SLUG}}</code></pre></div></div></li>
+<li><b>Open the project</b><span>Go to the project folder (<code>cd</code>) and start <code>claude</code>.</span></li>
+<li><b>Start</b><span>Type <code>/power-platform-llm-wiki:init</code>. The other skills use the same prefix: <code>:config</code>, <code>:update</code>, <code>:ingest</code>, <code>:query</code>. The steps below already show the commands with the prefix.</span></li>
+<li><b>Good to know</b><span>At step 3 choose <code>claude-code</code> among the tools: <code>init</code> also writes <code>.mcp.json</code> and a <code>CLAUDE.md</code> that imports the wiki instructions. At the next start approve the project servers (<a href="#step-8">details in step 8</a>).</span></li>
+</ol>
+            </div>
+            <div lang="it">
+              <h3>🟠 Il tuo setup in Claude Code</h3>
+              <ol class="env-steps">
+<li><b>Installa</b><div>Claude Code 2.1.275 o successivo, da un terminale: <div class="code"><div class="code-bar"><span>Claude Code</span><button type="button" class="copy" data-copy="#env-claude-install-it"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="env-claude-install-it"><code>claude plugin install power-platform-llm-wiki --marketplace {{REPO_SLUG}}</code></pre></div></div></li>
+<li><b>Apri il progetto</b><span>Entra nella cartella del progetto (<code>cd</code>) e avvia <code>claude</code>.</span></li>
+<li><b>Avvia</b><span>Scrivi <code>/power-platform-llm-wiki:init</code>. Le altre skill usano lo stesso prefisso: <code>:config</code>, <code>:update</code>, <code>:ingest</code>, <code>:query</code>. Nei passi qui sotto i comandi sono già mostrati con il prefisso.</span></li>
+<li><b>Da sapere</b><span>Al passo 3 scegli <code>claude-code</code> tra gli strumenti: <code>init</code> scrive anche <code>.mcp.json</code> e un <code>CLAUDE.md</code> che importa le istruzioni della wiki. Al successivo avvio approva i server del progetto (<a href="#step-8">dettagli al passo 8</a>).</span></li>
+</ol>
             </div>
           </div>
         </div>
@@ -242,8 +356,8 @@
                   </li>
                   <li>
                     <a href="#step-3"
-                      ><span lang="en">Project and profiles</span
-                      ><span lang="it">Progetto e profili</span></a
+                      ><span lang="en">Project, profiles, tools</span
+                      ><span lang="it">Progetto, profili, strumenti</span></a
                     >
                   </li>
                   <li>
@@ -308,9 +422,7 @@
                 </header>
                 <div lang="en">
                   <p>
-                    You always need <b>VS Code with GitHub Copilot</b>,
-                    <b>PowerShell 7</b> and <b>git</b>. Everything else depends
-                    on the sources you will use.
+                    You always need <b>PowerShell 7</b>, <b>git</b> and the tool you chose above. Everything else depends on the sources you will use.
                   </p>
                   <div class="tbl">
                     <table>
@@ -322,8 +434,9 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Any source</td>
+                        <tr data-env-only="vscode"><td>Your tool</td><td>VS Code with GitHub Copilot Chat</td><td>The Chat view opens</td></tr><tr data-env-only="cli"><td>Your tool</td><td>GitHub Copilot CLI</td><td><code>copilot --version</code></td></tr><tr data-env-only="claude"><td>Your tool</td><td>Claude Code 2.1.275 or later</td><td><code>claude --version</code></td></tr>
+<tr>
+<td>Any source</td>
                           <td>PowerShell 7</td>
                           <td><code>pwsh --version</code></td>
                         </tr>
@@ -375,9 +488,7 @@
                 </div>
                 <div lang="it">
                   <p>
-                    Servono sempre <b>VS Code con GitHub Copilot</b>,
-                    <b>PowerShell 7</b> e <b>git</b>. Il resto dipende dalle
-                    fonti che userai.
+                    Servono sempre <b>PowerShell 7</b>, <b>git</b> e lo strumento scelto qui sopra. Il resto dipende dalle fonti che userai.
                   </p>
                   <div class="tbl">
                     <table>
@@ -389,8 +500,9 @@
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>Qualsiasi fonte</td>
+                        <tr data-env-only="vscode"><td>Il tuo strumento</td><td>VS Code con GitHub Copilot Chat</td><td>Si apre la vista Chat</td></tr><tr data-env-only="cli"><td>Il tuo strumento</td><td>GitHub Copilot CLI</td><td><code>copilot --version</code></td></tr><tr data-env-only="claude"><td>Il tuo strumento</td><td>Claude Code 2.1.275 o successivo</td><td><code>claude --version</code></td></tr>
+<tr>
+<td>Qualsiasi fonte</td>
                           <td>PowerShell 7</td>
                           <td><code>pwsh --version</code></td>
                         </tr>
@@ -464,113 +576,51 @@
                     </h2>
                   </div>
                 </header>
-                <div lang="en">
-                  <ol>
-                    <li>
-                      In VS Code open <b>Settings</b> and enable
-                      <b>Chat › Plugins: Enabled</b>.
-                    </li>
-                    <li>
-                      In <b>Chat › Plugins: Marketplaces</b> add
-                      <code>{{REPO_SLUG}}</code>.
-                    </li>
-                    <li>
-                      In the <b>Extensions</b> view search
-                      <code>@agentPlugins power-platform-llm-wiki</code> and
-                      install.
-                    </li>
-                  </ol>
-                  <p>
-                    Steps 1 and 2 are equivalent to this snippet in
-                    <code>settings.json</code>:
-                  </p>
-                </div>
-                <div lang="it">
-                  <ol>
-                    <li>
-                      In VS Code apri <b>Impostazioni</b> e attiva
-                      <b>Chat › Plugins: Enabled</b>.
-                    </li>
-                    <li>
-                      In <b>Chat › Plugins: Marketplaces</b> aggiungi
-                      <code>{{REPO_SLUG}}</code>.
-                    </li>
-                    <li>
-                      Nella vista <b>Extensions</b> cerca
-                      <code>@agentPlugins power-platform-llm-wiki</code> e
-                      installa.
-                    </li>
-                  </ol>
-                  <p>
-                    I punti 1 e 2 equivalgono a questo frammento in
-                    <code>settings.json</code>:
-                  </p>
-                </div>
-                <div class="code">
-                  <div class="code-bar">
-                    <span>settings.json</span
-                    ><button type="button" class="copy" data-copy="#wz-cfg">
-                      <span lang="en">Copy</span><span lang="it">Copia</span>
-                    </button>
+                <div data-env-only="vscode">
+                  <div lang="en">
+                    <ol>
+                      <li>In VS Code open <b>Settings</b> and enable <b>Chat › Plugins: Enabled</b>.</li>
+                      <li>In <b>Chat › Plugins: Marketplaces</b> add <code>{{REPO_SLUG}}</code>.</li>
+                      <li>In the <b>Extensions</b> view search <code>@agentPlugins power-platform-llm-wiki</code> and install.</li>
+                    </ol>
+                    <p>Steps 1 and 2 are equivalent to this snippet in <code>settings.json</code>:</p>
                   </div>
-                  <pre id="wz-cfg"><code>"chat.plugins.enabled": true,
+                  <div lang="it">
+                    <ol>
+                      <li>In VS Code apri <b>Impostazioni</b> e attiva <b>Chat › Plugins: Enabled</b>.</li>
+                      <li>In <b>Chat › Plugins: Marketplaces</b> aggiungi <code>{{REPO_SLUG}}</code>.</li>
+                      <li>Nella vista <b>Extensions</b> cerca <code>@agentPlugins power-platform-llm-wiki</code> e installa.</li>
+                    </ol>
+                    <p>I punti 1 e 2 equivalgono a questo frammento in <code>settings.json</code>:</p>
+                  </div>
+                  <div class="code"><div class="code-bar"><span>settings.json</span><button type="button" class="copy" data-copy="#wz-cfg"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="wz-cfg"><code>"chat.plugins.enabled": true,
 "chat.plugins.marketplaces": [
   "{{REPO_SLUG}}"
-]</code></pre>
+]</code></pre></div>
+                  <p class="verify" lang="en"><b>✅ Verify:</b> in the chat, the agent list shows <b>LLM Wiki</b>.</p>
+                  <p class="verify" lang="it"><b>✅ Verifica:</b> nella chat, nell'elenco degli agenti compare <b>LLM Wiki</b>.</p>
                 </div>
-                <p lang="en">
-                  <b>Using the terminal instead of VS Code?</b> Install from the
-                  shell with GitHub Copilot CLI or Claude Code. In Claude Code
-                  the skills are called
-                  <code>/power-platform-llm-wiki:init</code>,
-                  <code>:update</code> and so on.
-                </p>
-                <p lang="it">
-                  <b>Usi il terminale invece di VS Code?</b> Installa da shell
-                  con GitHub Copilot CLI o Claude Code. In Claude Code le skill
-                  si chiamano <code>/power-platform-llm-wiki:init</code>,
-                  <code>:update</code> e così via.
-                </p>
-                <div class="code">
-                  <div class="code-bar">
-                    <span>GitHub Copilot CLI</span
-                    ><button
-                      type="button"
-                      class="copy"
-                      data-copy="#wz-cli-copilot"
-                    >
-                      <span lang="en">Copy</span><span lang="it">Copia</span>
-                    </button>
-                  </div>
-                  <pre
-                    id="wz-cli-copilot"
-                  ><code>copilot plugin marketplace add {{REPO_SLUG}}
-copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre>
+                <div data-env-only="cli">
+                  <p lang="en">Install from a terminal. Inside a session the same commands work as <code>/plugin marketplace add ...</code> and <code>/plugin install ...</code>.</p>
+                  <p lang="it">Installa da un terminale. In una sessione gli stessi comandi funzionano come <code>/plugin marketplace add ...</code> e <code>/plugin install ...</code>.</p>
+                  <div class="code"><div class="code-bar"><span>GitHub Copilot CLI</span><button type="button" class="copy" data-copy="#wz-cli-copilot"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="wz-cli-copilot"><code>copilot plugin marketplace add {{REPO_SLUG}}
+copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre></div>
+                  <p class="verify" lang="en"><b>✅ Verify:</b> <code>copilot plugin list</code> shows <code>power-platform-llm-wiki</code>, and in a session <code>/agent</code> lists <b>LLM Wiki</b>.</p>
+                  <p class="verify" lang="it"><b>✅ Verifica:</b> <code>copilot plugin list</code> mostra <code>power-platform-llm-wiki</code> e in una sessione <code>/agent</code> elenca <b>LLM Wiki</b>.</p>
                 </div>
-                <div class="code">
-                  <div class="code-bar">
-                    <span>Claude Code</span
-                    ><button
-                      type="button"
-                      class="copy"
-                      data-copy="#wz-cli-claude"
-                    >
-                      <span lang="en">Copy</span><span lang="it">Copia</span>
-                    </button>
-                  </div>
-                  <pre
-                    id="wz-cli-claude"
-                  ><code>claude plugin marketplace add {{REPO_SLUG}}
-claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre>
+                <div data-env-only="claude">
+                  <p lang="en">Claude Code 2.1.275 or later (<code>claude --version</code>). One step, from a terminal:</p>
+                  <p lang="it">Claude Code 2.1.275 o successivo (<code>claude --version</code>). Un solo passo, da un terminale:</p>
+                  <div class="code"><div class="code-bar"><span>Claude Code</span><button type="button" class="copy" data-copy="#wz-cli-claude-one"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="wz-cli-claude-one"><code>claude plugin install power-platform-llm-wiki --marketplace {{REPO_SLUG}}</code></pre></div>
+                  <p lang="en">Or in two steps, from your shell or inside a session as <code>/plugin ...</code>:</p>
+                  <p lang="it">Oppure in due passi, dalla shell o dentro una sessione come <code>/plugin ...</code>:</p>
+                  <div class="code"><div class="code-bar"><span>Claude Code</span><button type="button" class="copy" data-copy="#wz-cli-claude"><span lang="en">Copy</span><span lang="it">Copia</span></button></div><pre id="wz-cli-claude"><code>claude plugin marketplace add {{REPO_SLUG}}
+claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pre></div>
+                  <p lang="en">The skills are called <code>/power-platform-llm-wiki:init</code>, <code>:config</code>, <code>:update</code>, <code>:ingest</code> and <code>:query</code>.</p>
+                  <p lang="it">Le skill si chiamano <code>/power-platform-llm-wiki:init</code>, <code>:config</code>, <code>:update</code>, <code>:ingest</code> e <code>:query</code>.</p>
+                  <p class="verify" lang="en"><b>✅ Verify:</b> <code>claude plugin list</code> shows <code>power-platform-llm-wiki</code>; typing <code>/power-platform-llm-wiki:</code> in a session autocompletes the skills.</p>
+                  <p class="verify" lang="it"><b>✅ Verifica:</b> <code>claude plugin list</code> mostra <code>power-platform-llm-wiki</code>; scrivendo <code>/power-platform-llm-wiki:</code> in una sessione le skill si completano da sole.</p>
                 </div>
-                <p class="verify" lang="en">
-                  <b>✅ Verify:</b> in the chat, the agent list shows
-                  <b>LLM Wiki</b>.
-                </p>
-                <p class="verify" lang="it">
-                  <b>✅ Verifica:</b> nella chat, nell'elenco degli agenti
-                  compare <b>LLM Wiki</b>.
-                </p>
                 <label class="wz-done"
                   ><input type="checkbox" data-wz-done />
                   <span lang="en">Done: I verified this step</span
@@ -596,15 +646,21 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                   </div>
                 </header>
                 <div lang="en">
-                  <ol>
-                    <li>
-                      Open in VS Code the folder of the
-                      <b>project repository</b>, the one that will host the
-                      <code>llm-wiki/</code> folder.
-                    </li>
+                  <div data-env-only="vscode"><ol>
+                    <li>Open in VS Code the folder of the <b>project repository</b>, the one that will host the <code>llm-wiki/</code> folder.</li>
                     <li>In the chat pick the <b>LLM Wiki</b> agent.</li>
                     <li>Type <code>init</code>.</li>
-                  </ol>
+                  </ol></div>
+                  <div data-env-only="cli"><ol>
+                    <li>In a terminal go to the folder of the <b>project repository</b>, the one that will host the <code>llm-wiki/</code> folder, and start <code>copilot</code>.</li>
+                    <li>Type <code>/agent</code> and pick <b>LLM Wiki</b>.</li>
+                    <li>Type <code>init</code>.</li>
+                  </ol></div>
+                  <div data-env-only="claude"><ol>
+                    <li>In a terminal go to the folder of the <b>project repository</b>, the one that will host the <code>llm-wiki/</code> folder, and start <code>claude</code>.</li>
+                    <li>Type <code>/power-platform-llm-wiki:init</code>.</li>
+                    <li>Answer the questions: the other skills use the same prefix.</li>
+                  </ol></div>
                   <p>The wizard first asks for the mode:</p>
                   <div class="opts">
                     <div class="opt rec">
@@ -626,15 +682,21 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                   <p>The rest of this page follows the guided mode.</p>
                 </div>
                 <div lang="it">
-                  <ol>
-                    <li>
-                      Apri in VS Code la cartella del
-                      <b>repository del progetto</b>, quello che ospiterà la
-                      cartella <code>llm-wiki/</code>.
-                    </li>
+                  <div data-env-only="vscode"><ol>
+                    <li>Apri in VS Code la cartella del <b>repository del progetto</b>, quello che ospiterà la cartella <code>llm-wiki/</code>.</li>
                     <li>Nella chat scegli l'agente <b>LLM Wiki</b>.</li>
                     <li>Scrivi <code>init</code>.</li>
-                  </ol>
+                  </ol></div>
+                  <div data-env-only="cli"><ol>
+                    <li>In un terminale entra nella cartella del <b>repository del progetto</b>, quello che ospiterà la cartella <code>llm-wiki/</code>, e avvia <code>copilot</code>.</li>
+                    <li>Scrivi <code>/agent</code> e scegli <b>LLM Wiki</b>.</li>
+                    <li>Scrivi <code>init</code>.</li>
+                  </ol></div>
+                  <div data-env-only="claude"><ol>
+                    <li>In un terminale entra nella cartella del <b>repository del progetto</b>, quello che ospiterà la cartella <code>llm-wiki/</code>, e avvia <code>claude</code>.</li>
+                    <li>Scrivi <code>/power-platform-llm-wiki:init</code>.</li>
+                    <li>Rispondi alle domande: le altre skill usano lo stesso prefisso.</li>
+                  </ol></div>
                   <p>Il wizard ti chiede subito la modalità:</p>
                   <div class="opts">
                     <div class="opt rec">
@@ -674,15 +736,15 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       ><span lang="it">Passo 3</span>
                     </p>
                     <h2 id="step-3-t" tabindex="-1">
-                      🏷️ <span lang="en">Project and profiles</span
-                      ><span lang="it">Progetto e profili</span>
+                      🏷️ <span lang="en">Project, profiles and tools</span
+                      ><span lang="it">Progetto, profili e strumenti</span>
                     </h2>
                   </div>
                 </header>
                 <div lang="en">
                   <p>
                     <b>The wizard asks:</b> project name, content language,
-                    profiles.
+                    profiles, agent tools.
                   </p>
                   <ul>
                     <li>
@@ -715,16 +777,22 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       ><span>Integrations, Azure Functions, APIs, .NET.</span>
                     </div>
                   </div>
+                  <p><b>Agent tools</b>: the tools the team will use with the wiki (more than one is fine). The wizard pre-selects the one you are running <code>init</code> from.</p>
+                  <div class="opts">
+                    <div class="opt"><b><code>vscode</code></b><span>GitHub Copilot in VS Code.</span><small>Writes <code>.vscode/mcp.json</code></small></div>
+                    <div class="opt"><b><code>copilot-cli</code></b><span>GitHub Copilot CLI.</span><small>Writes <code>.mcp.json</code></small></div>
+                    <div class="opt"><b><code>claude-code</code></b><span>Claude Code.</span><small>Writes <code>.mcp.json</code> and <code>CLAUDE.md</code></small></div>
+                  </div>
                   <p class="verify">
                     <b>✅ Verify:</b> the chosen profiles match what is really
-                    in the code. When in doubt pick the ones you need now: you
+                    in the code, and the tools match the team. When in doubt pick the ones you need now: you
                     can change them later with <code>config</code>.
                   </p>
                 </div>
                 <div lang="it">
                   <p>
                     <b>Il wizard chiede:</b> nome del progetto, lingua dei
-                    contenuti, profili.
+                    contenuti, profili, strumenti.
                   </p>
                   <ul>
                     <li>
@@ -757,9 +825,15 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       ><span>Integrazioni, Azure Functions, API, .NET.</span>
                     </div>
                   </div>
+                  <p><b>Strumenti</b>: quelli che il team userà con la wiki (anche più di uno). Il wizard preseleziona quello da cui stai lanciando <code>init</code>.</p>
+                  <div class="opts">
+                    <div class="opt"><b><code>vscode</code></b><span>GitHub Copilot in VS Code.</span><small>Scrive <code>.vscode/mcp.json</code></small></div>
+                    <div class="opt"><b><code>copilot-cli</code></b><span>GitHub Copilot CLI.</span><small>Scrive <code>.mcp.json</code></small></div>
+                    <div class="opt"><b><code>claude-code</code></b><span>Claude Code.</span><small>Scrive <code>.mcp.json</code> e <code>CLAUDE.md</code></small></div>
+                  </div>
                   <p class="verify">
                     <b>✅ Verifica:</b> i profili scelti corrispondono a ciò che
-                    c'è davvero nel codice. In caso di dubbio scegli quelli che
+                    c'è davvero nel codice e gli strumenti a quelli del team. In caso di dubbio scegli quelli che
                     ti servono ora: li cambi più avanti con <code>config</code>.
                   </p>
                 </div>
@@ -1069,7 +1143,7 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                     </div>
                     <div class="opt">
                       <b>⏭️ None</b
-                      ><span>For now you read the wiki only in VS Code.</span>
+                      ><span>For now you read the wiki only in your own tool.</span>
                     </div>
                   </div>
                   <p>
@@ -1111,7 +1185,7 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                     </div>
                     <div class="opt">
                       <b>⏭️ Nessuna</b
-                      ><span>Per ora consulti la wiki solo in VS Code.</span>
+                      ><span>Per ora consulti la wiki solo nel tuo strumento.</span>
                     </div>
                   </div>
                   <p>
@@ -1299,7 +1373,7 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       >Repository → Agents → Automations → Create new → On a
                       schedule</b
                     >. If the repository is on Azure DevOps, skip this step and
-                    run <code>update --full</code> from VS Code when needed.
+                    run <code>update --full</code> from your tool when needed.
                   </p>
                   <p>
                     <b>Sprint</b> (Azure DevOps Boards only): length (default 2
@@ -1335,7 +1409,7 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                       >Repository → Agents → Automations → Create new → On a
                       schedule</b
                     >. Se il repository è su Azure DevOps, salta questo passo e
-                    lancia <code>update --full</code> da VS Code quando serve.
+                    lancia <code>update --full</code> dal tuo strumento quando serve.
                   </p>
                   <p>
                     <b>Sprint</b> (solo con Azure DevOps Boards): durata
@@ -1416,19 +1490,31 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                         </tr>
                         <tr>
                           <td><code>.vscode/mcp.json</code></td>
-                          <td>
-                            The Azure DevOps connection, if you use Boards
-                          </td>
+                          <td>VS Code: the Azure DevOps connection, if you use Boards</td>
+                        </tr>
+                        <tr>
+                          <td><code>.mcp.json</code></td>
+                          <td>Copilot CLI and Claude Code: the same connection</td>
                         </tr>
                         <tr>
                           <td><code>.github/copilot-instructions.md</code></td>
-                          <td>
-                            The instructions that make Copilot use the wiki
-                          </td>
+                          <td>The instructions that make the agent use the wiki (VS Code, Copilot CLI)</td>
+                        </tr>
+                        <tr>
+                          <td><code>CLAUDE.md</code></td>
+                          <td>Claude Code: imports the same instructions with <code>@.github/copilot-instructions.md</code></td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
+                  <p>MCP files appear only when a server is needed (Boards or MarkItDown), and only for the chosen tools.</p>
+                  <div data-env-only="claude">
+                    <p class="callout info"><b>First start of Claude Code:</b> approve the servers from <code>.mcp.json</code> when prompted, then sign in to <code>ado-remote</code> with <code>/mcp</code>. With <code>/context</code> check that <code>CLAUDE.md</code> is listed under <b>Memory files</b>.</p>
+                  </div>
+                  <div data-env-only="cli">
+                    <p class="callout info"><b>First start of Copilot CLI:</b> accept the folder trust prompt when you start <code>copilot</code>: servers from <code>.mcp.json</code> load only in trusted folders. Check with <code>/mcp</code> that <code>ado-remote</code> is there.</p>
+                  </div>
+                  <p class="callout info" data-env-only="cli claude"><b>Wiki created with an older plugin version?</b> Run <code>config</code>, choose <b>agent tools</b> and add your tool: it creates the missing files without touching the rest.</p>
                   <p>
                     <b>Final check</b> (the agent runs it, but you can repeat
                     it):
@@ -1485,19 +1571,31 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
                         </tr>
                         <tr>
                           <td><code>.vscode/mcp.json</code></td>
-                          <td>
-                            Il collegamento ad Azure DevOps, se usi le Boards
-                          </td>
+                          <td>VS Code: il collegamento ad Azure DevOps, se usi le Boards</td>
+                        </tr>
+                        <tr>
+                          <td><code>.mcp.json</code></td>
+                          <td>Copilot CLI e Claude Code: lo stesso collegamento</td>
                         </tr>
                         <tr>
                           <td><code>.github/copilot-instructions.md</code></td>
-                          <td>
-                            Le istruzioni che fanno usare la wiki a Copilot
-                          </td>
+                          <td>Le istruzioni che fanno usare la wiki all'agente (VS Code, Copilot CLI)</td>
+                        </tr>
+                        <tr>
+                          <td><code>CLAUDE.md</code></td>
+                          <td>Claude Code: importa le stesse istruzioni con <code>@.github/copilot-instructions.md</code></td>
                         </tr>
                       </tbody>
                     </table>
                   </div>
+                  <p>I file MCP compaiono solo se serve un server (Boards o MarkItDown), e solo per gli strumenti scelti.</p>
+                  <div data-env-only="claude">
+                    <p class="callout info"><b>Primo avvio di Claude Code:</b> approva i server di <code>.mcp.json</code> quando te lo chiede, poi accedi ad <code>ado-remote</code> con <code>/mcp</code>. Con <code>/context</code> controlla che <code>CLAUDE.md</code> compaia tra i <b>Memory files</b>.</p>
+                  </div>
+                  <div data-env-only="cli">
+                    <p class="callout info"><b>Primo avvio di Copilot CLI:</b> accetta la richiesta di fiducia nella cartella quando avvii <code>copilot</code>: i server di <code>.mcp.json</code> si caricano solo nelle cartelle attendibili. Controlla con <code>/mcp</code> che <code>ado-remote</code> compaia.</p>
+                  </div>
+                  <p class="callout info" data-env-only="cli claude"><b>Wiki creata con una versione precedente del plugin?</b> Lancia <code>config</code>, scegli <b>strumenti</b> e aggiungi il tuo: crea i file mancanti senza toccare il resto.</p>
                   <p>
                     <b>Verifica finale</b> (la fa l'agente, ma puoi ripeterla):
                   </p>
@@ -1712,25 +1810,27 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
           <div class="faq reveal">
             <details>
               <summary>
-                <span lang="en">The <b>LLM Wiki</b> agent does not appear</span
-                ><span lang="it">L'agente <b>LLM Wiki</b> non compare</span>
+                <span lang="en">The <b>LLM Wiki</b> agent (or its commands) does not appear</span
+                ><span lang="it">L'agente <b>LLM Wiki</b> (o i suoi comandi) non compare</span>
               </summary>
-              <p lang="en">
-                Check <b>Chat › Plugins: Enabled</b> and that the plugin is
+              <p lang="en" data-env-only="vscode">Check <b>Chat › Plugins: Enabled</b> and that the plugin is
                 installed; restart VS Code.
               </p>
-              <p lang="it">
-                Controlla <b>Chat › Plugins: Enabled</b> e che il plugin sia
+              <p lang="it" data-env-only="vscode">Controlla <b>Chat › Plugins: Enabled</b> e che il plugin sia
                 installato; riavvia VS Code.
               </p>
+              <p lang="en" data-env-only="cli">Run <code>copilot plugin list</code>: if the plugin is missing, repeat the install, then restart the session and try <code>/agent</code>.</p>
+              <p lang="it" data-env-only="cli">Esegui <code>copilot plugin list</code>: se il plugin manca, ripeti l'installazione, poi riavvia la sessione e prova <code>/agent</code>.</p>
+              <p lang="en" data-env-only="claude">Run <code>claude plugin list</code>: if the plugin is missing, repeat the install and restart the session. The commands start with <code>/power-platform-llm-wiki:</code>: type it and use autocomplete.</p>
+              <p lang="it" data-env-only="claude">Esegui <code>claude plugin list</code>: se il plugin manca, ripeti l'installazione e riavvia la sessione. I comandi iniziano con <code>/power-platform-llm-wiki:</code>: scrivilo e usa il completamento.</p>
             </details>
             <details>
               <summary>
                 <span lang="en"><code>pwsh</code> not found</span
                 ><span lang="it"><code>pwsh</code> non trovato</span>
               </summary>
-              <p lang="en">Install PowerShell 7 and reopen VS Code.</p>
-              <p lang="it">Installa PowerShell 7 e riapri VS Code.</p>
+              <p lang="en">Install PowerShell 7 and reopen your tool (VS Code or the terminal).</p>
+              <p lang="it">Installa PowerShell 7 e riapri il tuo strumento (VS Code o il terminale).</p>
             </details>
             <details>
               <summary>
@@ -1897,7 +1997,7 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
       </div>
     </footer>
 
-    <script src="main.js"></script>
-    <script src="wizard.js"></script>
+    <script src="main.js?v={{VERSION}}"></script>
+    <script src="wizard.js?v={{VERSION}}"></script>
   </body>
 </html>

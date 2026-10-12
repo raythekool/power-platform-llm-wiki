@@ -6,6 +6,7 @@ updated: {{YYYY-MM-DD}}
 participants: [{{Name}}, {{Name}}]
 sources: [{{raw/meetings/file.md}}]
 tags: [{{topic}}]
+related: []
 ---
 
 # {{YYYY-MM-DD}} {{Meeting title}}

@@ -42,6 +42,7 @@ try {
     Assert ($rules -contains 'LNK003') 'link outside wiki detected'
     Assert ($r.Json.status.certified -eq 1) 'certified page counted'
     Assert ($r.Json.requirements.total -eq 2 -and $r.Json.requirements.withImplementation -eq 1) 'traceability counts'
+    Assert ($rules -notcontains 'AI001') 'every fixture page has a TL;DR'
     Assert (Test-Path (Join-Path $work 'lint.md')) 'markdown report written'
 
     Write-Host 'Test-WikiLint (broken copy)'
@@ -49,9 +50,13 @@ try {
     Add-Content -LiteralPath $broken -Value "`nSee [missing](../nowhere.md) and [[old|alias]].`n`nclient_secret = abcdefgh12345678`n"
     $certified = Join-Path $wiki 'requirements/REQ-SAL-001-credit-check.md'
     (Get-Content -LiteralPath $certified -Raw) -replace 'certified_by: John Customer\r?\n', '' | Set-Content -LiteralPath $certified -NoNewline
-    $r = Invoke-Json 'Test-WikiLint.ps1' @{ WikiPath = $wiki; Today = '2026-10-01' }
+    $req2 = Join-Path $wiki 'requirements/REQ-SAL-002-discount-approval.md'
+    (Get-Content -LiteralPath $req2 -Raw) -replace '(?m)^> Discounts.*$', 'Plain text.' | Set-Content -LiteralPath $req2 -NoNewline
+    $r = Invoke-Json 'Test-WikiLint.ps1' @{ WikiPath = $wiki; Today = '2026-10-01'; MaxPageKB = 0 }
     $rules = @($r.Json.issues | ForEach-Object rule)
     Assert ($r.Exit -eq 1) 'exit code 1 on errors'
+    Assert (@($r.Json.issues | Where-Object { $_.rule -eq 'AI001' }).file -contains 'requirements/REQ-SAL-002-discount-approval.md') 'page without TL;DR detected'
+    Assert ($rules -contains 'AI002') 'long page detected'
     Assert ($rules -contains 'LNK001') 'broken link detected'
     Assert (@($r.Json.issues | Where-Object { $_.rule -eq 'LNK002' -and $_.severity -eq 'error' }).Count -eq 1) 'pipe-alias wiki link is an error'
     Assert ($rules -contains 'SEC001') 'secret detected'
@@ -120,10 +125,47 @@ try {
     $r = Invoke-Json 'Get-CodeInventory.ps1' @{ Path = $plain; OutFile = (Join-Path $work 'inv-plain.json') }
     Assert ($r.Json.vcs -eq 'none' -and $null -eq $r.Json.revision -and $null -eq $r.Json.changes) 'plain folder: no VCS, no revision, no change state unless requested'
 
+    Write-Host 'Get-WikiGraph'
+    $null = & (Join-Path $scripts 'Get-CodeInventory.ps1') -Path (Join-Path $fixtures 'repo') -OutFile (Join-Path $work 'llm-wiki/raw/code/contoso-2026-09-30.json')
+    $r = Invoke-Json 'Get-WikiGraph.ps1' @{ WikiPath = $wiki; Today = '2026-10-01' }
+    $g = $r.Json
+    Assert ($r.Exit -eq 0 -and @($g.inventories).Count -eq 1) 'graph built with the latest code inventory'
+    Assert ($g.byKind.page -eq 9 -and $g.byKind.ax -ge 5 -and $g.byKind.component -ge 4) 'pages, F&O objects and components are nodes'
+    Assert ($g.byRelation.implements -eq 2 -and $g.byRelation.related_to -eq 1 -and $g.byRelation.depends_on -eq 1 -and $g.byRelation.drift -eq 1) 'front matter, inferred and drift relations'
+    Assert ($g.byRelation.extension_of -eq 1 -and $g.byRelation.uses_table -eq 1 -and $g.byRelation.relates_to -ge 1) 'inventory relations'
+    Assert (@($g.communities | ForEach-Object name) -contains 'SAL') 'requirement area SAL is a community'
+    Assert ($g.hubs[0].id -eq 'page:code/fno-credit.md') 'most connected page is the first hub'
+    Assert (@($g.gaps.undocumentedComponents.items) -contains 'RecalculateActivity' -and @($g.gaps.undocumentedComponents.items) -notcontains 'CreditCheckPlugin') 'undocumented components listed'
+    $q = Invoke-Json 'Get-WikiGraph.ps1' @{ WikiPath = $wiki; Query = @('AxTable:CustTable'); Depth = 2 }
+    Assert (@($q.Json.seeds) -contains 'ax:AxTable:CustTable' -and @($q.Json.pagesToRead) -contains 'llm-wiki/wiki/code/fno-credit.md') 'query returns the pages to read'
+    $q = Invoke-Json 'Get-WikiGraph.ps1' @{ WikiPath = $wiki; Impact = 'AxTable:CustTable'; Depth = 3 }
+    $impacted = @($q.Json.nodes | ForEach-Object id)
+    Assert ($impacted -contains 'ax:AxTableExtension:CustTable.ContosoExt' -and $impacted -contains 'ax:AxDataEntityView:ContosoCreditLimitEntity' -and $impacted -contains 'page:code/fno-credit.md') 'impact follows extensions, entities and pages'
+    $q = Invoke-Json 'Get-WikiGraph.ps1' @{ WikiPath = $wiki; From = 'REQ-SAL-001'; To = 'AxTable:CustTable' }
+    Assert ($q.Json.found -and @($q.Json.edges).Count -le 3 -and @($q.Json.nodes)[0].id -eq 'page:requirements/REQ-SAL-001-credit-check.md') 'shortest connection between a requirement and a table'
+    $ai = Join-Path $work 'ai'
+    $map = Join-Path $wiki 'reference/knowledge-map.md'
+    $null = Invoke-Json 'Get-WikiGraph.ps1' @{ WikiPath = $wiki; OutFile = (Join-Path $work 'graph1.json'); AiExportPath = $ai; ReportPath = $map; Today = '2026-10-01' }
+    foreach ($f in @('graph.json', 'llms.txt', 'llms-full.txt', 'graph.html')) { Assert (Test-Path -LiteralPath (Join-Path $ai $f)) "AI export: $f" }
+    $null = Invoke-Json 'Get-WikiGraph.ps1' @{ WikiPath = $wiki; OutFile = (Join-Path $work 'graph2.json') }
+    Assert ((Get-FileHash (Join-Path $work 'graph1.json')).Hash -eq (Get-FileHash (Join-Path $work 'graph2.json')).Hash) 'graph.json is byte-stable and ignores the generated knowledge map'
+    $nl = Get-Content -LiteralPath (Join-Path $ai 'graph.json') -Raw | ConvertFrom-Json -Depth 20
+    Assert ($nl.directed -and $nl.multigraph -and @($nl.nodes).Count -gt 0 -and $nl.links[0].source -and $nl.links[0].relation -and $nl.links[0].confidence) 'node-link JSON (networkx, GraphRAG)'
+    $llms = Get-Content -LiteralPath (Join-Path $ai 'llms.txt') -Raw
+    Assert ($llms -match '(?m)^# Contoso Sales' -and $llms -match '\[REQ-SAL-001 Credit check\]\(requirements/REQ-SAL-001-credit-check\.md\): Orders above') 'llms.txt lists pages with their TL;DR'
+    Assert ((Get-Content -LiteralPath (Join-Path $ai 'llms-full.txt') -Raw) -match 'Path: requirements/REQ-SAL-001-credit-check\.md \| Type: requirement \| Status: certified') 'llms-full.txt has page metadata'
+    $html = Get-Content -LiteralPath (Join-Path $ai 'graph.html') -Raw
+    Assert ($html -notmatch '__GRAPH_DATA__' -and $html -notmatch '<script[^>]+src=' -and $html -notmatch 'https?://' -and $html -match '"REQ-SAL-001 Credit check"') 'graph.html is self-contained with embedded data'
+    $mapText = Get-Content -LiteralPath $map -Raw
+    Assert ($mapText -match 'generated: true' -and $mapText -match '\[REQ-SAL-001 Credit check\]\(\.\./requirements/REQ-SAL-001-credit-check\.md\)' -and $mapText -match 'RecalculateActivity') 'knowledge map with relative links and gaps'
+    $r = Invoke-Json 'Test-WikiLint.ps1' @{ WikiPath = $wiki; Today = '2026-10-01' }
+    Assert ($r.Json.errors -eq 0) 'wiki with the knowledge map has no lint errors'
+    Remove-Item -LiteralPath $map
+
     Write-Host 'Export-Wiki azure-devops'
     $ado = Join-Path $work 'ado'
     $r = Invoke-Json 'Export-Wiki.ps1' @{ WikiPath = $wiki; OutPath = $ado; Target = 'azure-devops'; ProjectName = 'Contoso' }
-    Assert ($r.Json.pages -eq 7) "7 pages exported (got $($r.Json.pages))"
+    Assert ($r.Json.pages -eq 8) "8 pages exported (got $($r.Json.pages))"
     Assert (@($r.Json.warnings).Count -eq 0) "no export warnings ($(@($r.Json.warnings) -join '; '))"
     $rootOrder = Get-Content -LiteralPath (Join-Path $ado '.order')
     Assert ($rootOrder[0] -eq 'Home' -and $rootOrder[1] -eq 'Overview') 'root .order starts with Home, Overview'
@@ -136,6 +178,9 @@ try {
     Assert ($plugins -notmatch '(?m)^---\s*$' -and $plugins -match '\*\*Status:\*\* draft') 'front matter replaced by status callout'
     Assert ($plugins -match '\[\[_TOC_\]\]') 'TOC macro added'
     Assert ($plugins -match '```mermaid') 'mermaid fence preserved'
+    Assert ($plugins -match '## 🔗 Related pages' -and $plugins -match '\[REQ-SAL-001 Credit check\]\(/Requirements/REQ%2DSAL%2D001-Credit-check\) \(links here\)') 'related pages section with converted links'
+    $reqPage = Get-Content -LiteralPath $req -Raw
+    Assert ($reqPage -match '\(implements\)' -and $reqPage -match '\*\*ID:\*\* REQ-SAL-001') 'traceability backlinks and page ID in the callout'
     $meeting = Get-Content -LiteralPath (Get-ChildItem -LiteralPath (Join-Path $ado 'Meetings') -Filter '*.md' | Select-Object -First 1).FullName -Raw
     Assert ($meeting -match 'Original notes \(`\.\./\.\./raw/meetings/kickoff\.md`\)') 'link outside wiki turned into plain text'
     Assert (Test-Path -LiteralPath (Join-Path $ado 'Reference/Decisions.md')) 'nested hub generated'
@@ -160,7 +205,7 @@ try {
         Assert (Test-Path -LiteralPath (Join-Path $hostWiki $f)) "installed $f"
     }
     $out = & pwsh -NoProfile -File (Join-Path $hostWiki '.engine/scripts/Test-WikiLint.ps1') -WikiPath $wiki -Today '2026-10-01'
-    Assert ($LASTEXITCODE -eq 0 -and (($out -join "`n") | ConvertFrom-Json).pages -eq 8) 'vendored lint runs standalone'
+    Assert ($LASTEXITCODE -eq 0 -and (($out -join "`n") | ConvertFrom-Json).pages -eq 9) 'vendored lint runs standalone'
 
     Write-Host 'Build-Site'
     $siteOut = Join-Path $work '_site'

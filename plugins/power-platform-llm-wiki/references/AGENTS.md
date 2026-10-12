@@ -50,6 +50,9 @@ owner: Functional team             # accountable person or team
 updated: 2026-10-01                # last substantive change
 sources: [raw/analysis/fdd.md, ado:US-123, crm-repo@a1b2c3d]   # provenance
 tags: [sales]
+# relations not expressed by a link (knowledge graph, confidence INFERRED): page paths or entity ids
+related: [../design/integration.md, AxClass:SalesFormLetter_Contoso_Extension]
+depends_on: [REQ-SAL-001]
 # lifecycle
 reviewed_by: Name
 certified_by: Name
@@ -65,7 +68,7 @@ participants: [Name, Name]         # meeting
 ---
 ```
 
-Body: one `#` title, a `>` TL;DR paragraph, then sections. Use the templates in `llm-wiki/templates/` (if present) or `.engine/templates/`, translating headings to `project.language`.
+Body: one `#` title, a `>` TL;DR paragraph, then sections. The TL;DR is mandatory (lint `AI001`): one or two plain sentences that stand on their own, because the knowledge graph, `llms.txt` and AI search use it as the page summary. Use the templates in `llm-wiki/templates/` (if present) or `.engine/templates/`, translating headings to `project.language`.
 
 ### Links
 
@@ -119,21 +122,33 @@ Answer project questions only from wiki pages, citing them with relative links. 
 | Dataverse table | `` `dv:<logicalname>` ``    | `dv:salesorder`                                                                                                      |
 | Sprint          | `` `YYYY-SNN` ``            | `2026-S08`                                                                                                           |
 
+Write entity ids in inline code exactly as above: the knowledge graph recognises them (and the names of components in the code inventory, e.g. `` `CreditCheckPlugin` ``) and links the page to them.
+
+## Knowledge graph
+
+`Get-WikiGraph.ps1` turns the wiki into a typed graph (0 tokens): pages, the entities they cite and the custom objects of the code inventories, with relations `links_to`, `implements`, `implemented_by`, `cites`, `mentions`, `drift`, `contradiction` (extracted), `related_to`, `depends_on` (inferred, from `related:` / `depends_on:`), and `extends`, `extension_of`, `relates_to`, `uses_table`, `grants`, `opens` (from the inventory). It groups nodes into areas (seeded by requirement areas), and lists hubs, cross-area connections and gaps.
+
+- **Use it before opening pages**: `-Query <ids or words>` returns the neighbourhood and `pagesToRead`; `-Impact <id>` what depends on an object; `-From <a> -To <b>` how two things are connected.
+- **Feed it**: link pages, write entity ids in inline code, and add `related:` / `depends_on:` only for relations that no link or `implements` already expresses.
+- `wiki/reference/knowledge-map.md` is generated (`generated: true`): never edit it by hand; it is rebuilt at every lint.
+
 ## Deterministic scripts (prefer them to reading files by hand)
 
 All scripts are in `llm-wiki/.engine/scripts/` (PowerShell 7, `pwsh`), emit JSON, and cost no tokens to run.
 
-| Script                                                                                | Use                                                                                                                                                                                                                                                    |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `Get-RawDelta.ps1 -RawPath llm-wiki/raw`                                              | New / changed / to-convert sources. After a successful ingest: `-MarkProcessed <paths>`. Adopt an existing wiki: `-Baseline`.                                                                                                                          |
-| `Get-CodeInventory.ps1 -Path <clone> -OutFile llm-wiki/raw/code/<repo>-<date>.json`   | Inventory of plugins, PCF, web resources, solutions, flows, pipelines, F&O models and Ax objects. Git, TFVC or plain folder; without git add `-Revision` and `-StatePath llm-wiki/.state/code-<repo>.json` for the changed files, then `-AcceptState`. |
-| `Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`                                           | Front matter, lifecycle, links, orphans, index coverage, overdue actions, stale pages, Mermaid, traceability, secrets.                                                                                                                                 |
-| `Export-Wiki.ps1 -WikiPath llm-wiki/wiki -OutPath <dir> -Target azure-devops\|github` | Converts the wiki for publishing.                                                                                                                                                                                                                      |
+| Script                                                                                        | Use                                                                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Get-RawDelta.ps1 -RawPath llm-wiki/raw`                                                      | New / changed / to-convert sources. After a successful ingest: `-MarkProcessed <paths>`. Adopt an existing wiki: `-Baseline`.                                                                                                                          |
+| `Get-CodeInventory.ps1 -Path <clone> -OutFile llm-wiki/raw/code/<repo>-<date>.json`           | Inventory of plugins, PCF, web resources, solutions, flows, pipelines, F&O models and Ax objects. Git, TFVC or plain folder; without git add `-Revision` and `-StatePath llm-wiki/.state/code-<repo>.json` for the changed files, then `-AcceptState`. |
+| `Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`                                                   | Front matter, lifecycle, links, orphans, index coverage, overdue actions, stale pages, Mermaid, traceability, secrets, TL;DR and page size (`AI001`, `AI002`).                                                                                         |
+| `Get-WikiGraph.ps1 -WikiPath llm-wiki/wiki [-Query <terms>\|-Impact <id>\|-From <a> -To <b>]` | Knowledge graph summary or a focused subgraph with `pagesToRead`. Outputs: `-ReportPath` (knowledge map), `-AiExportPath` (`graph.json`, `llms.txt`, `llms-full.txt`, `graph.html`), `-OutFile`, `-HtmlPath`.                                          |
+| `Export-Wiki.ps1 -WikiPath llm-wiki/wiki -OutPath <dir> -Target azure-devops\|github`         | Converts the wiki for publishing.                                                                                                                                                                                                                      |
 
 ## Cost control
 
 - Process only what changed (`Get-RawDelta.ps1`, code inventory diff by commit, TFVC changeset or file-hash snapshot); never re-read unchanged sources.
 - Read inventories and summaries before opening source files; open only the files a page needs.
+- To answer or update, ask the knowledge graph which pages matter (`Get-WikiGraph.ps1 -Query`) instead of reading `index.md` and following links by hand.
 - Let scripts do mechanical work (lint, link checks, publish conversion).
 - Record `pendingKB` (from `Get-RawDelta.ps1`) and the number of files read in each `log.md` entry so consumption can be tracked over time.
 

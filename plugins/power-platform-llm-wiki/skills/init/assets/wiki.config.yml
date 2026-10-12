@@ -8,6 +8,7 @@ project:
   name: "" # shown in published wiki headers
   language: it # language of wiki content (it | en | ...)
   profiles: [power-platform] # power-platform | dynamics-fno | generic (one or more)
+  tools: [vscode] # vscode | copilot-cli | claude-code: decides the MCP and instruction files init/config write
 
 # Source code is the primary source for as-built documentation.
 code:
@@ -72,6 +73,14 @@ governance:
 
 # Project-specific rules the agent must follow (free text, one per line).
 conventions: []
+
+# Knowledge graph (Get-WikiGraph.ps1, no tokens): helps the agent find the right pages and makes the wiki easier to use for AI tools.
+graph:
+  knowledge_map: true # wiki/reference/knowledge-map.md, rebuilt at every lint and published with the wiki
+  related_section: true # "Related pages" (backlinks) section added to every published page
+  include_inventory: true # custom objects from raw/code and raw/fno become graph nodes (undocumented ones are reported)
+  ai_export: true # graph.json, llms.txt, llms-full.txt, graph.html
+  ai_export_path: llm-wiki/dist/ai # or a clone of a separate repo, or a OneDrive-synced SharePoint library
 
 publish:
   enabled: false

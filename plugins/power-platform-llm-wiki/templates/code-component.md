@@ -7,6 +7,7 @@ commit: "{{repo@rev}}"
 implements: [{{REQ-AREA-NNN}}]
 sources: [{{raw/code/repo-YYYY-MM-DD.json}}, {{path/in/repo}}]
 tags: [{{plugin|pcf|xpp|flow|integration}}]
+related: []
 ---
 
 # {{Component name}}

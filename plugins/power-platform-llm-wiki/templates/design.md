@@ -6,6 +6,7 @@ updated: {{YYYY-MM-DD}}
 implements: [{{REQ-AREA-NNN}}]
 sources: [{{raw/specs/tdd-file.md}}]
 tags: [{{component}}]
+related: []
 ---
 
 # {{Design title}}

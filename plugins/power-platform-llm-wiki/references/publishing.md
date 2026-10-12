@@ -1,6 +1,6 @@
 # Publishing reference
 
-Read this file only for `update --publish`. The canonical wiki in `llm-wiki/wiki/` never changes during publishing: `Export-Wiki.ps1` produces a converted copy that is pushed to the target wiki repository.
+Read this file for `update --publish` and for the AI pack written at lint time. The canonical wiki in `llm-wiki/wiki/` never changes during publishing: `Export-Wiki.ps1` produces a converted copy that is pushed to the target wiki repository.
 
 ## Choose the target
 
@@ -19,7 +19,7 @@ A GitHub-hosted repository cannot be published as an Azure DevOps code wiki: use
 - Internal links are absolute and use the same encoding: `/Mount/Requirements/REQ%2DSAL%2D001-Credit-check`.
 - `[[_TOC_]]` is added to pages with two or more sections; Mermaid stays in standard ```` ```mermaid ```` fences.
 - Images and attachments go to `/.attachments/`.
-- Front matter is removed and replaced by a one-line status callout (status, owner, certification, updated).
+- Front matter is removed and replaced by a one-line status callout (status, owner, certification, updated, IDs).
 - Never create or reorder pages with the wiki UI or page APIs for bulk changes: new pages are inserted at the top and the order breaks. Always publish through git.
 
 ## GitHub Wiki conventions (applied by `Export-Wiki.ps1 -Target github`)
@@ -40,8 +40,10 @@ A GitHub-hosted repository cannot be published as an Azure DevOps code wiki: use
 3. Export into the clone, replacing everything except `.git` (for a code wiki, export into the configured sub-folder):
 
     ```powershell
-    pwsh llm-wiki/.engine/scripts/Export-Wiki.ps1 -WikiPath llm-wiki/wiki -OutPath $tmp -Target azure-devops -MountFolder "<mount or empty>" -ProjectName "<name>" -Clean
+    pwsh llm-wiki/.engine/scripts/Export-Wiki.ps1 -WikiPath llm-wiki/wiki -OutPath $tmp -Target azure-devops -MountFolder "<mount or empty>" -ProjectName "<name>" -RelatedHeading "<'Related pages' in project.language>" -Clean
     ```
+
+    Every page gets a final "Related pages" section with the pages that point to it (links, implements, related, drift), taken from the knowledge graph, and the page IDs in the status callout: readers and AI assistants of the published wiki see backlinks and traceability without the graph. With `graph.related_section: false` add `-NoRelated`.
 
 4. Review the JSON output: `warnings` must be empty or explained. Show `git -C $tmp status --short` to the user.
 5. **Interactive mode:** ask for confirmation before pushing (it updates a shared wiki). **Headless mode:** push only when `publish.headless: true`.
@@ -55,3 +57,23 @@ The published wiki is the knowledge source for questions from people outside the
 
 - **Microsoft 365 Copilot / Copilot Studio**: connect the Azure DevOps Wiki through the Microsoft Graph connector for Azure DevOps Wiki (tenant admin), or publish an export to a SharePoint library used as knowledge source. Pages with front matter-derived status callouts let users see whether content is certified.
 - **VS Code**: the `query` skill answers from `llm-wiki/wiki/` directly.
+
+## AI pack (knowledge graph outputs)
+
+`Get-WikiGraph.ps1 -AiExportPath <folder>` (run by `update --lint`) writes:
+
+| File            | For                                                                                                  |
+| --------------- | ---------------------------------------------------------------------------------------------------- |
+| `graph.json`    | GraphRAG, graphify, networkx, custom agents: nodes and typed relations (node-link JSON, byte-stable) |
+| `llms.txt`      | Tools that follow the llms.txt convention: one line per page with its TL;DR and status               |
+| `llms-full.txt` | Single-file context for an agent or a knowledge source: every page with its metadata                 |
+| `graph.html`    | People: interactive map (search, areas, relations), self-contained, opens offline in any browser     |
+
+Where to put them:
+
+- **The wiki itself publishes the knowledge map** (`wiki/reference/knowledge-map.md`), which is Markdown: Azure DevOps Wiki and GitHub Wiki render it, and Microsoft 365 Copilot indexes it with the rest of the wiki.
+- **Not inside the wiki repository**: Azure DevOps Wiki and GitHub Wiki show only Markdown pages, so the other files would be invisible there.
+- **Default** `graph.ai_export_path: llm-wiki/dist/ai` (git-ignored): local use and CI artefacts.
+- **Separate git repository** (e.g. a `docs-ai` repo): set `graph.ai_export_path` to its local clone, then commit and push with the same confirmation rules as the wiki (`publish.headless` for scheduled runs).
+- **SharePoint library** used as a Copilot Studio knowledge source: set `graph.ai_export_path` to the library folder synced with OneDrive; the sync uploads the files. `llms-full.txt` is the most useful file there; `graph.html` lets people browse the map from SharePoint.
+- The pack contains the wiki text: share it only where the wiki itself may be read.

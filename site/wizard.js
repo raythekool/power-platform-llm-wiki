@@ -1,5 +1,32 @@
 (function () {
     'use strict';
+    // Environment selector: VS Code, Copilot CLI or Claude Code.
+    var ENV_KEY = 'llmwiki-env';
+    var ENVS = ['vscode', 'cli', 'claude'];
+    var CLAUDE_PREFIX = '/power-platform-llm-wiki:';
+    var CMD = /^(init|config|update|ingest|query)(\s|$)/;
+    var cards = Array.prototype.slice.call(document.querySelectorAll('[data-env-set]'));
+    if (!cards.length) { return; }
+    var cmds = Array.prototype.slice.call(document.querySelectorAll('.wz-panel code, #later code')).filter(function (c) {
+        if (c.children.length || !CMD.test(c.textContent)) { return false; }
+        c.dataset.cmd = c.textContent;
+        return true;
+    });
+
+    function setEnv(env, persist) {
+        if (ENVS.indexOf(env) < 0) { env = 'vscode'; }
+        document.documentElement.dataset.env = env;
+        cards.forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.envSet === env)); });
+        cmds.forEach(function (c) { c.textContent = (env === 'claude' ? CLAUDE_PREFIX : '') + c.dataset.cmd; });
+        if (persist) { try { localStorage.setItem(ENV_KEY, env); } catch (e) { /* storage unavailable */ } }
+    }
+
+    cards.forEach(function (b) { b.addEventListener('click', function () { setEnv(b.dataset.envSet, true); }); });
+    setEnv(document.documentElement.dataset.env, false);
+})();
+
+(function () {
+    'use strict';
     var panels = Array.prototype.slice.call(document.querySelectorAll('.wz-panel'));
     if (!panels.length) { return; }
     var wz = document.querySelector('.wz');

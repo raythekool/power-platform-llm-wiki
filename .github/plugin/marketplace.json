@@ -2,7 +2,7 @@
   "name": "power-platform-llm-wiki",
   "metadata": {
     "description": "Plugin marketplace for LLM Wiki — code-first project knowledge base maintained by an LLM agent.",
-    "version": "3.1.0"
+    "version": "3.2.0"
   },
   "owner": {
     "name": "raythekool",
@@ -13,7 +13,7 @@
       "name": "power-platform-llm-wiki",
       "source": "./plugins/power-platform-llm-wiki/",
       "description": "Code-first project knowledge base for Dynamics 365 delivery — single agent with five skills (init, config, update, ingest, query). Analyses code (Azure Repos, GitHub, local), Dataverse and F&O metadata, work items, meetings, FDD/TDD; publishes to Azure DevOps Wiki or GitHub Wiki.",
-      "version": "3.1.0"
+      "version": "3.2.0"
     }
   ]
 }

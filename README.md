@@ -19,14 +19,15 @@
 
 ## ✨ What you get
 
-|                                  |                                                                                                                                                                                                                    |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 🧬 **Code is the primary source** | As-built pages are generated from repositories (Azure Repos, GitHub, TFS / TFVC, local folders) and platform metadata. FDD and TDD describe the intent; when they disagree with the code the wiki flags `⚠️ Drift`. |
-| 📐 **Standard formats**           | Templates for requirements (FDD), technical design (TDD), ADR, meeting minutes and code components give every project the same structure.                                                                          |
-| 🛡️ **Governed content**           | Every page has an owner, sources and a lifecycle: `draft` -> `reviewed` -> `certified`. The agent writes drafts; people review and certify.                                                                        |
-| 💸 **Low token cost**             | Deterministic PowerShell scripts do inventory, change detection, lint and publishing. The LLM reads their JSON and only the files that changed.                                                                    |
-| 🌐 **Publish anywhere**           | Azure DevOps Wiki (project or code wiki) and GitHub Wiki, generated from the same Markdown.                                                                                                                        |
-| 💬 **Ask the wiki**               | `query` answers only from the wiki, with citations and the certification status of each source.                                                                                                                    |
+|                                  |                                                                                                                                                                                                                                                                                                                                                                                                 |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🧬 **Code is the primary source** | As-built pages are generated from repositories (Azure Repos, GitHub, TFS / TFVC, local folders) and platform metadata. FDD and TDD describe the intent; when they disagree with the code the wiki flags `⚠️ Drift`.                                                                                                                                                                              |
+| 📐 **Standard formats**           | Templates for requirements (FDD), technical design (TDD), ADR, meeting minutes and code components give every project the same structure.                                                                                                                                                                                                                                                       |
+| 🛡️ **Governed content**           | Every page has an owner, sources and a lifecycle: `draft` -> `reviewed` -> `certified`. The agent writes drafts; people review and certify.                                                                                                                                                                                                                                                     |
+| 💸 **Low token cost**             | Deterministic PowerShell scripts do inventory, change detection, lint and publishing. The LLM reads their JSON and only the files that changed.                                                                                                                                                                                                                                                 |
+| 🌐 **Publish anywhere**           | Azure DevOps Wiki (project or code wiki) and GitHub Wiki, generated from the same Markdown.                                                                                                                                                                                                                                                                                                     |
+| 💬 **Ask the wiki**               | `query` answers only from the wiki, with citations and the certification status of each source.                                                                                                                                                                                                                                                                                                 |
+| 🕸️ **Knowledge graph for AI**     | `Get-WikiGraph.ps1` links pages, requirements, F&O objects, Dataverse tables, components and work items (0 tokens). The agent asks it which pages to read, what an object impacts and how two things are connected; it also writes a knowledge map page, "Related pages" backlinks in the published wiki, and an AI pack (`graph.json`, `llms.txt`, `llms-full.txt`, interactive `graph.html`). |
 
 ## 🧭 How it works
 
@@ -107,7 +108,9 @@ Requirements carry a `req_id`; code and design pages declare `implements: [REQ-.
 <project>/
 ├── .github/copilot-instructions.md        # LLM Wiki section (appended)
 ├── .github/workflows/copilot-setup-steps.yml   # only with scheduled automation (GitHub host)
-├── .vscode/mcp.json                       # Azure DevOps MCP (Entra ID sign-in, no PAT), MarkItDown
+├── .vscode/mcp.json                       # VS Code: Azure DevOps MCP (Entra ID sign-in, no PAT), MarkItDown
+├── .mcp.json                              # Copilot CLI / Claude Code: same servers (mcpServers)
+├── CLAUDE.md                              # Claude Code: @.github/copilot-instructions.md import
 └── llm-wiki/
     ├── AGENTS.md                          # operating manual (managed)
     ├── wiki.config.yml                    # project configuration
@@ -172,7 +175,7 @@ plugins/power-platform-llm-wiki/
 ├── plugin.json  .mcp.json
 ├── agents/llm-wiki.agent.md
 ├── skills/{init,config,update,ingest,query}/SKILL.md
-├── scripts/                               # Install-Engine, Get-RawDelta, Get-CodeInventory, Test-WikiLint, Export-Wiki
+├── scripts/                               # Install-Engine, Get-RawDelta, Get-CodeInventory, Get-WikiGraph, Test-WikiLint, Export-Wiki
 ├── templates/                             # meeting, requirement, design, adr, code-component, source
 └── references/                            # AGENTS.md, publishing.md, tfvc.md, profiles/
 scripts/Validate-Plugin.ps1                # release checks (structure, versions, confidentiality, doc links)

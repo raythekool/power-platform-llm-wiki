@@ -8,6 +8,8 @@ tags: [governance]
 
 # ADR-001 Wiki repository
 
+> The Azure DevOps Wiki is the single documentation repository.
+
 ## Context
 
 Documentation is spread across tools.

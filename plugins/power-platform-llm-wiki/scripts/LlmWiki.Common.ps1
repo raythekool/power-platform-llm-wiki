@@ -86,6 +86,33 @@ function Get-LineNumber([string]$Text, [int]$Index) {
     return ([regex]::Matches($Text.Substring(0, $Index), '\n')).Count + 1
 }
 
+# Inline code spans outside fenced blocks: entity ids (`AxClass:X`, `dv:account`, `US-12`, `repo@rev:path`) live here.
+function Get-InlineCode([string]$Body) {
+    $noFences = [regex]::Replace($Body, '(?ms)^[ \t]*(```|~~~).*?^[ \t]*\1[ \t]*$', {
+            param($m) ($m.Value -replace '[^\r\n]', ' ')
+        })
+    foreach ($m in [regex]::Matches($noFences, '`([^`\r\n]+)`')) {
+        [pscustomobject]@{ Value = $m.Groups[1].Value.Trim(); Line = (Get-LineNumber $noFences $m.Index) }
+    }
+}
+
+# TL;DR: the blockquote that must follow the H1. Returns $null when the first block after the title is not a quote
+# or is an inline marker (⚠️, 🕐, ...) rather than a summary.
+function Get-PageSummary([string]$Body, [int]$MaxLength = 300) {
+    $lines = $Body -split '\r?\n'
+    $i = 0
+    while ($i -lt $lines.Count -and $lines[$i] -notmatch '^#[ \t]+') { $i++ }
+    $i++
+    while ($i -lt $lines.Count -and $lines[$i].Trim() -eq '') { $i++ }
+    $quote = @()
+    while ($i -lt $lines.Count -and $lines[$i] -match '^>\s?(.*)$') { $quote += $Matches[1].Trim(); $i++ }
+    $text = (($quote | Where-Object { $_ }) -join ' ').Trim()
+    if (-not $text -or $text -match '^(\*\*)?[\p{So}\p{Cs}]') { return $null }
+    $text = $text -replace '^\*\*TL;DR:?\*\*:?\s*', ''
+    if ($text.Length -gt $MaxLength) { $text = $text.Substring(0, $MaxLength - 1).TrimEnd() + '…' }
+    return $text
+}
+
 # Markdown links and images whose target is a local path (no URI scheme, not an anchor).
 function Get-LocalLinks([string]$Body) {
     $clean = Remove-CodeSpans $Body

@@ -51,7 +51,7 @@ In Claude Code le skill si chiamano `/power-platform-llm-wiki:init`, `:config`, 
 
 Apri la cartella del repository di progetto (quello che ospiterà la wiki) e scrivi `init` all'agente. Il wizard chiede:
 
-1. **Progetto**: nome, lingua dei contenuti (default italiano), profili (`power-platform`, `dynamics-fno`, `generic`).
+1. **Progetto**: nome, lingua dei contenuti (default italiano), profili (`power-platform`, `dynamics-fno`, `generic`) e strumenti del team (`vscode`, `copilot-cli`, `claude-code`), che decidono quali file di configurazione dell'agente vengono scritti.
 2. **Fonti** (tutte opzionali):
     - 🧬 repository di codice (Azure Repos, GitHub, TFS / TFVC o cartella locale senza git) - consigliato, il codice è la fonte primaria. Per TFVC servono `tf.exe` e il percorso `$/...`; i dettagli sono nel [wizard di configurazione](wizard-configurazione.md#-passo-4---fonti);
     - 📋 Azure DevOps Boards (organizzazione e progetto; accesso con il proprio account, nessun PAT);
@@ -62,7 +62,7 @@ Apri la cartella del repository di progetto (quello che ospiterà la wiki) e scr
 4. **Governance**: redazione dei dati personali, soglia di "pagina non aggiornata", nomi dei certificatori.
 5. **Automazione**: solo per repository su GitHub (aggiornamento schedulato tramite Copilot cloud agent).
 
-Al termine il progetto contiene la cartella `llm-wiki/` (configurazione, motore, sorgenti, wiki) e le integrazioni per VS Code. Fai commit di tutto tranne quanto escluso da `.gitignore`.
+Al termine il progetto contiene la cartella `llm-wiki/` (configurazione, motore, sorgenti, wiki) e le integrazioni per gli strumenti scelti: `.vscode/mcp.json` per VS Code, `.mcp.json` per Copilot CLI e Claude Code, `CLAUDE.md` per Claude Code. Fai commit di tutto tranne quanto escluso da `.gitignore`.
 
 ### 🧱 3. Riempire la wiki
 
@@ -93,8 +93,10 @@ Ogni requisito ha un ID (`REQ-...`); le pagine di codice dichiarano quali requis
 Il lint è uno script deterministico (non consuma token) e segnala:
 
 - 🔴 **errori**: link interrotti, front matter mancante, pagine certificate senza certificatore, possibili segreti nel testo;
-- 🟠 **avvisi**: pagine orfane o non presenti nell'indice, azioni scadute, requisiti senza implementazione, pagine di codice senza diagramma;
-- 🔵 **info**: pagine non aggiornate da troppo tempo, componenti di codice non tracciati a un requisito.
+- 🟠 **avvisi**: pagine orfane o non presenti nell'indice, azioni scadute, requisiti senza implementazione, pagine di codice senza diagramma, pagine senza TL;DR (il riassunto `>` subito dopo il titolo);
+- 🔵 **info**: pagine non aggiornate da troppo tempo, componenti di codice non tracciati a un requisito, pagine troppo lunghe per essere usate bene dagli assistenti AI.
+
+Nello stesso passaggio l'agente aggiorna la **mappa della conoscenza** (`wiki/reference/knowledge-map.md`, vedi [Usare la wiki con strumenti AI](#-8-usare-la-wiki-con-strumenti-ai)).
 
 > [!IMPORTANT]
 > Correggi gli errori prima di pubblicare. Le segnalazioni `⚠️ Drift` richiedono una decisione del team: aggiornare il documento o correggere il codice.
@@ -110,7 +112,7 @@ Il processo completo è descritto in [governance.md](governance.md).
 
 ### 🌐 6. Pubblicare (`update --publish`)
 
-L'agente converte la wiki nel formato del target (Azure DevOps Wiki o GitHub Wiki), mostra le modifiche e chiede conferma prima del push. Su Azure DevOps la struttura delle pagine, l'ordine e i link vengono generati automaticamente.
+L'agente converte la wiki nel formato del target (Azure DevOps Wiki o GitHub Wiki), mostra le modifiche e chiede conferma prima del push. Su Azure DevOps la struttura delle pagine, l'ordine e i link vengono generati automaticamente. In fondo a ogni pagina pubblicata compare la sezione **Pagine collegate**, con le pagine che puntano a quella (link, implementazioni, drift): chi legge, e Microsoft 365 Copilot, vede anche i collegamenti "all'indietro".
 
 > [!WARNING]
 > Non modificare a mano la wiki pubblicata: le modifiche vanno fatte nei sorgenti o nelle pagine di `llm-wiki/wiki/` e poi ripubblicate, altrimenti vengono sovrascritte.
@@ -126,6 +128,25 @@ Esempi:
 L'agente risponde solo con il contenuto della wiki, cita le pagine e indica se sono certificate. Se l'informazione manca risponde "Not documented yet" e propone come aggiungerla. La risposta può essere salvata come FAQ in `wiki/reference/queries/`.
 
 Chi non usa VS Code consulta la wiki pubblicata su Azure DevOps o tramite Microsoft 365 Copilot / Copilot Studio collegati alla wiki.
+
+### 🕸️ 8. Usare la wiki con strumenti AI
+
+La wiki è anche un **grafo della conoscenza**: pagine, requisiti, oggetti F&O, tabelle Dataverse, componenti di codice e work item sono collegati tra loro. Lo costruisce uno script (`Get-WikiGraph.ps1`) che non consuma token.
+
+| Cosa                              | A cosa serve                                                                                                                                                                                                                           |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Domande più precise ed economiche | `query` chiede al grafo quali pagine leggere invece di sfogliare l'indice. Funzionano anche domande di impatto ("cosa tocca se cambio `AxTable:CustTable`?") e di collegamento ("come è collegato REQ-SAL-001 a NotifyCreditBlocked?") |
+| Mappa della conoscenza            | Pagina generata `wiki/reference/knowledge-map.md`: aree funzionali, pagine centrali, collegamenti tra aree, lacune (componenti non documentati, pagine senza TL;DR). Viene pubblicata con la wiki; non modificarla a mano              |
+| Pagine collegate                  | Nella wiki pubblicata ogni pagina elenca chi la cita o la implementa                                                                                                                                                                   |
+| Pacchetto AI                      | In `llm-wiki/dist/ai/`: `graph.json` (per GraphRAG e altri strumenti), `llms.txt` e `llms-full.txt` (la wiki in formato adatto ai modelli), `graph.html` (mappa interattiva da aprire nel browser, senza installare nulla)             |
+
+Per aiutare il grafo:
+
+- inizia ogni pagina con un TL;DR (`> ...`) di una o due frasi;
+- scrivi gli identificativi in `codice inline`: `REQ-SAL-001`, `AxTable:CustTable`, `dv:account`, `US-128`;
+- l'agente aggiunge `related:` / `depends_on:` nel front matter solo per relazioni che nessun link esprime.
+
+Il pacchetto AI non va nella wiki pubblicata (Azure DevOps e GitHub mostrano solo pagine Markdown). Con `config` puoi scegliere un'altra cartella in `graph.ai_export_path`, ad esempio il clone di un repository separato o una libreria SharePoint sincronizzata con OneDrive da usare come fonte di conoscenza di Copilot Studio. Tutte le opzioni sono nella sezione `graph:` di `wiki.config.yml`.
 
 ### ❓ Domande frequenti
 

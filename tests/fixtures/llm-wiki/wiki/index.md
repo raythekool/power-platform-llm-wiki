@@ -17,6 +17,7 @@ updated: 2026-09-30
 ## Code
 
 - [Plugins](code/plugins.md) - Dataverse plugins
+- [F&O credit extensions](code/fno-credit.md) - credit limit table and sales posting extension
 
 ## Meetings
 

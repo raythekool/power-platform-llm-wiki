@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 3.2.0 - 2026-10-12
+
+- 🧙 Setup wizard (web and Markdown): environment selector (VS Code, GitHub Copilot CLI, Claude Code) that adapts install, launch and command syntax (`/power-platform-llm-wiki:` prefix in Claude Code).
+- 🤝 `init` / `config`: new **agent tools** question (`project.tools`: `vscode`, `copilot-cli`, `claude-code`). Besides `.vscode/mcp.json` (VS Code), `init` writes the same MCP servers to `.mcp.json` at the project root under `mcpServers` (read by Copilot CLI and Claude Code, which ignore `.vscode/mcp.json`) and, for Claude Code, a `CLAUDE.md` that imports `.github/copilot-instructions.md`. The instructions snippet is now tool-neutral. Configs without `project.tools` behave as `[vscode]`.
+- 🕸️ **Knowledge graph** (`Get-WikiGraph.ps1`, 0 tokens), inspired by graphify: pages, cited entities (`REQ-...`, `AxType:Name`, `dv:table`, work items, repositories, sprints, raw sources) and the custom objects of the latest code inventories become typed nodes; relations carry `relation`, `confidence` (EXTRACTED from links, front matter and inventory; INFERRED from the new `related:` / `depends_on:` fields) and evidence. Deterministic areas (label propagation seeded by requirement areas), hubs, cross-area connections and gaps (undocumented components, entities without a page, pages without TL;DR).
+- 🔎 Graph queries for the agent: `-Query` (neighbourhood and `pagesToRead`), `-Impact` (what depends on an object), `-From` / `-To` (shortest connection). `query` and `ingest` ask the graph before opening pages.
+- 🗺️ Generated **knowledge map** page (`wiki/reference/knowledge-map.md`, rebuilt at every lint and published with the wiki).
+- 🤖 **AI pack** (`-AiExportPath`, default `llm-wiki/dist/ai`): `graph.json` (node-link: networkx, graphify, GraphRAG; byte-stable), `llms.txt`, `llms-full.txt` and a self-contained interactive `graph.html` (search, areas, relations, offline). Can target a separate repository clone or a OneDrive-synced SharePoint library (`graph.ai_export_path`; see `publishing.md`, "AI pack").
+- 🔗 `Export-Wiki.ps1`: "Related pages" backlinks section on every published page (`-RelatedHeading`, `-NoRelated`) and page IDs in the status callout.
+- ✅ Lint: `AI001` page without TL;DR, `AI002` page too long for AI retrieval (`-MaxPageKB`, default 40).
+- ⚙️ New optional `graph:` section in `wiki.config.yml` (all on by default); templates gain `related: []`.
+- 🐛 Lint, export and graph scripts accept 8.3 short paths (e.g. `%TEMP%`).
+
 ## 3.1.0 - 2026-10-12
 
 - 🗃️ Code in **TFVC** (TFS, Azure DevOps Server, Azure DevOps Services TFVC projects), typical of older F&O projects: new `provider: tfvc` for `code.repos` with a read-only procedure (`references/tfvc.md`, installed as `.engine/tfvc.md`: reuse or create a workspace, `tf get`, latest changeset as revision, never check in). Without `tf.exe`, or for any folder without version control, `provider: local` with a downloaded copy.

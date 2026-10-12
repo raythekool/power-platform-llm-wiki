@@ -34,7 +34,13 @@ The file must be `.md` or `.txt`. For other formats use the `.md` sibling with t
 
 ## Step 3 - Read
 
-Read the whole source, `wiki/index.md`, and the existing pages it is likely to affect (requirements, design, code pages, entities mentioned).
+Read the whole source, then ask the knowledge graph which existing pages it affects, using the ids and names it mentions (requirements, F&O objects, Dataverse tables, components, work items):
+
+```powershell
+pwsh llm-wiki/.engine/scripts/Get-WikiGraph.ps1 -WikiPath llm-wiki/wiki -Query "<id or name>","<id or name>" -Depth 1
+```
+
+Read the `pagesToRead` it returns (fall back to `wiki/index.md` when it finds nothing).
 
 ## Step 4 - Confirm (interactive only)
 
@@ -73,7 +79,9 @@ Summarise the source in 3-5 bullets and the pages you plan to create/update. Pro
 
 ## Step 6 - Update related pages
 
-- Add links in both directions (relative Markdown links).
+- Add links in both directions (relative Markdown links), at least to the pages the graph returned for the same entities, so no new page is an island.
+- Write ids in inline code (`` `REQ-SAL-001` ``, `` `AxTable:CustTable` ``, `` `dv:account` ``, `` `US-128` ``) so the graph links them; use `related:` / `depends_on:` only for relations that no link expresses.
+- Start every page with a `>` TL;DR right after the title (lint `AI001`).
 - Contradictions: `> ⚠️ **Contradiction:** ...` on both pages; never overwrite.
 - New concepts, systems, teams: create `reference/concepts/` or `reference/entities/` pages before linking.
 - Every new page: `status: draft`, `updated: <today>`, `sources: [raw/...]`.

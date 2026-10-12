@@ -9,8 +9,10 @@
                   [[_TOC_]] on pages with 2+ sections; images copied to /.attachments.
     github        Flat page names (Category-Page), [text](Page-Name) links, _Sidebar.md, _Footer.md,
                   images copied to images/.
-    Both: front matter is stripped and replaced by a one-line status callout; links that point outside
-    the wiki (e.g. raw/) become plain text; legacy [[wiki links]] are resolved when possible.
+    Both: front matter is stripped and replaced by a one-line status callout (with the page IDs); links that point outside
+    the wiki (e.g. raw/) become plain text; legacy [[wiki links]] are resolved when possible; unless -NoRelated, each page
+    ends with a section listing the pages that point to it (links, implements, related, drift), taken from the knowledge
+    graph (Get-WikiGraph.ps1), so readers and AI assistants of the published wiki see backlinks too.
 .PARAMETER WikiPath
     Path to llm-wiki/wiki.
 .PARAMETER OutPath
@@ -28,13 +30,15 @@ param(
     [string]$ProjectName = '',
     [string]$MountFolder = '',
     [string[]]$Exclude = @('log.md', 'lint-*.md'),
+    [string]$RelatedHeading = 'Related pages',
+    [switch]$NoRelated,
     [switch]$Clean
 )
 
 $ErrorActionPreference = 'Stop'
 . "$PSScriptRoot/LlmWiki.Common.ps1"
 
-$WikiPath = (Resolve-Path -LiteralPath $WikiPath).Path
+$WikiPath = (Get-Item -LiteralPath $WikiPath).FullName.TrimEnd('\', '/')
 if (-not (Test-Path -LiteralPath $OutPath)) { New-Item -ItemType Directory -Path $OutPath -Force | Out-Null }
 $OutPath = (Resolve-Path -LiteralPath $OutPath).Path
 if (Test-PathUnder $OutPath $WikiPath) { throw 'OutPath must not be inside WikiPath.' }
@@ -82,6 +86,8 @@ function Add-Callout([string]$Body, $Data, [bool]$Toc) {
     if ($status -eq 'certified' -and $certBy) { $parts += "**Certified by:** $certBy ($(Get-FmValue $Data 'certified_at'))" }
     $updated = Get-FmValue $Data 'updated'
     if ($updated) { $parts += "**Updated:** $updated" }
+    $ids = @('req_id', 'adr_id', 'devops_id' | ForEach-Object { Get-FmValue $Data $_ } | Where-Object { $_ })
+    if ($ids.Count) { $parts += "**ID:** $($ids -join ', ')" }
     $insert = @()
     if ($parts.Count) { $insert += '> ' + ($parts -join ' &middot; ') }
     if ($Toc) { $insert += '[[_TOC_]]' }
@@ -110,6 +116,13 @@ function Get-AttachmentLink([string]$Full) {
 
 function Convert-Body($Page) {
     $body = $Page.Body
+    if ($related.ContainsKey($Page.Full.ToLowerInvariant())) {
+        $lines = @($related[$Page.Full.ToLowerInvariant()] | ForEach-Object {
+                $rel = [System.IO.Path]::GetRelativePath((Split-Path -Parent $Page.Full), $_.Full).Replace('\', '/')
+                "- [$($_.Title -replace '[\[\]]', '')]($rel) ($($_.Relation))"
+            })
+        $body = $body.TrimEnd() + "`n`n## 🔗 $RelatedHeading`n`n" + ($lines -join "`n") + "`n"
+    }
     # legacy [[wiki links]]
     foreach ($wl in (@(Get-WikiLinks $body) | Sort-Object Index -Descending)) {
         $inner = ($wl.Inner -split '\|')[0].Trim()
@@ -224,6 +237,30 @@ function ConvertTo-GitHubName([string]$Rel) {
 }
 
 # ---------- run ----------
+# Incoming relations per page, from the knowledge graph (pages only; root hubs and excluded pages are skipped).
+$related = @{}
+if (-not $NoRelated) {
+    $tmp = [System.IO.Path]::GetTempFileName()
+    try {
+        $null = & (Join-Path $PSScriptRoot 'Get-WikiGraph.ps1') -WikiPath $WikiPath -NoInventory -OutFile $tmp
+        $graph = Read-Utf8Text $tmp | ConvertFrom-Json -Depth 10
+    }
+    finally { Remove-Item -LiteralPath $tmp -Force -ErrorAction SilentlyContinue }
+    $labels = @{ links_to = 'links here'; implements = 'implements'; implemented_by = 'implemented by'; related_to = 'related'; depends_on = 'depends on this'; drift = 'drift'; contradiction = 'contradiction' }
+    foreach ($e in $graph.links) {
+        if (-not $labels.ContainsKey($e.relation) -or -not $e.source.StartsWith('page:') -or -not $e.target.StartsWith('page:')) { continue }
+        $srcRel = $e.source.Substring(5)
+        if (-not $srcRel.Contains('/') -and $srcRel -in @('index.md', 'overview.md', 'log.md')) { continue }
+        $src = $pages[[System.IO.Path]::GetFullPath((Join-Path $WikiPath $srcRel)).ToLowerInvariant()]
+        $dstKey = [System.IO.Path]::GetFullPath((Join-Path $WikiPath $e.target.Substring(5))).ToLowerInvariant()
+        if (-not $src -or -not $pages.ContainsKey($dstKey)) { continue }
+        if (-not $related.ContainsKey($dstKey)) { $related[$dstKey] = [System.Collections.Generic.List[object]]::new() }
+        $existing = $related[$dstKey] | Where-Object { $_.Full -eq $src.Full }
+        if ($existing) { if ($existing.Relation -eq $labels.links_to) { $existing.Relation = $labels[$e.relation] }; continue }
+        $related[$dstKey].Add([pscustomobject]@{ Full = $src.Full; Title = $src.Title; Relation = $labels[$e.relation] })
+    }
+}
+
 if ($Target -eq 'azure-devops') {
     $root = New-AdoNode '' $null $null
     $homePage = $pages[(Join-Path $WikiPath 'index.md').ToLowerInvariant()]
