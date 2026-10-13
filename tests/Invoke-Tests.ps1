@@ -207,6 +207,21 @@ try {
     $out = & pwsh -NoProfile -File (Join-Path $hostWiki '.engine/scripts/Test-WikiLint.ps1') -WikiPath $wiki -Today '2026-10-01'
     Assert ($LASTEXITCODE -eq 0 -and (($out -join "`n") | ConvertFrom-Json).pages -eq 9) 'vendored lint runs standalone'
 
+    Write-Host 'Test-Prerequisites'
+    $emptyBin = Join-Path $work 'empty-bin'
+    New-Item -ItemType Directory -Path $emptyBin | Out-Null
+    $prereq = Join-Path $scripts 'Test-Prerequisites.ps1'
+    $out = & pwsh -NoProfile -Command "`$env:PATH = '$emptyBin'; & '$prereq' -Features 'dataverse,github'; exit `$LASTEXITCODE"
+    $p = ($out -join "`n") | ConvertFrom-Json
+    $byId = @{}; foreach ($c in $p.checks) { $byId[$c.id] = $c }
+    Assert ($LASTEXITCODE -eq 1 -and -not $p.ready) 'not ready (exit 1) when required tools are missing'
+    Assert ($byId['pwsh'].status -eq 'ok' -and $byId['git'].status -eq 'missing' -and $byId['git'].required) 'pwsh ok, git missing and required'
+    Assert (($p.blocking -contains 'git') -and ($p.blocking -contains 'pacx or pac') -and ($p.blocking -contains 'gh')) 'blocking lists git, the Dataverse CLI group and gh'
+    Assert (-not $byId['claude'].required -and ($p.optionalMissing -contains 'claude')) 'agent tools are informational'
+    Assert (@($p.checks | Where-Object { -not $_.install }).Count -eq 0) 'every check has an install hint'
+    $null = & pwsh -NoProfile -File $prereq -Features 'bogus' 2>&1
+    Assert ($LASTEXITCODE -ne 0) 'unknown feature rejected'
+
     Write-Host 'Build-Site'
     $siteOut = Join-Path $work '_site'
     $out = & pwsh -NoProfile -File (Join-Path $repoRoot 'scripts/Build-Site.ps1') -OutPath $siteOut -BaseUrl 'https://example.github.io/demo' -RepoUrl 'https://github.com/example/demo'

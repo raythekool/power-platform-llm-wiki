@@ -23,6 +23,7 @@ Come usare **LLM Wiki** su un progetto Dynamics 365 (CE / Power Platform o Finan
 - 🟦 VS Code con GitHub Copilot e l'impostazione **Chat > Plugins: Enabled** attiva.
 - 🐚 PowerShell 7 (`pwsh`) e 🌿 git.
 - In base alle fonti del progetto: Git Credential Manager (Azure Repos, Azure DevOps Wiki), `tf.exe` di Visual Studio (codice in TFS / TFVC), `pacx` / `pac` (Dataverse), `gh` (GitHub), `markitdown` (documenti Word, PowerPoint, Excel, PDF).
+- Non serve controllarli a mano: `init` esegue un controllo in sola lettura (`Test-Prerequisites.ps1`) e ti mostra cosa c'è, cosa manca e come installarlo.
 
 ### 📦 1. Installare il plugin
 

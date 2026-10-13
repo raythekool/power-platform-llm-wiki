@@ -766,8 +766,12 @@ copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></p
                     </table>
                   </div>
                   <p class="callout info">
-                    <b>Note:</b> the agent installs nothing on its own: it tells
-                    you what is missing and lets you decide.
+                    <b>Note:</b> the agent installs nothing on its own.
+                    <code>init</code> runs a read-only check
+                    (<code>Test-Prerequisites.ps1</code>) before the wizard and
+                    again after you confirm, on the sources you chose: it tells
+                    you what is missing, with the install command, and lets you
+                    decide.
                   </p>
                   <p class="verify">
                     <b>✅ Verify:</b> the commands you need reply with a version
@@ -848,8 +852,11 @@ copilot plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></p
                     </table>
                   </div>
                   <p class="callout info">
-                    <b>Nota:</b> l'agente non installa nulla da solo: ti segnala
-                    cosa manca e ti lascia decidere.
+                    <b>Nota:</b> l'agente non installa nulla da solo.
+                    <code>init</code> esegue un controllo in sola lettura
+                    (<code>Test-Prerequisites.ps1</code>) prima del wizard e di
+                    nuovo dopo la conferma, sulle fonti scelte: ti segnala cosa
+                    manca, con il comando per installarlo, e ti lascia decidere.
                   </p>
                   <p class="verify">
                     <b>✅ Verifica:</b> i comandi che ti servono rispondono con

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 3.3.0 - 2026-10-13
+
+- 🧰 New `Test-Prerequisites.ps1` (read-only, JSON): checks git, Git Credential Manager, tf.exe (also outside PATH, via vswhere), pacx / pac, gh and its sign-in, markitdown, markitdown-mcp, node and the agent tools, in parallel; reports what is found, what is missing, what the selected features (`-Features`) require and how to install it. `init` runs it before the wizard and again with the chosen sources; `config` when sources or publishing change.
+- 🔌 The plugin no longer bundles the GitHub MCP server (`.mcp.json` removed, `mcpServers` dropped from `plugin.json`): it needed a separate GitHub sign-in and showed as "needs authentication" in Claude Code. `update --source github` uses the GitHub CLI (`gh`).
+
 ## 3.2.0 - 2026-10-12
 
 - 🧙 Setup wizard (web and Markdown): environment selector (VS Code, GitHub Copilot CLI, Claude Code) that adapts install, launch and command syntax (`/power-platform-llm-wiki:` prefix in Claude Code).

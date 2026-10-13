@@ -4,7 +4,7 @@
     Validates the LLM Wiki plugin before release (structure, manifests, skills, confidentiality).
 .DESCRIPTION
     Checks:
-      1. plugin.json, .mcp.json and both marketplace.json files (.github/plugin and .claude-plugin) are valid; versions match; marketplace entry points to the plugin.
+      1. plugin.json (and its mcpServers file, if declared) and both marketplace.json files (.github/plugin and .claude-plugin) are valid; versions match; marketplace entry points to the plugin.
       2. The five skills exist with front matter (name = folder, description) and no unsupported keys.
       3. The agent references only existing skills.
       4. Every file installed by Install-Engine.ps1 exists (scripts, templates, profiles, publishing.md, tfvc.md, AGENTS.md).
@@ -33,7 +33,7 @@ function Read-Json([string]$Path) {
 
 # 1. Manifests
 $plugin = Read-Json (Join-Path $pluginRoot 'plugin.json')
-$null = Read-Json (Join-Path $pluginRoot '.mcp.json')
+if ($plugin -and $plugin.PSObject.Properties['mcpServers'] -and $plugin.mcpServers -is [string]) { $null = Read-Json (Join-Path $pluginRoot $plugin.mcpServers) }
 $marketFiles = '.github/plugin/marketplace.json', '.claude-plugin/marketplace.json'
 $markets = @{}
 foreach ($mf in $marketFiles) { $markets[$mf] = Read-Json (Join-Path $RepoRoot $mf) }
@@ -77,7 +77,7 @@ else {
 }
 
 # 4. Engine payload
-$required = @('references/AGENTS.md', 'references/publishing.md', 'references/tfvc.md', 'scripts/Install-Engine.ps1', 'scripts/LlmWiki.Common.ps1', 'scripts/Test-WikiLint.ps1', 'scripts/Get-RawDelta.ps1', 'scripts/Get-CodeInventory.ps1', 'scripts/Get-WikiGraph.ps1', 'scripts/Export-Wiki.ps1',
+$required = @('references/AGENTS.md', 'references/publishing.md', 'references/tfvc.md', 'scripts/Install-Engine.ps1', 'scripts/LlmWiki.Common.ps1', 'scripts/Test-WikiLint.ps1', 'scripts/Get-RawDelta.ps1', 'scripts/Get-CodeInventory.ps1', 'scripts/Get-WikiGraph.ps1', 'scripts/Export-Wiki.ps1', 'scripts/Test-Prerequisites.ps1',
     'templates/meeting.md', 'templates/requirement.md', 'templates/design.md', 'templates/adr.md', 'templates/code-component.md', 'templates/source.md',
     'references/profiles/power-platform.md', 'references/profiles/dynamics-fno.md', 'references/profiles/generic.md',
     'skills/init/assets/wiki.config.yml', 'skills/init/assets/mcp-servers.json', 'skills/init/assets/copilot-snippet.md', 'skills/init/assets/wiki-index.md', 'skills/init/assets/automation-prompt.md', 'skills/init/assets/copilot-setup-steps.yml')

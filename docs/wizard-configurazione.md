@@ -66,7 +66,7 @@ Servono sempre **PowerShell 7**, **git** e lo strumento che hai scelto (**VS Cod
 ✅ **Verifica:** i comandi che ti servono rispondono con un numero di versione. Se `pwsh` manca, **fermati**: senza PowerShell 7 la wiki non funziona.
 
 > [!NOTE]
-> L'agente non installa nulla da solo: ti segnala cosa manca e ti lascia decidere.
+> L'agente non installa nulla da solo. `init` esegue un controllo in sola lettura (`Test-Prerequisites.ps1`) prima del wizard e di nuovo dopo la conferma, sulle fonti scelte: ti segnala cosa manca, con il comando per installarlo, e ti lascia decidere.
 
 ---
 

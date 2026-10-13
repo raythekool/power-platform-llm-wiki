@@ -172,10 +172,10 @@ Roles, cadence and indicators: [docs/governance.md](docs/governance.md).
 .github/workflows/validate.yml             # CI: validator + script tests
 .github/workflows/pages.yml                # deploys the website to GitHub Pages
 plugins/power-platform-llm-wiki/
-├── plugin.json  .mcp.json
+├── plugin.json
 ├── agents/llm-wiki.agent.md
 ├── skills/{init,config,update,ingest,query}/SKILL.md
-├── scripts/                               # Install-Engine, Get-RawDelta, Get-CodeInventory, Get-WikiGraph, Test-WikiLint, Export-Wiki
+├── scripts/                               # Install-Engine, Test-Prerequisites, Get-RawDelta, Get-CodeInventory, Get-WikiGraph, Test-WikiLint, Export-Wiki
 ├── templates/                             # meeting, requirement, design, adr, code-component, source
 └── references/                            # AGENTS.md, publishing.md, tfvc.md, profiles/
 scripts/Validate-Plugin.ps1                # release checks (structure, versions, confidentiality, doc links)

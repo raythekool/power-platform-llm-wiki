@@ -20,19 +20,26 @@ This skill creates structure and configuration only; it never writes wiki conten
 
 ## Prerequisites
 
-Detect and report (never install silently):
+Check `pwsh --version` first: if PowerShell 7 is missing, stop, the engine cannot run without it. Then run the read-only check, which never installs anything:
 
-| Tool                                   | Needed for                                | Check                                      |
-| -------------------------------------- | ----------------------------------------- | ------------------------------------------ |
-| PowerShell 7                           | all deterministic scripts                 | `pwsh --version`                           |
-| git                                    | code analysis, publishing                 | `git --version`                            |
-| Git Credential Manager                 | Azure Repos clone, Azure DevOps Wiki push | `git credential-manager --version`         |
-| tf.exe (Visual Studio / Team Explorer) | code in TFVC (TFS, Azure DevOps Server)   | `tf help` in a Developer PowerShell for VS |
-| pacx / pac                             | Dataverse source                          | `pacx --version`, `pac help`               |
-| gh                                     | GitHub source / GitHub Wiki               | `gh auth status`                           |
-| markitdown                             | Office / PDF sources                      | `markitdown --version`                     |
+```powershell
+pwsh -NoProfile -File "<plugin>/scripts/Test-Prerequisites.ps1"
+```
 
-If `pwsh` is missing, stop: the engine cannot run without it.
+It prints JSON: `ready`, `blocking`, `optionalMissing` and one entry per tool in `checks` (`status` `ok` | `missing` | `warning`, `version`, `required`, `neededFor`, `detail`, `install`). Show the user a short table of what is available and what is missing, with the wizard choices each missing tool affects. Wizard answers map to features:
+
+| Wizard answer                   | Feature       | Tool                   |
+| ------------------------------- | ------------- | ---------------------- |
+| Code in Azure Repos             | `azure-repos` | Git Credential Manager |
+| Code in TFVC                    | `tfvc`        | tf.exe (Visual Studio) |
+| Dataverse                       | `dataverse`   | pacx or pac            |
+| GitHub activity                 | `github`      | gh, signed in          |
+| Publish to Azure DevOps Wiki    | `ado-wiki`    | Git Credential Manager |
+| Publish to GitHub Wiki          | `github-wiki` | gh, signed in          |
+| Word / PowerPoint / Excel / PDF | `documents`   | markitdown             |
+| Boards through `ado-local`      | `ado-local`   | node                   |
+
+After the Confirm step, run it again with the selected features, e.g. `-Features azure-repos,dataverse,ado-wiki`. Exit code 1 with `ready: false` means the chosen setup cannot fully run yet: list each `blocking` item with its `install` hint and ask whether to continue (the configuration can be written; the affected source or publish step fails until the tool is available). Never install anything without the user's explicit request.
 
 ## Wizard
 
@@ -74,7 +81,7 @@ Ask one step at a time, offering **Yes** before **No**. Pre-fill answers from an
 4. **`llm-wiki/wiki.config.yml`** - from `assets/wiki.config.yml`, enabling only the selected sections and setting `project.tools`. If the file exists, merge without dropping user keys.
 5. **MCP configuration** - only the servers that are needed, taken from `assets/mcp-servers.json`:
    - Boards selected: `ado-remote` with the organization (Microsoft-hosted, Entra ID sign-in). If the remote server is not available in the tenant, use `ado-local` (pinned version) instead.
-   - `markitdown` only if `markitdown-mcp` is installed.
+   - `markitdown` only if the prerequisites check reports `markitdown-mcp` as `ok`.
    - `vscode` in `project.tools`: merge the entries into `.vscode/mcp.json` under `servers`.
    - `copilot-cli` or `claude-code` in `project.tools`: merge the same entries into `.mcp.json` at the project root under `mcpServers` (both tools read this file; neither reads `.vscode/mcp.json`). Keep the `type` field on every entry.
    - Keep unrelated servers untouched. Write nothing when no server is needed.
@@ -91,7 +98,7 @@ Ask one step at a time, offering **Yes** before **No**. Pre-fill answers from an
 
 ## Verification
 
-Run `pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`: it must report 0 errors. Check that every JSON file written parses. Print a checklist with only the applicable items: engine version (`llm-wiki/.engine/VERSION`), config sections enabled, agent tools, MCP files and servers added, instructions updated (`.github/copilot-instructions.md`, `CLAUDE.md`), `.gitignore`, automation.
+Run `pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki`: it must report 0 errors. Check that every JSON file written parses. Print a checklist with only the applicable items: prerequisites (`ready`, open `blocking` items), engine version (`llm-wiki/.engine/VERSION`), config sections enabled, agent tools, MCP files and servers added, instructions updated (`.github/copilot-instructions.md`, `CLAUDE.md`), `.gitignore`, automation.
 
 First-run notes, only for the selected tools:
 
