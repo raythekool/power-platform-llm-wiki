@@ -150,20 +150,24 @@
             <div
               class="term"
               role="img"
-              aria-label="Example session: init, update --source code, update --lint"
+              aria-label="Example session: /power-platform-llm-wiki:init, :update --source code, :update --lint"
             >
               <div class="term-bar">
                 <i></i><i></i><i></i><span>LLM Wiki · VS Code</span>
               </div>
               <div class="term-body">
-                <div class="l p" style="--d: 0">&gt; init</div>
+                <div class="l p" style="--d: 0">
+                  &gt; /power-platform-llm-wiki:init
+                </div>
                 <div class="l ok" style="--d: 1">
                   ✔ Profiles: power-platform · dynamics-fno
                 </div>
                 <div class="l ok" style="--d: 2">
                   ✔ Engine installed (v{{VERSION}})
                 </div>
-                <div class="l p" style="--d: 3">&gt; update --source code</div>
+                <div class="l p" style="--d: 3">
+                  &gt; /power-platform-llm-wiki:update --source code
+                </div>
                 <div class="l ok" style="--d: 4">
                   ✔ Inventory: 14 plugins · 3 PCF · 212 Ax objects
                 </div>
@@ -173,7 +177,9 @@
                 <div class="l warn" style="--d: 6">
                   ⚠ Drift: REQ-SAL-001 ≠ CreditCheckPlugin.cs:87
                 </div>
-                <div class="l p" style="--d: 7">&gt; update --lint</div>
+                <div class="l p" style="--d: 7">
+                  &gt; /power-platform-llm-wiki:update --lint
+                </div>
                 <div class="l ok" style="--d: 8">
                   ✔ 0 errors · 3 warnings · 4 certified · 12 draft
                 </div>
@@ -432,8 +438,8 @@
               width="1200"
               height="290"
               loading="lazy"
-              alt="The six steps: init, update --source code, ingest, update --lint, update --publish, query"
-              data-alt-it="I sei passi: init, update --source code, ingest, update --lint, update --publish, query"
+              alt="The six steps: /power-platform-llm-wiki:init, :update --source code, :ingest, :update --lint, :update --publish, :query"
+              data-alt-it="I sei passi: /power-platform-llm-wiki:init, :update --source code, :ingest, :update --lint, :update --publish, :query"
             />
           </figure>
 
@@ -711,14 +717,16 @@
                 >
               </li>
               <li>
-                <b lang="en">Pick the agent and say <code>init</code></b
-                ><b lang="it">Scegli l'agente e scrivi <code>init</code></b>
+                <b lang="en">Run <code>/power-platform-llm-wiki:init</code></b
+                ><b lang="it"
+                  >Lancia <code>/power-platform-llm-wiki:init</code></b
+                >
                 <span lang="en"
-                  >The wizard configures sources, profiles, publishing and
-                  governance.</span
+                  >Type the full name, not <code>/init</code>. The wizard
+                  configures sources, profiles, publishing and governance.</span
                 ><span lang="it"
-                  >Il wizard configura fonti, profili, pubblicazione e
-                  governance.</span
+                  >Scrivi il nome completo, non <code>/init</code>. Il wizard
+                  configura fonti, profili, pubblicazione e governance.</span
                 >
               </li>
             </ol>
@@ -796,10 +804,12 @@ claude plugin install power-platform-llm-wiki@power-platform-llm-wiki</code></pr
               ><b lang="it">Vuoi un percorso guidato?</b>
               <span lang="en"
                 >Follow the setup wizard step by step: what to answer to
-                <code>init</code>, with examples and checks.</span
+                <code>/power-platform-llm-wiki:init</code>, with examples and
+                checks.</span
               ><span lang="it"
                 >Segui il wizard di configurazione passo passo: cosa rispondere
-                a <code>init</code>, con esempi e verifiche.</span
+                a <code>/power-platform-llm-wiki:init</code>, con esempi e
+                verifiche.</span
               >
             </span>
             <span class="arrow" aria-hidden="true">→</span>

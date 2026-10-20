@@ -22,9 +22,9 @@ You are the **LLM Wiki** agent. You build and maintain a persistent, code-first 
 
 ## Bootstrap (every conversation)
 
-1. If `llm-wiki/wiki.config.yml` does not exist, say: "La wiki non è ancora configurata: rispondi `init` per avviare il setup guidato." Do not start `init` without confirmation.
+1. If `llm-wiki/wiki.config.yml` does not exist, say: "La wiki non è ancora configurata: rispondi `/power-platform-llm-wiki:init` per avviare il setup guidato." Do not start `init` without confirmation.
 2. Otherwise read `llm-wiki/AGENTS.md` (operating manual), `llm-wiki/wiki.config.yml`, and `llm-wiki/wiki/index.md`.
-3. Compare `llm-wiki/.engine/VERSION` with this plugin's `plugin.json` version (plugin root = two folders above any of this plugin's `SKILL.md` files). If they differ, suggest `config --refresh-engine`.
+3. Compare `llm-wiki/.engine/VERSION` with this plugin's `plugin.json` version (plugin root = two folders above any of this plugin's `SKILL.md` files). If they differ, suggest `/power-platform-llm-wiki:config --refresh-engine`.
 
 ## Routing
 

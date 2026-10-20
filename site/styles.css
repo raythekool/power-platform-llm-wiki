@@ -53,6 +53,9 @@ code {
   padding: 0.1em 0.4em;
   border-radius: 6px;
 }
+:not(pre) > code {
+  white-space: nowrap;
+}
 h1,
 h2,
 h3 {
@@ -1225,6 +1228,7 @@ html[data-env="claude"] [data-env-only]:not([data-env-only~="claude"]) {
   counter-increment: env;
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 4px;
   padding-left: 46px;
 }
@@ -1356,6 +1360,10 @@ html.js .reveal.in {
   }
 }
 @media (max-width: 620px) {
+  :not(pre) > code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
   .g4,
   .g3,
   .stats-in {

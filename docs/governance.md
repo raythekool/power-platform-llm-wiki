@@ -29,8 +29,8 @@ La wiki è utile solo se ci si può fidare. Questo documento descrive ruoli, cic
 | Stato          | Significato                                            | Chi lo imposta                      |
 | -------------- | ------------------------------------------------------ | ----------------------------------- |
 | 🟡 `draft`      | Contenuto generato o modificato, non verificato        | Agente                              |
-| 🔵 `reviewed`   | Verificato da un revisore (`reviewed_by`)              | Persona, tramite `update --review`  |
-| 🟢 `certified`  | Approvato formalmente (`certified_by`, `certified_at`) | Persona, tramite `update --certify` |
+| 🔵 `reviewed`   | Verificato da un revisore (`reviewed_by`)              | Persona, tramite `/power-platform-llm-wiki:update --review`  |
+| 🟢 `certified`  | Approvato formalmente (`certified_by`, `certified_at`) | Persona, tramite `/power-platform-llm-wiki:update --certify` |
 | ⚪ `superseded` | Sostituito da un'altra pagina (collegata)              | Owner di pagina                     |
 | ⚫ `deprecated` | Non più valido                                         | Owner di pagina                     |
 
@@ -48,7 +48,7 @@ L'agente non riscrive mai una pagina certificata. Quando una nuova fonte la cont
 
 | Quando                   | Attività                                                                                                                           |
 | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| 🏃 A ogni sprint          | `update --full`, revisione delle pagine `draft` dello sprint, `update --sprint`                                                    |
+| 🏃 A ogni sprint          | `/power-platform-llm-wiki:update --full`, revisione delle pagine `draft` dello sprint, `/power-platform-llm-wiki:update --sprint`                                                    |
 | 🚦 Prima di UAT e go-live | Certificazione dei requisiti e delle pagine `code/` collegate; nessun errore di lint; drift chiusi                                 |
 | 🗓️ Mensile                | Controllo delle pagine non aggiornate (`STL001`), delle azioni scadute (`ACT001`) e dei requisiti senza implementazione (`TRC002`) |
 

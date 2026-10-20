@@ -37,7 +37,7 @@ Run after a plugin update, or when the agent reports that `llm-wiki/.engine/VERS
 pwsh -NoProfile -File "<plugin>/scripts/Install-Engine.ps1" -LlmWikiPath llm-wiki
 ```
 
-Show the old and new version, then suggest `update --lint` because lint rules may have changed. If `wiki.config.yml` has no section that the new `assets/wiki.config.yml` introduces (e.g. `graph:`), add it with its defaults and comments, and say so. Log `config --refresh-engine`.
+Show the old and new version, then suggest `/power-platform-llm-wiki:update --lint` because lint rules may have changed. If `wiki.config.yml` has no section that the new `assets/wiki.config.yml` introduces (e.g. `graph:`), add it with its defaults and comments, and say so. Log `config --refresh-engine`.
 
 ### `--migrate` (v2 -> v3 conventions)
 

@@ -15,7 +15,7 @@ Thanks for improving LLM Wiki. This repository is the source of the `power-platf
 | Path                                                     | Content                                                                      |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `plugins/power-platform-llm-wiki/agents/`                | The LLM Wiki agent (routing and core rules)                                  |
-| `plugins/power-platform-llm-wiki/skills/<name>/SKILL.md` | One skill per user intent: `init`, `config`, `update`, `ingest`, `query`     |
+| `plugins/power-platform-llm-wiki/skills/<name>/SKILL.md` | One skill per user intent: `/power-platform-llm-wiki:init`, `/power-platform-llm-wiki:config`, `/power-platform-llm-wiki:update`, `/power-platform-llm-wiki:ingest`, `/power-platform-llm-wiki:query`     |
 | `plugins/power-platform-llm-wiki/references/`            | `AGENTS.md` (installed in projects), `publishing.md`, `tfvc.md`, `profiles/` |
 | `plugins/power-platform-llm-wiki/templates/`             | Page templates                                                               |
 | `plugins/power-platform-llm-wiki/scripts/`               | PowerShell 7 scripts; JSON on stdout; shared helpers in `LlmWiki.Common.ps1` |
@@ -27,7 +27,7 @@ Thanks for improving LLM Wiki. This repository is the source of the `power-platf
 ### 🧭 Conventions
 
 - **Skills:** front matter with `name` (equal to the folder) and `description`; optional `argument-hint`, `user-invocable`. Do not use `context:` or `disable-model-invocation: true`. Each skill states its ownership (what it may read and write) and appends to `wiki/log.md`.
-- **Paths in skills:** projects run the engine from `llm-wiki/.engine/`; refer to scripts as `llm-wiki/.engine/scripts/<name>.ps1` and to the plugin root as "two folders above this SKILL.md" (only `init` / `config` need it).
+- **Paths in skills:** projects run the engine from `llm-wiki/.engine/`; refer to scripts as `llm-wiki/.engine/scripts/<name>.ps1` and to the plugin root as "two folders above this SKILL.md" (only `/power-platform-llm-wiki:init` / `/power-platform-llm-wiki:config` need it).
 - **Scripts:** `#Requires -Version 7.0`, explicit UTF-8 I/O (`Read-Utf8Text` / `Write-Utf8Text`), JSON output, exit code 1 on failure. Never name a variable `$host`. New scripts used by projects are copied by `Install-Engine.ps1` (whole `scripts/` folder) and must be listed in the validator's required files.
 - **Wiki content conventions** (links, front matter, lifecycle) live in `references/AGENTS.md`; change them there and in `Test-WikiLint.ps1` together.
 - **Markdown:** relative links, no `[[wiki links]]` in templates, Mermaid in fenced blocks. Emoji are welcome in headings and tables of the docs; never inside link text of wiki pages.
@@ -49,5 +49,5 @@ Thanks for improving LLM Wiki. This repository is the source of the `power-platf
 ### 🏷️ Releasing
 
 1. Bump the version (SemVer) in `plugins/power-platform-llm-wiki/plugin.json` and in both marketplace manifests, `.github/plugin/marketplace.json` (VS Code, Copilot CLI) and `.claude-plugin/marketplace.json` (Claude Code): `metadata.version` and `plugins[0].version` in each. The validator fails on mismatches.
-2. Breaking changes to links, front matter, configuration or host layout require a major version, a CHANGELOG "Breaking" section and migration steps (`config --migrate` and `docs/`).
-3. Tag the release (`vX.Y.Z`). Projects update the plugin, then run `config --refresh-engine`.
+2. Breaking changes to links, front matter, configuration or host layout require a major version, a CHANGELOG "Breaking" section and migration steps (`/power-platform-llm-wiki:config --migrate` and `docs/`).
+3. Tag the release (`vX.Y.Z`). Projects update the plugin, then run `/power-platform-llm-wiki:config --refresh-engine`.

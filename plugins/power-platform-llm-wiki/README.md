@@ -12,6 +12,9 @@ Quick install in Claude Code:
 
 ## 🧱 Components
 
+> [!IMPORTANT]
+> Always type the full command name: `/power-platform-llm-wiki:init`, `/power-platform-llm-wiki:config`, `/power-platform-llm-wiki:update`, `/power-platform-llm-wiki:ingest`, `/power-platform-llm-wiki:query`. The short names (`/init`, `/update`, ...) belong to the tool itself and do not run this plugin.
+
 |     | Component        | Path                       | Purpose                                                                                                |
 | --- | ---------------- | -------------------------- | ------------------------------------------------------------------------------------------------------ |
 | 🤖   | Agent            | `agents/llm-wiki.agent.md` | **LLM Wiki** agent: bootstrap, routing to skills, core rules                                           |

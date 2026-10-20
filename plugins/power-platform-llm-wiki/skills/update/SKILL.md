@@ -43,7 +43,7 @@ Without flags: ask which mode (interactive) or run `--full` (headless).
 ## Phase 0 - Bootstrap
 
 1. Read `llm-wiki/wiki.config.yml` and `llm-wiki/wiki/index.md`.
-2. Compare `llm-wiki/.engine/VERSION` with the plugin version (`plugin.json`, two folders above the plugin's skills). If they differ, tell the user to run `config --refresh-engine` (headless: continue with the installed engine and mention it in the PR).
+2. Compare `llm-wiki/.engine/VERSION` with the plugin version (`plugin.json`, two folders above the plugin's skills). If they differ, tell the user to run `/power-platform-llm-wiki:config --refresh-engine` (headless: continue with the installed engine and mention it in the PR).
 3. Expand the flags into an ordered list of phases.
 
 ## Phase 1 - Sources

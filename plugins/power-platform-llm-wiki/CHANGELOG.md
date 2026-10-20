@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 3.3.1 - 2026-10-20
+
+- 📖 Docs, site and plugin messages always use the full command names (`/power-platform-llm-wiki:init`, `:config`, `:update`, `:ingest`, `:query`) and warn not to type the tool's own `/init` or `/update`, which do not run the plugin. The wizard no longer rewrites prefixes in JavaScript.
+
 ## 3.3.0 - 2026-10-13
 
 - 🧰 New `Test-Prerequisites.ps1` (read-only, JSON): checks git, Git Credential Manager, tf.exe (also outside PATH, via vswhere), pacx / pac, gh and its sign-in, markitdown, markitdown-mcp, node and the agent tools, in parallel; reports what is found, what is missing, what the selected features (`-Features`) require and how to install it. `init` runs it before the wizard and again with the chosen sources; `config` when sources or publishing change.

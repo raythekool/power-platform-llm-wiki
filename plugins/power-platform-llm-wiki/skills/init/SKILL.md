@@ -107,13 +107,13 @@ First-run notes, only for the selected tools:
 
 ## Next steps message
 
-In Claude Code every command below is a skill with the plugin prefix, e.g. `/power-platform-llm-wiki:update --source code`.
+Always show the full command names (`/power-platform-llm-wiki:<skill>`), never the short ones (`/init`, `/update`, ...): those belong to the tool itself and would not run this plugin.
 
-- Code repositories: `update --source code` (builds `wiki/code/` and `wiki/projects/`).
-- Boards: `update --source devops`. Dataverse: `update --source dataverse` (check `pacx auth ping`). F&O: `update --source fno`.
-- Documents and minutes: drop files in `llm-wiki/raw/<folder>/`, then `ingest <file>` or `update --full`.
-- Publishing: `update --publish` once the lint is clean.
-- Always available: `query <question>`, `update --lint`, `config`.
+- Code repositories: `/power-platform-llm-wiki:update --source code` (builds `wiki/code/` and `wiki/projects/`).
+- Boards: `/power-platform-llm-wiki:update --source devops`. Dataverse: `/power-platform-llm-wiki:update --source dataverse` (check `pacx auth ping`). F&O: `/power-platform-llm-wiki:update --source fno`.
+- Documents and minutes: drop files in `llm-wiki/raw/<folder>/`, then `/power-platform-llm-wiki:ingest <file>` or `/power-platform-llm-wiki:update --full`.
+- Publishing: `/power-platform-llm-wiki:update --publish` once the lint is clean.
+- Always available: `/power-platform-llm-wiki:query <question>`, `/power-platform-llm-wiki:update --lint`, `/power-platform-llm-wiki:config`.
 
 ## Bookkeeping
 

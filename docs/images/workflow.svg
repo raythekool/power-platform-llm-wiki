@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="290" viewBox="0 0 1200 290" role="img" aria-labelledby="title desc" font-family="Segoe UI, Helvetica, Arial, sans-serif">
     <title id="title">The six steps</title>
-    <desc id="desc">init, update --source code, ingest, update --lint, update --publish, query.</desc>
+    <desc id="desc">/power-platform-llm-wiki:init, :update --source code, :ingest, :update --lint, :update --publish, :query.</desc>
     <rect x="1" y="1" width="1198" height="288" rx="20" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="2"/>
     <text x="600" y="42" font-size="24" font-weight="700" fill="#0F172A" text-anchor="middle">From zero to a published wiki in six steps</text>
 
@@ -21,27 +21,35 @@
         <text x="1100" y="119">6</text>
     </g>
 
+    <g font-size="11" font-family="Consolas, Menlo, monospace" fill="#64748B" text-anchor="middle">
+        <text x="100" y="166">/power-platform-llm-wiki:</text>
+        <text x="300" y="166">/power-platform-llm-wiki:</text>
+        <text x="500" y="166">/power-platform-llm-wiki:</text>
+        <text x="700" y="166">/power-platform-llm-wiki:</text>
+        <text x="900" y="166">/power-platform-llm-wiki:</text>
+        <text x="1100" y="166">/power-platform-llm-wiki:</text>
+    </g>
     <g font-size="15" font-weight="700" font-family="Consolas, Menlo, monospace" fill="#0F172A" text-anchor="middle">
-        <text x="100" y="176">init</text>
-        <text x="300" y="176">update --source code</text>
-        <text x="500" y="176">ingest &lt;file&gt;</text>
-        <text x="700" y="176">update --lint</text>
-        <text x="900" y="176">update --publish</text>
-        <text x="1100" y="176">query &lt;question&gt;</text>
+        <text x="100" y="186">init</text>
+        <text x="300" y="186">update --source code</text>
+        <text x="500" y="186">ingest &lt;file&gt;</text>
+        <text x="700" y="186">update --lint</text>
+        <text x="900" y="186">update --publish</text>
+        <text x="1100" y="186">query &lt;question&gt;</text>
     </g>
     <g font-size="13" fill="#475569" text-anchor="middle">
-        <text x="100" y="204">Wizard: sources, profiles,</text>
-        <text x="100" y="222">publish target, governance</text>
-        <text x="300" y="204">Inventory + as-built pages</text>
-        <text x="300" y="222">with diagrams</text>
-        <text x="500" y="204">FDD, TDD, minutes, ADR</text>
-        <text x="500" y="222">into linked wiki pages</text>
-        <text x="700" y="204">Links, lifecycle, drift,</text>
-        <text x="700" y="222">traceability, secrets</text>
-        <text x="900" y="204">Azure DevOps Wiki</text>
-        <text x="900" y="222">or GitHub Wiki</text>
-        <text x="1100" y="204">Answers with citations</text>
-        <text x="1100" y="222">from the wiki only</text>
+        <text x="100" y="212">Wizard: sources, profiles,</text>
+        <text x="100" y="229">publish target, governance</text>
+        <text x="300" y="212">Inventory + as-built pages</text>
+        <text x="300" y="229">with diagrams</text>
+        <text x="500" y="212">FDD, TDD, minutes, ADR</text>
+        <text x="500" y="229">into linked wiki pages</text>
+        <text x="700" y="212">Links, lifecycle, drift,</text>
+        <text x="700" y="229">traceability, secrets</text>
+        <text x="900" y="212">Azure DevOps Wiki</text>
+        <text x="900" y="229">or GitHub Wiki</text>
+        <text x="1100" y="212">Answers with citations</text>
+        <text x="1100" y="229">from the wiki only</text>
     </g>
-    <text x="600" y="266" font-size="13" fill="#64748B" text-anchor="middle">Later: update --full re-runs everything incrementally; only new or changed sources are processed.</text>
+    <text x="600" y="266" font-size="13" fill="#64748B" text-anchor="middle">Later: /power-platform-llm-wiki:update --full re-runs everything incrementally; only new or changed sources are processed.</text>
 </svg>
