@@ -13,7 +13,7 @@ VS Code offers a plugin update only when the version changes (the same applies t
    - minor: new features;
    - major: breaking changes to links, front matter, configuration or host layout (also requires a CHANGELOG "Breaking" section and migration steps in `config --migrate` and `docs/`).
 4. After confirmation:
-   - bump `version` in `plugins/power-platform-llm-wiki/plugin.json` and in both `.github/plugin/marketplace.json` and `.claude-plugin/marketplace.json` (`metadata.version` and `plugins[0].version` in each);
+   - bump `version` in `plugins/power-platform-llm-wiki/plugin.json`, `plugins/power-platform-llm-wiki/.claude-plugin/plugin.json` and in both `.github/plugin/marketplace.json` and `.claude-plugin/marketplace.json` (`metadata.version` and `plugins[0].version` in each);
    - move the CHANGELOG "Unreleased" entries under the new version with its date, then copy `CHANGELOG.md` to `plugins/power-platform-llm-wiki/CHANGELOG.md`;
    - run `pwsh ./scripts/Validate-Plugin.ps1 -Human` and `pwsh ./tests/Invoke-Tests.ps1`;
    - suggest the tag `vX.Y.Z`.
