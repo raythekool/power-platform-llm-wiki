@@ -70,10 +70,16 @@ function Get-Files([string]$Root) {
     $stack.Push($Root)
     while ($stack.Count -gt 0) {
         $dir = $stack.Pop()
-        foreach ($d in [System.IO.Directory]::EnumerateDirectories($dir)) {
-            if ((Split-Path -Leaf $d) -notin $skipDirs) { $stack.Push($d) }
+        # Unreadable folders (permissions, broken junctions) are reported, not fatal; reparse points are not followed (no loops).
+        try { $info = [System.IO.DirectoryInfo]::new($dir); $subDirs = $info.GetDirectories(); $files = $info.GetFiles() }
+        catch [System.UnauthorizedAccessException], [System.IO.IOException] {
+            $inventory.warnings += "Unreadable folder skipped: $(Get-RelativePath $Root $dir)"
+            continue
         }
-        foreach ($f in [System.IO.Directory]::EnumerateFiles($dir)) { [System.IO.FileInfo]::new($f) }
+        foreach ($d in $subDirs) {
+            if ($d.Name -notin $skipDirs -and -not ($d.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) { $stack.Push($d.FullName) }
+        }
+        $files
     }
 }
 
