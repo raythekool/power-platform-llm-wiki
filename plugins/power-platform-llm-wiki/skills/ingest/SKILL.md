@@ -58,7 +58,7 @@ Summarise the source in 3-5 bullets and the pages you plan to create/update. Pro
 
 ### FDD / functional analysis
 
-- One page per requirement with a stable ID: reuse IDs from the document; otherwise generate `REQ-<AREA>-<NNN>` (area = 3-letter process code) and record the original section in `Source references`.
+- One page per requirement with a stable ID: reuse IDs from the document; otherwise generate `REQ-<AREA>-<NNN>` (area = 3-letter process code; `NNN` = next free number for that area: check `wiki/requirements/` and the knowledge graph, never reuse an ID) and record the original section in `Source references`.
 - Fill business context, functional description, business rules, Given/When/Then acceptance criteria, non-functional requirements, open questions (🎯).
 - If a requirement page already exists, update it; changed rules on certified pages go to `## 🔄 Pending updates`.
 - Then check `wiki/code/` for components that implement each requirement (names, tables, objects): add links and `implements:` where the evidence is clear; otherwise leave the `Implementation` section to `update --source code`.

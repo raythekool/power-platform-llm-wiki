@@ -112,7 +112,7 @@ Create `wiki/delivery/sprint-snapshots/<id>.md` (`type: delivery`): progress per
    pwsh llm-wiki/.engine/scripts/Test-WikiLint.ps1 -WikiPath llm-wiki/wiki -StaleAfterDays <governance.stale_after_days> -ReportPath llm-wiki/wiki/lint-<YYYY-MM-DD>.md
    ```
 
-2. Fix the safe issues: missing front matter fields on draft pages, broken links with an obvious target, missing `index.md` entries, legacy `[[...]]` links, missing TL;DR on draft pages (`AI001`). Re-run until no new safe fixes remain.
+2. Fix the safe issues: missing front matter fields on draft pages, broken links with an obvious target, missing `index.md` entries, legacy `[[...]]` links, missing TL;DR on draft pages (`AI001`). Re-run until no new safe fixes remain, at most 3 times; then list what is left for human review and stop fixing.
 3. Never auto-fix: `SEC001` (remove the secret and tell the user immediately - it may need rotation), certified pages, contradictions, drift.
 4. Semantic review (LLM, only pages changed since the previous lint): contradictions between pages, missing concept/entity pages, claims without sources.
 5. Summarise errors / warnings / status counts (draft, reviewed, certified) and requirement coverage.

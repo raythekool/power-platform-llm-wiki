@@ -2,7 +2,7 @@
 type: decision
 adr_id: {{ADR-NNN}}
 status: draft
-decision_state: {{proposed|accepted|superseded|rejected}}
+state: {{proposed|accepted|superseded|rejected}}
 owner: {{decision owner}}
 updated: {{YYYY-MM-DD}}
 sources: [{{raw/adrs/file.md or meeting page}}]
@@ -11,6 +11,8 @@ related: []
 ---
 
 # {{ADR-NNN}} {{Decision title}}
+
+> {{TL;DR: the decision and its main reason, in 1-2 sentences.}}
 
 ## Context
 
