@@ -1,3 +1,13 @@
+> [!IMPORTANT]
+> **This repository has moved to [raythekool/power-platform-plugins](https://github.com/raythekool/power-platform-plugins)** and is archived: it gets no more updates. The `power-platform-llm-wiki` plugin continues there with the same content (3.3.1).
+>
+> To migrate:
+> 1. Remove the `raythekool/power-platform-llm-wiki` marketplace (VS Code: `chat.plugins.marketplaces`; Copilot CLI / Claude Code: `plugin marketplace remove power-platform-llm-wiki`).
+> 2. Add `raythekool/power-platform-plugins` and install `power-platform-llm-wiki@power-platform-plugins`.
+> 3. In each project run `/power-platform-llm-wiki:config --refresh-engine` once.
+>
+> Guide and website: [docs/power-platform-llm-wiki](https://github.com/raythekool/power-platform-plugins/tree/main/docs/power-platform-llm-wiki) · <https://raythekool.github.io/power-platform-plugins/power-platform-llm-wiki/>
+
 <p align="center">
   <img src="docs/images/banner.svg" alt="LLM Wiki - code-first knowledge base for Dynamics 365 delivery" width="100%">
 </p>
