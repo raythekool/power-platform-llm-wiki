@@ -1,4 +1,3 @@
-#Requires -Version 7.0
 <#
 .SYNOPSIS
     Read-only check of the tools used by the LLM Wiki: what is installed, what is missing, what the selected features require.
@@ -25,6 +24,21 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+# No #Requires: under Windows PowerShell 5.1 the script still answers with JSON instead of a parse-time error.
+if ($PSVersionTable.PSVersion.Major -lt 7) {
+    [ordered]@{
+        platform        = 'windows'
+        features        = @($Features)
+        ready           = $false
+        blocking        = @('pwsh')
+        optionalMissing = @()
+        checks          = @([ordered]@{
+                id = 'pwsh'; name = 'PowerShell 7'; status = 'missing'; version = $PSVersionTable.PSVersion.ToString(); path = $null
+                required = $true; neededFor = 'All engine scripts'; detail = 'running under Windows PowerShell; run the engine scripts with pwsh'; install = 'winget install Microsoft.PowerShell'; group = 'pwsh'
+            })
+    } | ConvertTo-Json -Depth 4
+    exit 1
+}
 $allowed = 'azure-repos', 'tfvc', 'dataverse', 'github', 'github-wiki', 'ado-wiki', 'documents', 'ado-local'
 $Features = @($Features | ForEach-Object { $_ -split '[,;\s]+' } | Where-Object { $_ } | ForEach-Object { $_.ToLowerInvariant() } | Select-Object -Unique)
 $unknown = @($Features | Where-Object { $_ -notin $allowed })

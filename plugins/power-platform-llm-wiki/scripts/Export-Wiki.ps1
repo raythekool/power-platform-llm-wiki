@@ -42,6 +42,7 @@ $WikiPath = (Get-Item -LiteralPath $WikiPath).FullName.TrimEnd('\', '/')
 if (-not (Test-Path -LiteralPath $OutPath)) { New-Item -ItemType Directory -Path $OutPath -Force | Out-Null }
 $OutPath = (Resolve-Path -LiteralPath $OutPath).Path
 if (Test-PathUnder $OutPath $WikiPath) { throw 'OutPath must not be inside WikiPath.' }
+if ($OutPath.TrimEnd('\', '/') -eq $WikiPath -or (Test-PathUnder $WikiPath $OutPath)) { throw 'OutPath must not be WikiPath or one of its parent folders.' }
 if ($Clean) {
     Get-ChildItem -LiteralPath $OutPath -Force | Where-Object Name -ne '.git' | Remove-Item -Recurse -Force
 }

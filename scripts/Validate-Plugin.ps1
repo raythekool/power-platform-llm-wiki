@@ -41,6 +41,16 @@ if ($plugin) {
     if (-not $plugin.version) { $errors.Add('plugin.json has no version') }
     if ($plugin.PSObject.Properties['hooks'] -and -not (Test-Path (Join-Path $pluginRoot $plugin.hooks))) { $errors.Add("plugin.json hooks file not found: $($plugin.hooks)") }
 }
+# Copies that must stay byte-identical: plugin.json (root for Copilot CLI, .claude-plugin/ for Claude Code), CHANGELOG, LICENSE.
+$copies = @(
+    @((Join-Path $pluginRoot 'plugin.json'), (Join-Path $pluginRoot '.claude-plugin/plugin.json')),
+    @((Join-Path $RepoRoot 'CHANGELOG.md'), (Join-Path $pluginRoot 'CHANGELOG.md')),
+    @((Join-Path $RepoRoot 'LICENSE'), (Join-Path $pluginRoot 'LICENSE'))
+)
+foreach ($c in $copies) {
+    if (-not ((Test-Path -LiteralPath $c[0]) -and (Test-Path -LiteralPath $c[1]))) { $errors.Add("Missing copy: $([IO.Path]::GetRelativePath($RepoRoot, $c[0])) / $([IO.Path]::GetRelativePath($RepoRoot, $c[1]))"); continue }
+    if ((Get-FileHash -LiteralPath $c[0]).Hash -ne (Get-FileHash -LiteralPath $c[1]).Hash) { $errors.Add("$([IO.Path]::GetRelativePath($RepoRoot, $c[1])) differs from $([IO.Path]::GetRelativePath($RepoRoot, $c[0]))") }
+}
 foreach ($mf in $marketFiles) {
     $market = $markets[$mf]
     if (-not ($plugin -and $market)) { continue }
